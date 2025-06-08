@@ -1,10 +1,12 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ExternalLink, MessageCircle, ArrowLeft, AlertCircle, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import type { Metadata } from 'next'
+import { fetchServiceStatus, getStatusColor, getStatusText, type ServiceStatusData } from '@/lib/status'
 
 const serviceData = {
   aws: {
@@ -282,10 +284,9 @@ const serviceData = {
   },
 }
 
-interface PageProps {
-  params: {
-    service: string
-  }
+type PageProps = {
+  params: { service: string }
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
 function getTagColor(tag: string) {
@@ -308,17 +309,39 @@ function getTagColor(tag: string) {
   return colors[tag as keyof typeof colors] || "bg-gray-100 text-gray-800"
 }
 
-export default function ServiceStatusPage({ params }: PageProps) {
-  const service = serviceData[params.service as keyof typeof serviceData]
+const getRssUrl = (service: any) => {
+  switch (service.slug) {
+    case 'supabase':
+      return 'https://status.supabase.com/history.rss'
+    case 'anthropic':
+      return 'https://status.anthropic.com/history.rss'
+    case 'cohere':
+      return 'https://status.cohere.com/feed.rss'
+    case 'openai':
+      return 'https://status.openai.com/feed.rss'
+    default:
+      return null
+  }
+}
 
+export default async function ServiceStatusPage({
+  params,
+}: PageProps) {
+  // Use Promise.resolve to properly handle dynamic params
+  const { service: serviceSlug } = await Promise.resolve(params)
+  const service = serviceData[serviceSlug as keyof typeof serviceData]
+  
   if (!service) {
     notFound()
   }
 
-  const StatusIcon = service.status === "operational" ? CheckCircle : AlertCircle
-  const statusColor = service.status === "operational" ? "text-green-600" : "text-red-600"
-  const statusBg = service.status === "operational" ? "bg-green-50" : "bg-red-50"
-
+  // Fetch real-time status if RSS feed is available
+  const rssUrl = getRssUrl(service)
+  const statusData = rssUrl ? await fetchServiceStatus(rssUrl) : {
+    status: 'unknown' as const,
+    incidents: []
+  }
+  
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -326,7 +349,11 @@ export default function ServiceStatusPage({ params }: PageProps) {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <Link 
+                href="/" 
+                prefetch={true}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
               </Link>
@@ -340,46 +367,91 @@ export default function ServiceStatusPage({ params }: PageProps) {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Service Header */}
+        {/* Status Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">{service.name} Status</h1>
-          <div className="flex justify-center gap-2 mb-4">
-            {service.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className={`${getTagColor(tag)}`}>
-                {tag}
-              </Badge>
-            ))}
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 ${getStatusColor(statusData.status)}`}>
+            <span className="text-sm font-medium">{getStatusText(statusData.status)}</span>
           </div>
-          <p className="text-xl text-muted-foreground mb-6">{service.description}</p>
+          {statusData.lastIncident && (
+            <p className="text-muted-foreground">
+              Last incident: {new Date(statusData.lastIncident.createdAt).toLocaleDateString()}
+            </p>
+          )}
+          {!rssUrl && (
+            <p className="text-muted-foreground mt-2">
+              Real-time status updates are not available for this service.
+            </p>
+          )}
         </div>
 
-        {/* Current Status Card */}
-        <Card className={`mb-8 ${statusBg} border-2`}>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <StatusIcon className={`w-12 h-12 ${statusColor}`} />
-              <div className="text-center">
-                <h2 className="text-2xl font-bold capitalize">{service.status}</h2>
-                <p className="text-muted-foreground">All systems operational</p>
+        {/* Status Details */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <Card>
+            <CardHeader>
+              <CardTitle>Current Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Overall Status</span>
+                  <span className={getStatusColor(statusData.status)}>
+                    {getStatusText(statusData.status)}
+                  </span>
+                </div>
+                {statusData.lastIncident && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Last Incident</span>
+                      <span>{statusData.lastIncident.title}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Incident Status</span>
+                      <span>{statusData.lastIncident.status}</span>
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">{service.uptime}</p>
-                <p className="text-sm text-muted-foreground">30-day uptime</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">{service.lastIncident}</p>
-                <p className="text-sm text-muted-foreground">Last incident</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">{"< 1min"}</p>
-                <p className="text-sm text-muted-foreground">Response time</p>
-              </div>
+        {/* Recent Incidents */}
+        {statusData.incidents.length > 0 && (
+          <div className="max-w-4xl mx-auto mb-12">
+            <h2 className="text-2xl font-bold mb-4">Recent Incidents</h2>
+            <div className="space-y-4">
+              {statusData.incidents.slice(0, 5).map((incident, index) => (
+                <Card key={index}>
+                  <CardHeader>
+                    <CardTitle className="text-lg">{incident.title}</CardTitle>
+                    <CardDescription>
+                      {new Date(incident.createdAt).toLocaleString()}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div 
+                      className="prose prose-sm dark:prose-invert max-w-none mb-4"
+                      dangerouslySetInnerHTML={{ __html: incident.htmlDescription }}
+                    />
+                    {incident.components.length > 0 && (
+                      <div>
+                        <h4 className="font-medium mb-2">Affected Components:</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {incident.components.map((component, i) => (
+                            <Badge key={i} variant="secondary">
+                              {component}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex justify-center gap-4 mb-12">
@@ -415,7 +487,7 @@ export default function ServiceStatusPage({ params }: PageProps) {
           <h3 className="text-2xl font-bold text-center mb-8">Check Other Services</h3>
           <div className="flex justify-center gap-4 flex-wrap">
             {Object.entries(serviceData)
-              .filter(([key]) => key !== params.service)
+              .filter(([key]) => key !== serviceSlug)
               .slice(0, 4)
               .map(([key, data]) => (
                 <Button key={key} variant="outline" asChild>
@@ -427,4 +499,33 @@ export default function ServiceStatusPage({ params }: PageProps) {
       </main>
     </div>
   )
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  // Use Promise.resolve to properly handle dynamic params
+  const { service: serviceSlug } = await Promise.resolve(params)
+  const service = serviceData[serviceSlug as keyof typeof serviceData]
+  
+  if (!service) {
+    return {
+      title: 'Service Not Found',
+      description: 'The requested service status page could not be found.'
+    }
+  }
+
+  return {
+    title: `${service.name} Status | Is ${service.name} Down?`,
+    description: `Check the current status of ${service.name}. ${service.description || `Monitor ${service.name}'s service status, uptime, and recent incidents.`}`,
+    openGraph: {
+      title: `${service.name} Status | Is ${service.name} Down?`,
+      description: `Check the current status of ${service.name}. ${service.description || `Monitor ${service.name}'s service status, uptime, and recent incidents.`}`,
+      url: `https://status-page-aggregator.vercel.app/${service.slug}`,
+    },
+    twitter: {
+      title: `${service.name} Status | Is ${service.name} Down?`,
+      description: `Check the current status of ${service.name}. ${service.description || `Monitor ${service.name}'s service status, uptime, and recent incidents.`}`,
+    },
+  }
 }

@@ -1,16 +1,38 @@
-"use client"
-
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ExternalLink, Github, MessageCircle } from "lucide-react"
 import Link from "next/link"
+import { fetchServiceStatus, getStatusColor, getStatusText } from '@/lib/status'
+import { supabase } from '@/lib/supabase'
+import { StatusMonitorClient } from './components/StatusMonitorClient'
 
-const services = [
+// Add type definitions at the top of the file
+type ServiceStatus = 'operational' | 'degraded' | 'outage' | 'unknown'
+
+interface Service {
+  name: string
+  status: ServiceStatus
+  statusUrl: string
+  communityUrl: string
+  slug: string
+  tags: string[]
+}
+
+interface StatusMap {
+  [key: string]: {
+    status: ServiceStatus
+    last_incident?: {
+      createdAt: string
+    }
+  }
+}
+
+const services: Service[] = [
   // Cloud Providers
   {
     name: "AWS",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.aws.amazon.com/",
     communityUrl: "https://reddit.com/r/aws",
     slug: "aws",
@@ -18,7 +40,7 @@ const services = [
   },
   {
     name: "Google Cloud",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/googlecloud",
     slug: "google-cloud",
@@ -26,7 +48,7 @@ const services = [
   },
   {
     name: "Microsoft Azure",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.azure.com/",
     communityUrl: "https://reddit.com/r/azure",
     slug: "azure",
@@ -34,7 +56,7 @@ const services = [
   },
   {
     name: "DigitalOcean",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.digitalocean.com/",
     communityUrl: "https://reddit.com/r/digitalocean",
     slug: "digitalocean",
@@ -42,7 +64,7 @@ const services = [
   },
   {
     name: "Linode",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.linode.com/",
     communityUrl: "https://reddit.com/r/linode",
     slug: "linode",
@@ -52,7 +74,7 @@ const services = [
   // LLM Providers
   {
     name: "OpenAI",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.openai.com/",
     communityUrl: "https://reddit.com/r/openai",
     slug: "openai",
@@ -60,7 +82,7 @@ const services = [
   },
   {
     name: "Anthropic",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.anthropic.com/",
     communityUrl: "https://reddit.com/r/anthropic",
     slug: "anthropic",
@@ -68,7 +90,7 @@ const services = [
   },
   {
     name: "Google AI",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/googleai",
     slug: "google-ai",
@@ -76,7 +98,7 @@ const services = [
   },
   {
     name: "Cohere",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.cohere.com/",
     communityUrl: "https://reddit.com/r/cohere",
     slug: "cohere",
@@ -84,7 +106,7 @@ const services = [
   },
   {
     name: "Hugging Face",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.huggingface.co/",
     communityUrl: "https://reddit.com/r/huggingface",
     slug: "hugging-face",
@@ -92,7 +114,7 @@ const services = [
   },
   {
     name: "Replicate",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.replicate.com/",
     communityUrl: "https://reddit.com/r/replicate",
     slug: "replicate",
@@ -102,7 +124,7 @@ const services = [
   // Atlassian
   {
     name: "Jira",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.atlassian.com/",
     communityUrl: "https://reddit.com/r/jira",
     slug: "jira",
@@ -110,7 +132,7 @@ const services = [
   },
   {
     name: "Confluence",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.atlassian.com/",
     communityUrl: "https://reddit.com/r/confluence",
     slug: "confluence",
@@ -118,7 +140,7 @@ const services = [
   },
   {
     name: "Bitbucket",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.atlassian.com/",
     communityUrl: "https://reddit.com/r/bitbucket",
     slug: "bitbucket",
@@ -126,7 +148,7 @@ const services = [
   },
   {
     name: "Trello",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.atlassian.com/",
     communityUrl: "https://reddit.com/r/trello",
     slug: "trello",
@@ -136,7 +158,7 @@ const services = [
   // Databases
   {
     name: "MongoDB",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.mongodb.com/",
     communityUrl: "https://reddit.com/r/mongodb",
     slug: "mongodb",
@@ -144,7 +166,7 @@ const services = [
   },
   {
     name: "PostgreSQL",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://postgresql.org/support/",
     communityUrl: "https://reddit.com/r/postgresql",
     slug: "postgresql",
@@ -152,7 +174,7 @@ const services = [
   },
   {
     name: "Redis",
-    status: "degraded",
+    status: "degraded" as ServiceStatus,
     statusUrl: "https://status.redis.com/",
     communityUrl: "https://reddit.com/r/redis",
     slug: "redis",
@@ -160,7 +182,7 @@ const services = [
   },
   {
     name: "Supabase",
-    status: "operational",
+    status: "unknown" as ServiceStatus,
     statusUrl: "https://status.supabase.com/",
     communityUrl: "https://reddit.com/r/supabase",
     slug: "supabase",
@@ -168,7 +190,7 @@ const services = [
   },
   {
     name: "PlanetScale",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://planetscale.com/status",
     communityUrl: "https://reddit.com/r/planetscale",
     slug: "planetscale",
@@ -176,7 +198,7 @@ const services = [
   },
   {
     name: "FaunaDB",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.fauna.com/",
     communityUrl: "https://reddit.com/r/faunadb",
     slug: "faunadb",
@@ -186,7 +208,7 @@ const services = [
   // DevOps & Deployment
   {
     name: "Vercel",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://vercel.com/status",
     communityUrl: "https://github.com/vercel/vercel/discussions",
     slug: "vercel",
@@ -194,7 +216,7 @@ const services = [
   },
   {
     name: "Netlify",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.netlify.com/",
     communityUrl: "https://reddit.com/r/netlify",
     slug: "netlify",
@@ -202,7 +224,7 @@ const services = [
   },
   {
     name: "GitHub",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://githubstatus.com/",
     communityUrl: "https://github.com/community/community/discussions",
     slug: "github",
@@ -210,7 +232,7 @@ const services = [
   },
   {
     name: "GitLab",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.gitlab.com/",
     communityUrl: "https://reddit.com/r/gitlab",
     slug: "gitlab",
@@ -218,7 +240,7 @@ const services = [
   },
   {
     name: "Docker Hub",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.docker.com/",
     communityUrl: "https://reddit.com/r/docker",
     slug: "docker-hub",
@@ -226,7 +248,7 @@ const services = [
   },
   {
     name: "CircleCI",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.circleci.com/",
     communityUrl: "https://reddit.com/r/circleci",
     slug: "circleci",
@@ -236,7 +258,7 @@ const services = [
   // CDN & Infrastructure
   {
     name: "Cloudflare",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://cloudflarestatus.com/",
     communityUrl: "https://reddit.com/r/cloudflare",
     slug: "cloudflare",
@@ -244,7 +266,7 @@ const services = [
   },
   {
     name: "Fastly",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.fastly.com/",
     communityUrl: "https://reddit.com/r/fastly",
     slug: "fastly",
@@ -254,7 +276,7 @@ const services = [
   // Payment & E-commerce
   {
     name: "Stripe",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.stripe.com/",
     communityUrl: "https://reddit.com/r/stripe",
     slug: "stripe",
@@ -262,7 +284,7 @@ const services = [
   },
   {
     name: "PayPal",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.paypal.com/",
     communityUrl: "https://reddit.com/r/paypal",
     slug: "paypal",
@@ -270,7 +292,7 @@ const services = [
   },
   {
     name: "Shopify",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.shopify.com/",
     communityUrl: "https://reddit.com/r/shopify",
     slug: "shopify",
@@ -280,7 +302,7 @@ const services = [
   // Communication
   {
     name: "Slack",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.slack.com/",
     communityUrl: "https://reddit.com/r/slack",
     slug: "slack",
@@ -288,7 +310,7 @@ const services = [
   },
   {
     name: "Discord",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://discordstatus.com/",
     communityUrl: "https://reddit.com/r/discord",
     slug: "discord",
@@ -296,7 +318,7 @@ const services = [
   },
   {
     name: "Zoom",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.zoom.us/",
     communityUrl: "https://reddit.com/r/zoom",
     slug: "zoom",
@@ -304,7 +326,7 @@ const services = [
   },
   {
     name: "Microsoft Teams",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.office365.com/",
     communityUrl: "https://reddit.com/r/microsoftteams",
     slug: "microsoft-teams",
@@ -314,7 +336,7 @@ const services = [
   // Monitoring & Analytics
   {
     name: "Datadog",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.datadoghq.com/",
     communityUrl: "https://reddit.com/r/datadog",
     slug: "datadog",
@@ -322,7 +344,7 @@ const services = [
   },
   {
     name: "New Relic",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.newrelic.com/",
     communityUrl: "https://reddit.com/r/newrelic",
     slug: "new-relic",
@@ -330,7 +352,7 @@ const services = [
   },
   {
     name: "Sentry",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.sentry.io/",
     communityUrl: "https://reddit.com/r/sentry",
     slug: "sentry",
@@ -340,7 +362,7 @@ const services = [
   // Email Services
   {
     name: "SendGrid",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.sendgrid.com/",
     communityUrl: "https://reddit.com/r/sendgrid",
     slug: "sendgrid",
@@ -348,7 +370,7 @@ const services = [
   },
   {
     name: "Mailgun",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.mailgun.com/",
     communityUrl: "https://reddit.com/r/mailgun",
     slug: "mailgun",
@@ -356,7 +378,7 @@ const services = [
   },
   {
     name: "Postmark",
-    status: "operational",
+    status: "operational" as ServiceStatus,
     statusUrl: "https://status.postmarkapp.com/",
     communityUrl: "https://reddit.com/r/postmark",
     slug: "postmark",
@@ -402,189 +424,45 @@ function getTagColor(tag: string) {
   return colors[tag as keyof typeof colors] || "bg-gray-100 text-gray-800"
 }
 
-export default function StatusMonitor() {
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-primary">DrDroid</h1>
-              <Badge variant="outline" className="text-xs">
-                Open Source
-              </Badge>
-            </div>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="https://github.com/drdroid/statuspage-aggregator" className="flex items-center gap-2">
-                <Github className="w-4 h-4" />
-                Star on GitHub
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+export default async function StatusMonitor() {
+  // Debug: Log environment variables (they will be undefined in the browser due to NEXT_PUBLIC_ prefix)
+  console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 10) + '...')
+  console.log('Supabase Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold mb-4">Is It Down?</h2>
-          <p className="text-xl text-muted-foreground mb-2">
-            Real-time status monitoring for popular cloud, AI, and infrastructure services
-          </p>
-          <p className="text-sm text-muted-foreground mb-4">
-            Built for engineers, by engineers. Check service status and join community discussions.
-          </p>
-          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
-            <span>💡</span>
-            <span>Don't see your tools? Fork this project and add them!</span>
-            <Link href="#customize" className="underline hover:no-underline font-medium">
-              Learn how
-            </Link>
-          </div>
-        </div>
+  // Fetch statuses from Supabase
+  const { data: statusRows, error } = await supabase
+    .from('service_status')
+    .select('*')
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
-          {services.map((service) => (
-            <Card
-              key={service.name}
-              className="hover:shadow-md transition-shadow cursor-pointer h-full"
-              onClick={() => (window.location.href = `/${service.slug}`)}
-            >
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center justify-between text-lg">
-                  <span>{service.name}</span>
-                  <StatusIndicator status={service.status} />
-                </CardTitle>
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {service.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className={`text-xs ${getTagColor(tag)}`}>
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      window.open(service.communityUrl, "_blank")
-                    }}
-                  >
-                    <MessageCircle className="w-3 h-3 mr-1" />
-                    Community
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      window.open(service.statusUrl, "_blank")
-                    }}
-                  >
-                    <ExternalLink className="w-3 h-3 mr-1" />
-                    Status
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+  // Debug: Log the query results
+  console.log('Supabase Query Results:', {
+    hasData: !!statusRows,
+    rowCount: statusRows?.length,
+    error: error?.message,
+    firstRow: statusRows?.[0]
+  })
 
-        {/* Fork & Customize Section */}
-        <div className="mb-12" id="customize">
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <h3 className="text-2xl font-bold mb-3">Want to customize for your tools?</h3>
-                <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
-                  Fork this project and create your own status dashboard with the services your team actually uses. Add
-                  your internal tools, remove what you don't need, and deploy it for your organization.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" asChild>
-                    <Link
-                      href="https://github.com/drdroid/statuspage-aggregator/fork"
-                      className="flex items-center gap-2"
-                    >
-                      <Github className="w-4 h-4" />
-                      Fork on GitHub
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="lg" asChild>
-                    <Link
-                      href="https://github.com/drdroid/statuspage-aggregator#customization"
-                      className="flex items-center gap-2"
-                    >
-                      📖 Customization Guide
-                    </Link>
-                  </Button>
-                </div>
-                <div className="mt-4 text-sm text-muted-foreground">
-                  <p>✨ Add your internal services • 🎨 Customize the design • 🚀 Deploy anywhere</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+  if (error) {
+    console.error('Supabase Error:', error)
+  }
 
-        {/* Legend */}
-        <div className="flex justify-center">
-          <Card className="w-fit">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <span>Operational</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <span>Degraded</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <span>Outage</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+  // Map statuses by slug for easy lookup
+  const statusMap = (statusRows || []).reduce((acc: Record<string, any>, row: any) => {
+    acc[row.service_slug] = {
+      status: row.status,
+      last_incident: row.last_incident ? {
+        createdAt: row.last_incident
+      } : undefined
+    }
+    return acc
+  }, {} as Record<string, any>)
 
-      {/* Footer */}
-      <footer className="border-t mt-16">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-sm text-muted-foreground">
-            <p className="mb-2">Made with ❤️ by the DrDroid team • Open source and community driven</p>
-            <p className="mb-4">
-              Want to add a service or report an issue?{" "}
-              <Link href="https://github.com/drdroid/statuspage-aggregator" className="underline hover:no-underline">
-                Contribute on GitHub
-              </Link>
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-xs">
-              <Link href="https://github.com/drdroid/statuspage-aggregator/fork" className="hover:underline">
-                🍴 Fork & Customize
-              </Link>
-              <Link href="https://github.com/drdroid/statuspage-aggregator/issues" className="hover:underline">
-                🐛 Report Issues
-              </Link>
-              <Link href="https://github.com/drdroid/statuspage-aggregator/discussions" className="hover:underline">
-                💬 Discussions
-              </Link>
-              <Link href="https://drdroid.io" className="hover:underline">
-                🏠 DrDroid.io
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-  )
+  // Debug: Log the final status map with more details
+  console.log('Status Map:', {
+    serviceCount: Object.keys(statusMap).length,
+    services: Object.keys(statusMap),
+    sampleService: statusMap[Object.keys(statusMap)[0]]
+  })
+
+  return <StatusMonitorClient services={services} statusMap={statusMap} />
 }
