@@ -1,12 +1,34 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ExternalLink, MessageCircle, ArrowLeft, AlertCircle, CheckCircle } from "lucide-react"
-import Link from "next/link"
-import { notFound } from "next/navigation"
-import type { Metadata } from 'next'
-import { fetchServiceStatus, getStatusColor, getStatusText, type ServiceStatusData } from '@/lib/status'
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  ExternalLink,
+  MessageCircle,
+  ArrowLeft,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import {
+  fetchServiceStatus,
+  getStatusColor,
+  getStatusText,
+  type ServiceStatusData,
+} from "@/lib/status";
 
 const serviceData = {
   aws: {
@@ -282,12 +304,12 @@ const serviceData = {
       },
     ],
   },
-}
+};
 
 type PageProps = {
-  params: { service: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
+  params: { service: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
 
 function getTagColor(tag: string) {
   const colors = {
@@ -305,43 +327,45 @@ function getTagColor(tag: string) {
     CDN: "bg-violet-100 text-violet-800",
     "E-commerce": "bg-emerald-100 text-emerald-800",
     "Project Management": "bg-indigo-100 text-indigo-800",
-  }
-  return colors[tag as keyof typeof colors] || "bg-gray-100 text-gray-800"
+  };
+  return colors[tag as keyof typeof colors] || "bg-gray-100 text-gray-800";
 }
 
 const getRssUrl = (service: any) => {
   switch (service.slug) {
-    case 'supabase':
-      return 'https://status.supabase.com/history.rss'
-    case 'anthropic':
-      return 'https://status.anthropic.com/history.rss'
-    case 'cohere':
-      return 'https://status.cohere.com/feed.rss'
-    case 'openai':
-      return 'https://status.openai.com/feed.rss'
+    case "supabase":
+      return "https://status.supabase.com/history.rss";
+    case "anthropic":
+      return "https://status.anthropic.com/history.rss";
+    case "cohere":
+      return "https://status.cohere.com/feed.rss";
+    case "openai":
+      return "https://status.openai.com/feed.rss";
+    case "azure":
+      return "https://rssfeed.azure.status.microsoft/en-us/status/feed/"; // https://status.azure.com/
     default:
-      return null
+      return null;
   }
-}
+};
 
-export default async function ServiceStatusPage({
-  params,
-}: PageProps) {
+export default async function ServiceStatusPage({ params }: PageProps) {
   // Use Promise.resolve to properly handle dynamic params
-  const { service: serviceSlug } = await Promise.resolve(params)
-  const service = serviceData[serviceSlug as keyof typeof serviceData]
-  
+  const { service: serviceSlug } = await Promise.resolve(params);
+  const service = serviceData[serviceSlug as keyof typeof serviceData];
+
   if (!service) {
-    notFound()
+    notFound();
   }
 
   // Fetch real-time status if RSS feed is available
-  const rssUrl = getRssUrl(service)
-  const statusData = rssUrl ? await fetchServiceStatus(rssUrl) : {
-    status: 'unknown' as const,
-    incidents: []
-  }
-  
+  const rssUrl = getRssUrl(service);
+  const statusData = rssUrl
+    ? await fetchServiceStatus(rssUrl)
+    : {
+        status: "unknown" as const,
+        incidents: [],
+      };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -349,8 +373,8 @@ export default async function ServiceStatusPage({
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 prefetch={true}
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
@@ -370,12 +394,19 @@ export default async function ServiceStatusPage({
         {/* Status Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">{service.name} Status</h1>
-          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 ${getStatusColor(statusData.status)}`}>
-            <span className="text-sm font-medium">{getStatusText(statusData.status)}</span>
+          <div
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 ${getStatusColor(
+              statusData.status
+            )}`}
+          >
+            <span className="text-sm font-medium">
+              {getStatusText(statusData.status)}
+            </span>
           </div>
           {statusData.lastIncident && (
             <p className="text-muted-foreground">
-              Last incident: {new Date(statusData.lastIncident.createdAt).toLocaleDateString()}
+              Last incident:{" "}
+              {new Date(statusData.lastIncident.createdAt).toLocaleDateString()}
             </p>
           )}
           {!rssUrl && (
@@ -402,11 +433,15 @@ export default async function ServiceStatusPage({
                 {statusData.lastIncident && (
                   <>
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Last Incident</span>
+                      <span className="text-muted-foreground">
+                        Last Incident
+                      </span>
                       <span>{statusData.lastIncident.title}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Incident Status</span>
+                      <span className="text-muted-foreground">
+                        Incident Status
+                      </span>
                       <span>{statusData.lastIncident.status}</span>
                     </div>
                   </>
@@ -430,13 +465,17 @@ export default async function ServiceStatusPage({
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div 
+                    <div
                       className="prose prose-sm dark:prose-invert max-w-none mb-4"
-                      dangerouslySetInnerHTML={{ __html: incident.htmlDescription }}
+                      dangerouslySetInnerHTML={{
+                        __html: incident.htmlDescription,
+                      }}
                     />
                     {incident.components.length > 0 && (
                       <div>
-                        <h4 className="font-medium mb-2">Affected Components:</h4>
+                        <h4 className="font-medium mb-2">
+                          Affected Components:
+                        </h4>
                         <div className="flex flex-wrap gap-2">
                           {incident.components.map((component, i) => (
                             <Badge key={i} variant="secondary">
@@ -462,7 +501,10 @@ export default async function ServiceStatusPage({
             </Link>
           </Button>
           <Button variant="outline" size="lg" asChild>
-            <Link href={service.communityUrl} className="flex items-center gap-2">
+            <Link
+              href={service.communityUrl}
+              className="flex items-center gap-2"
+            >
               <MessageCircle className="w-4 h-4" />
               Community Discussion
             </Link>
@@ -471,12 +513,18 @@ export default async function ServiceStatusPage({
 
         {/* FAQ Section */}
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">
+            Frequently Asked Questions
+          </h2>
           <Accordion type="single" collapsible className="w-full">
             {service.faq.map((item, index) => (
               <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">{item.answer}</AccordionContent>
+                <AccordionTrigger className="text-left">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {item.answer}
+                </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
@@ -484,7 +532,9 @@ export default async function ServiceStatusPage({
 
         {/* Related Services */}
         <div className="mt-16">
-          <h3 className="text-2xl font-bold text-center mb-8">Check Other Services</h3>
+          <h3 className="text-2xl font-bold text-center mb-8">
+            Check Other Services
+          </h3>
           <div className="flex justify-center gap-4 flex-wrap">
             {Object.entries(serviceData)
               .filter(([key]) => key !== serviceSlug)
@@ -498,34 +548,43 @@ export default async function ServiceStatusPage({
         </div>
       </main>
     </div>
-  )
+  );
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   // Use Promise.resolve to properly handle dynamic params
-  const { service: serviceSlug } = await Promise.resolve(params)
-  const service = serviceData[serviceSlug as keyof typeof serviceData]
-  
+  const { service: serviceSlug } = await Promise.resolve(params);
+  const service = serviceData[serviceSlug as keyof typeof serviceData];
+
   if (!service) {
     return {
-      title: 'Service Not Found',
-      description: 'The requested service status page could not be found.'
-    }
+      title: "Service Not Found",
+      description: "The requested service status page could not be found.",
+    };
   }
 
   return {
     title: `${service.name} Status | Is ${service.name} Down?`,
-    description: `Check the current status of ${service.name}. ${service.description || `Monitor ${service.name}'s service status, uptime, and recent incidents.`}`,
+    description: `Check the current status of ${service.name}. ${
+      service.description ||
+      `Monitor ${service.name}'s service status, uptime, and recent incidents.`
+    }`,
     openGraph: {
       title: `${service.name} Status | Is ${service.name} Down?`,
-      description: `Check the current status of ${service.name}. ${service.description || `Monitor ${service.name}'s service status, uptime, and recent incidents.`}`,
+      description: `Check the current status of ${service.name}. ${
+        service.description ||
+        `Monitor ${service.name}'s service status, uptime, and recent incidents.`
+      }`,
       url: `https://status-page-aggregator.vercel.app/${service.slug}`,
     },
     twitter: {
       title: `${service.name} Status | Is ${service.name} Down?`,
-      description: `Check the current status of ${service.name}. ${service.description || `Monitor ${service.name}'s service status, uptime, and recent incidents.`}`,
+      description: `Check the current status of ${service.name}. ${
+        service.description ||
+        `Monitor ${service.name}'s service status, uptime, and recent incidents.`
+      }`,
     },
-  }
+  };
 }
