@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 import { StatusMonitorClient } from './components/StatusMonitorClient'
 
 // Add type definitions at the top of the file
-type ServiceStatus = 'operational' | 'degraded' | 'outage' | 'unknown'
+type ServiceStatus = 'operational' | 'degraded' | 'outage' | 'incident' | 'unknown'
 
 interface Service {
   name: string
@@ -30,360 +30,886 @@ interface StatusMap {
 
 const services: Service[] = [
   // Cloud Providers
-  {
-    name: "AWS",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.aws.amazon.com/",
-    communityUrl: "https://reddit.com/r/aws",
-    slug: "aws",
-    tags: ["Cloud", "Infrastructure"],
-  },
-  {
-    name: "Google Cloud",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.cloud.google.com/",
-    communityUrl: "https://reddit.com/r/googlecloud",
-    slug: "google-cloud",
-    tags: ["Cloud", "Infrastructure"],
-  },
-  {
-    name: "Microsoft Azure",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.azure.com/",
-    communityUrl: "https://reddit.com/r/azure",
-    slug: "azure",
-    tags: ["Cloud", "Infrastructure"],
-  },
-  {
-    name: "DigitalOcean",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.digitalocean.com/",
-    communityUrl: "https://reddit.com/r/digitalocean",
-    slug: "digitalocean",
-    tags: ["Cloud", "Infrastructure"],
-  },
-  {
-    name: "Linode",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.linode.com/",
-    communityUrl: "https://reddit.com/r/linode",
-    slug: "linode",
-    tags: ["Cloud", "Infrastructure"],
-  },
-
-  // LLM Providers
-  {
-    name: "OpenAI",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.openai.com/",
-    communityUrl: "https://reddit.com/r/openai",
-    slug: "openai",
-    tags: ["AI/ML", "LLM"],
-  },
-  {
-    name: "Anthropic",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.anthropic.com/",
-    communityUrl: "https://reddit.com/r/anthropic",
-    slug: "anthropic",
-    tags: ["AI/ML", "LLM"],
-  },
-  {
-    name: "Google AI",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.cloud.google.com/",
-    communityUrl: "https://reddit.com/r/googleai",
-    slug: "google-ai",
-    tags: ["AI/ML", "LLM"],
-  },
-  {
-    name: "Cohere",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.cohere.com/",
-    communityUrl: "https://reddit.com/r/cohere",
-    slug: "cohere",
-    tags: ["AI/ML", "LLM"],
-  },
-  {
-    name: "Hugging Face",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.huggingface.co/",
-    communityUrl: "https://reddit.com/r/huggingface",
-    slug: "hugging-face",
-    tags: ["AI/ML", "LLM"],
-  },
-  {
-    name: "Replicate",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.replicate.com/",
-    communityUrl: "https://reddit.com/r/replicate",
-    slug: "replicate",
-    tags: ["AI/ML", "LLM"],
-  },
-
-  // Atlassian
-  {
-    name: "Jira",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.atlassian.com/",
-    communityUrl: "https://reddit.com/r/jira",
-    slug: "jira",
-    tags: ["Productivity", "Project Management"],
-  },
-  {
-    name: "Confluence",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.atlassian.com/",
-    communityUrl: "https://reddit.com/r/confluence",
-    slug: "confluence",
-    tags: ["Productivity", "Documentation"],
-  },
-  {
-    name: "Bitbucket",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.atlassian.com/",
-    communityUrl: "https://reddit.com/r/bitbucket",
-    slug: "bitbucket",
-    tags: ["DevOps", "Version Control"],
-  },
-  {
-    name: "Trello",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.atlassian.com/",
-    communityUrl: "https://reddit.com/r/trello",
-    slug: "trello",
-    tags: ["Productivity", "Project Management"],
-  },
-
-  // Databases
-  {
-    name: "MongoDB",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.mongodb.com/",
-    communityUrl: "https://reddit.com/r/mongodb",
-    slug: "mongodb",
-    tags: ["Database", "NoSQL"],
-  },
-  {
-    name: "PostgreSQL",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://postgresql.org/support/",
-    communityUrl: "https://reddit.com/r/postgresql",
-    slug: "postgresql",
-    tags: ["Database", "SQL"],
-  },
-  {
-    name: "Redis",
-    status: "degraded" as ServiceStatus,
-    statusUrl: "https://status.redis.com/",
-    communityUrl: "https://reddit.com/r/redis",
-    slug: "redis",
-    tags: ["Database", "Cache"],
-  },
-  {
-    name: "Supabase",
-    status: "unknown" as ServiceStatus,
-    statusUrl: "https://status.supabase.com/",
-    communityUrl: "https://reddit.com/r/supabase",
-    slug: "supabase",
-    tags: ["Database", "Backend"],
-  },
-  {
-    name: "PlanetScale",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://planetscale.com/status",
-    communityUrl: "https://reddit.com/r/planetscale",
-    slug: "planetscale",
-    tags: ["Database", "SQL"],
-  },
-  {
-    name: "FaunaDB",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.fauna.com/",
-    communityUrl: "https://reddit.com/r/faunadb",
-    slug: "faunadb",
-    tags: ["Database", "Serverless"],
-  },
-
-  // DevOps & Deployment
-  {
-    name: "Vercel",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://vercel.com/status",
-    communityUrl: "https://github.com/vercel/vercel/discussions",
-    slug: "vercel",
-    tags: ["DevOps", "Hosting"],
-  },
-  {
-    name: "Netlify",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.netlify.com/",
-    communityUrl: "https://reddit.com/r/netlify",
-    slug: "netlify",
-    tags: ["DevOps", "Hosting"],
-  },
-  {
-    name: "GitHub",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://githubstatus.com/",
-    communityUrl: "https://github.com/community/community/discussions",
-    slug: "github",
-    tags: ["DevOps", "Version Control"],
-  },
-  {
-    name: "GitLab",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.gitlab.com/",
-    communityUrl: "https://reddit.com/r/gitlab",
-    slug: "gitlab",
-    tags: ["DevOps", "Version Control"],
-  },
-  {
-    name: "Docker Hub",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.docker.com/",
-    communityUrl: "https://reddit.com/r/docker",
-    slug: "docker-hub",
-    tags: ["DevOps", "Containers"],
-  },
-  {
-    name: "CircleCI",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.circleci.com/",
-    communityUrl: "https://reddit.com/r/circleci",
-    slug: "circleci",
-    tags: ["DevOps", "CI/CD"],
-  },
-
-  // CDN & Infrastructure
-  {
-    name: "Cloudflare",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://cloudflarestatus.com/",
-    communityUrl: "https://reddit.com/r/cloudflare",
-    slug: "cloudflare",
-    tags: ["CDN", "Security"],
-  },
-  {
-    name: "Fastly",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.fastly.com/",
-    communityUrl: "https://reddit.com/r/fastly",
-    slug: "fastly",
-    tags: ["CDN", "Edge Computing"],
-  },
-
-  // Payment & E-commerce
-  {
-    name: "Stripe",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.stripe.com/",
-    communityUrl: "https://reddit.com/r/stripe",
-    slug: "stripe",
-    tags: ["Payments", "E-commerce"],
-  },
-  {
-    name: "PayPal",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.paypal.com/",
-    communityUrl: "https://reddit.com/r/paypal",
-    slug: "paypal",
-    tags: ["Payments", "E-commerce"],
-  },
-  {
-    name: "Shopify",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.shopify.com/",
-    communityUrl: "https://reddit.com/r/shopify",
-    slug: "shopify",
-    tags: ["E-commerce", "Platform"],
-  },
-
-  // Communication
-  {
-    name: "Slack",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.slack.com/",
-    communityUrl: "https://reddit.com/r/slack",
-    slug: "slack",
-    tags: ["Communication", "Productivity"],
-  },
-  {
-    name: "Discord",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://discordstatus.com/",
-    communityUrl: "https://reddit.com/r/discord",
-    slug: "discord",
-    tags: ["Communication", "Gaming"],
-  },
-  {
-    name: "Zoom",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.zoom.us/",
-    communityUrl: "https://reddit.com/r/zoom",
-    slug: "zoom",
-    tags: ["Communication", "Video"],
-  },
-  {
-    name: "Microsoft Teams",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.office365.com/",
-    communityUrl: "https://reddit.com/r/microsoftteams",
-    slug: "microsoft-teams",
-    tags: ["Communication", "Productivity"],
-  },
-
-  // Monitoring & Analytics
-  {
-    name: "Datadog",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.datadoghq.com/",
-    communityUrl: "https://reddit.com/r/datadog",
-    slug: "datadog",
-    tags: ["Monitoring", "Analytics"],
-  },
-  {
-    name: "New Relic",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.newrelic.com/",
-    communityUrl: "https://reddit.com/r/newrelic",
-    slug: "new-relic",
-    tags: ["Monitoring", "APM"],
-  },
-  {
-    name: "Sentry",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.sentry.io/",
-    communityUrl: "https://reddit.com/r/sentry",
-    slug: "sentry",
-    tags: ["Monitoring", "Error Tracking"],
-  },
-
-  // Email Services
-  {
-    name: "SendGrid",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.sendgrid.com/",
-    communityUrl: "https://reddit.com/r/sendgrid",
-    slug: "sendgrid",
-    tags: ["Email", "Communication"],
-  },
-  {
-    name: "Mailgun",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.mailgun.com/",
-    communityUrl: "https://reddit.com/r/mailgun",
-    slug: "mailgun",
-    tags: ["Email", "Communication"],
-  },
-  {
-    name: "Postmark",
-    status: "operational" as ServiceStatus,
-    statusUrl: "https://status.postmarkapp.com/",
-    communityUrl: "https://reddit.com/r/postmark",
-    slug: "postmark",
-    tags: ["Email", "Communication"],
-  },
+    {
+      "name": "OpenAI",
+      "status": "operational",
+      "statusUrl": "https://status.openai.com/",
+      "communityUrl": "https://reddit.com/r/OpenAI",
+      "slug": "openai",
+      "tags": ["LLM Provider"]
+    },
+    {
+      "name": "Anthropic",
+      "status": "operational",
+      "statusUrl": "https://status.anthropic.com/",
+      "communityUrl": "https://reddit.com/r/Anthropic",
+      "slug": "anthropic",
+      "tags": ["LLM Provider"]
+    },
+    {
+      "name": "Google",
+      "status": "incident",
+      "statusUrl": "https://status.google.com/",
+      "communityUrl": "https://reddit.com/r/GoogleCloud",
+      "slug": "google",
+      "tags": ["LLM Provider"]
+    },
+    {
+      "name": "DeepMind",
+      "status": "operational",
+      "statusUrl": "https://status.cloud.google.com/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "google-deepmind",
+      "tags": ["LLM Provider"]
+    },
+    {
+      "name": "Meta",
+      "status": "operational",
+      "statusUrl": "https://metastatus.com/",
+      "communityUrl": "https://reddit.com/r/Meta",
+      "slug": "meta-ai",
+      "tags": ["LLM Provider"]
+    },
+    {
+      "name": "Mistral AI",
+      "status": "operational",
+      "statusUrl": "https://status.mistral.ai/",
+      "communityUrl": "https://reddit.com/r/MistralAI",
+      "slug": "mistral-ai",
+      "tags": ["LLM Provider"]
+    },
+    {
+      "name": "Cohere",
+      "status": "operational",
+      "statusUrl": "https://status.cohere.ai/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "cohere",
+      "tags": ["LLM Provider"]
+    },
+    {
+      "name": "AWS Bedrock",
+      "status": "operational",
+      "statusUrl": "https://health.aws.amazon.com/health/status",
+      "communityUrl": "https://reddit.com/r/aws",
+      "slug": "aws-bedrock",
+      "tags": ["LLM Provider"]
+    },
+    {
+      "name": "xAI",
+      "status": "operational",
+      "statusUrl": "https://status.x.ai/",
+      "communityUrl": "https://reddit.com/r/xAI",
+      "slug": "xai",
+      "tags": ["LLM Provider"]
+    },
+    {
+      "name": "Together AI",
+      "status": "operational",
+      "statusUrl": "https://status.together.ai/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "together-ai",
+      "tags": ["LLM Inference Layer Companies"]
+    },
+    {
+      "name": "Fireworks AI",
+      "status": "operational",
+      "statusUrl": "https://status.fireworks.ai/",
+      "communityUrl": "https://discord.gg/mMqQxvFD9A",
+      "slug": "fireworks-ai",
+      "tags": ["LLM Inference Layer Companies"]
+    },
+    {
+      "name": "Hugging Face Inference Endpoints",
+      "status": "operational",
+      "statusUrl": "https://status.huggingface.co/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "huggingface",
+      "tags": ["LLM Inference Layer Companies"]
+    },
+    {
+      "name": "Replicate",
+      "status": "operational",
+      "statusUrl": "https://status.replicate.com/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "replicate",
+      "tags": ["LLM Inference Layer Companies"]
+    },
+    {
+      "name": "Anyscale",
+      "status": "operational",
+      "statusUrl": "https://status.anyscale.com/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "anyscale",
+      "tags": ["LLM Inference Layer Companies"]
+    },
+    {
+      "name": "OctoML",
+      "status": "operational",
+      "statusUrl": "https://status.octoml.ai/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "octoml",
+      "tags": ["LLM Inference Layer Companies"]
+    },
+    {
+      "name": "Modal",
+      "status": "operational",
+      "statusUrl": "https://status.modal.com/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "modal",
+      "tags": ["LLM Inference Layer Companies"]
+    },
+    {
+      "name": "RunPod",
+      "status": "operational",
+      "statusUrl": "https://status.runpod.io/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "runpod",
+      "tags": ["LLM Inference Layer Companies"]
+    },
+    {
+      "name": "Hyperbolic",
+      "status": "operational",
+      "statusUrl": "https://status.hyperbolic.xyz/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "hyperbolic",
+      "tags": ["LLM Inference Layer Companies"]
+    },
+    {
+      "name": "AssemblyAI",
+      "status": "operational",
+      "statusUrl": "https://status.assemblyai.com/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "assemblyai",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "Deepgram",
+      "status": "operational",
+      "statusUrl": "https://status.deepgram.com/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "deepgram",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "Google Speech-to-Text",
+      "status": "operational",
+      "statusUrl": "https://status.cloud.google.com/",
+      "communityUrl": "https://reddit.com/r/GoogleCloud",
+      "slug": "google-speech-to-text",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "AWS Transcribe",
+      "status": "operational",
+      "statusUrl": "https://health.aws.amazon.com/health/status",
+      "communityUrl": "https://reddit.com/r/aws",
+      "slug": "aws-transcribe",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "Microsoft Azure Speech",
+      "status": "operational",
+      "statusUrl": "https://status.azure.com/",
+      "communityUrl": "https://reddit.com/r/AZURE",
+      "slug": "azure-speech",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "Speechmatics",
+      "status": "operational",
+      "statusUrl": "https://status.speechmatics.com/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "speechmatics",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "ElevenLabs",
+      "status": "operational",
+      "statusUrl": "https://status.elevenlabs.io/",
+      "communityUrl": "https://reddit.com/r/ElevenLabs",
+      "slug": "elevenlabs",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "OpenAI TTS",
+      "status": "operational",
+      "statusUrl": "https://status.openai.com/",
+      "communityUrl": "https://reddit.com/r/OpenAI",
+      "slug": "openai-tts",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "AWS Polly",
+      "status": "operational",
+      "statusUrl": "https://health.aws.amazon.com/health/status",
+      "communityUrl": "https://reddit.com/r/aws",
+      "slug": "aws-polly",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "Google WaveNet",
+      "status": "operational",
+      "statusUrl": "https://status.cloud.google.com/",
+      "communityUrl": "https://reddit.com/r/GoogleCloud",
+      "slug": "google-wavenet",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "Azure Neural TTS",
+      "status": "operational",
+      "statusUrl": "https://status.azure.com/",
+      "communityUrl": "https://reddit.com/r/AZURE",
+      "slug": "azure-neural-tts",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "Rev.ai",
+      "status": "operational",
+      "statusUrl": "https://status.rev.ai/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "rev-ai",
+      "tags": ["Voice AI API"]
+    },
+    {
+      "name": "Pinecone",
+      "status": "operational",
+      "statusUrl": "https://status.pinecone.io/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "pinecone",
+      "tags": ["Vector Database"]
+    },
+    {
+      "name": "Weaviate",
+      "status": "operational",
+      "statusUrl": "https://status.weaviate.io/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "weaviate",
+      "tags": ["Vector Database"]
+    },
+    {
+      "name": "Milvus (Zilliz Cloud)",
+      "status": "operational",
+      "statusUrl": "https://status.zilliz.com/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "milvus-zilliz",
+      "tags": ["Vector Database"]
+    },
+    {
+      "name": "Qdrant",
+      "status": "operational",
+      "statusUrl": "https://status.qdrant.io/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "qdrant",
+      "tags": ["Vector Database"]
+    },
+    {
+      "name": "Chroma",
+      "status": "operational",
+      "statusUrl": "https://status.trychroma.com/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "chroma",
+      "tags": ["Vector Database"]
+    },
+    {
+      "name": "Vespa",
+      "status": "operational",
+      "statusUrl": "https://status.vespa.ai/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "vespa",
+      "tags": ["Vector Database"]
+    },
+    {
+      "name": "Deep Lake",
+      "status": "operational",
+      "statusUrl": "https://status.activeloop.ai/",
+      "communityUrl": "https://reddit.com/r/MachineLearning",
+      "slug": "deep-lake",
+      "tags": ["Vector Database"]
+    },
+    {
+      "name": "Cloudflare",
+      "status": "operational",
+      "statusUrl": "https://www.cloudflarestatus.com/",
+      "communityUrl": "https://reddit.com/r/CloudFlare",
+      "slug": "cloudflare",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "Fastly",
+      "status": "operational",
+      "statusUrl": "https://status.fastly.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "fastly",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "Akamai",
+      "status": "operational",
+      "statusUrl": "https://cloudharmony.com/status-of-akamai",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "akamai",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "AWS CloudFront",
+      "status": "operational",
+      "statusUrl": "https://health.aws.amazon.com/health/status",
+      "communityUrl": "https://reddit.com/r/aws",
+      "slug": "aws-cloudfront",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "Google Cloud CDN",
+      "status": "operational",
+      "statusUrl": "https://status.cloud.google.com/",
+      "communityUrl": "https://reddit.com/r/GoogleCloud",
+      "slug": "google-cloud-cdn",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "Azure Front Door/CDN",
+      "status": "operational",
+      "statusUrl": "https://status.azure.com/",
+      "communityUrl": "https://reddit.com/r/AZURE",
+      "slug": "azure-front-door-cdn",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "Netlify Edge",
+      "status": "operational",
+      "statusUrl": "https://www.netlifystatus.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "netlify-edge",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "Vercel Edge",
+      "status": "operational",
+      "statusUrl": "https://www.vercel-status.com/",
+      "communityUrl": "https://reddit.com/r/nextjs",
+      "slug": "vercel-edge",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "StackPath",
+      "status": "operational",
+      "statusUrl": "https://status.stackpath.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "stackpath",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "Bunny.net",
+      "status": "operational",
+      "statusUrl": "https://status.bunny.net/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "bunny-net",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "BitBucket",
+      "status": "operational",
+      "statusUrl": "https://bitbucket.status.atlassian.com/",
+      "communityUrl": "https://reddit.com/r/git",
+      "slug": "bitbucket",
+      "tags": ["CDN & Hosting"]
+    },
+    {
+      "name": "Redis",
+      "status": "operational",
+      "statusUrl": "https://status.redis.com/",
+      "communityUrl": "https://reddit.com/r/redis",
+      "slug": "redis",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "Upstash",
+      "status": "operational",
+      "statusUrl": "https://status.upstash.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "upstash",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "Confluent",
+      "status": "operational",
+      "statusUrl": "https://status.confluent.io/",
+      "communityUrl": "https://reddit.com/r/apachekafka",
+      "slug": "confluent",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "RedPanda",
+      "status": "operational",
+      "statusUrl": "https://status.redpanda.com/",
+      "communityUrl": "https://reddit.com/r/apachekafka",
+      "slug": "redpanda",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "Snowflake",
+      "status": "operational",
+      "statusUrl": "https://status.snowflake.com/",
+      "communityUrl": "https://reddit.com/r/snowflake",
+      "slug": "snowflake",
+      "tags": ["Data Warehouse Provider"]
+    },
+    {
+      "name": "Google BigQuery",
+      "status": "operational",
+      "statusUrl": "https://status.cloud.google.com/",
+      "communityUrl": "https://reddit.com/r/GoogleCloud",
+      "slug": "google-bigquery",
+      "tags": ["Data Warehouse Provider"]
+    },
+    {
+      "name": "Amazon Redshift",
+      "status": "operational",
+      "statusUrl": "https://health.aws.amazon.com/health/status",
+      "communityUrl": "https://reddit.com/r/aws",
+      "slug": "amazon-redshift",
+      "tags": ["Data Warehouse Provider"]
+    },
+    {
+      "name": "Databricks SQL Warehouse",
+      "status": "operational",
+      "statusUrl": "https://status.databricks.com/",
+      "communityUrl": "https://reddit.com/r/databricks",
+      "slug": "databricks-sql-warehouse",
+      "tags": ["Data Warehouse Provider"]
+    },
+    {
+      "name": "Azure Synapse Analytics",
+      "status": "operational",
+      "statusUrl": "https://status.azure.com/",
+      "communityUrl": "https://reddit.com/r/AZURE",
+      "slug": "azure-synapse-analytics",
+      "tags": ["Data Warehouse Provider"]
+    },
+    {
+      "name": "MongoDB Atlas",
+      "status": "operational",
+      "statusUrl": "https://status.mongodb.com/",
+      "communityUrl": "https://reddit.com/r/mongodb",
+      "slug": "mongodb-atlas",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "PlanetScale",
+      "status": "operational",
+      "statusUrl": "https://www.planetscalestatus.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "planetscale",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "CockroachDB Cloud",
+      "status": "operational",
+      "statusUrl": "https://status.cockroachlabs.cloud/",
+      "communityUrl": "https://reddit.com/r/CockroachDB",
+      "slug": "cockroachdb-cloud",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "ClickHouse Cloud",
+      "status": "operational",
+      "statusUrl": "https://status.clickhouse.com/",
+      "communityUrl": "https://reddit.com/r/ClickHouse",
+      "slug": "clickhouse-cloud",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "Firebolt",
+      "status": "operational",
+      "statusUrl": "https://status.firebolt.io/",
+      "communityUrl": "https://reddit.com/r/dataengineering",
+      "slug": "firebolt",
+      "tags": ["Data Warehouse Provider"]
+    },
+    {
+      "name": "Neon",
+      "status": "operational",
+      "statusUrl": "https://status.neon.tech/",
+      "communityUrl": "https://reddit.com/r/PostgreSQL",
+      "slug": "neon",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "Supabase",
+      "status": "operational",
+      "statusUrl": "https://status.supabase.com/",
+      "communityUrl": "https://reddit.com/r/Supabase",
+      "slug": "supabase",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "InfluxDB Cloud",
+      "status": "operational",
+      "statusUrl": "https://status.influxdata.com/",
+      "communityUrl": "https://reddit.com/r/influxdb",
+      "slug": "influxdb-cloud",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "Timescale Cloud",
+      "status": "operational",
+      "statusUrl": "https://status.timescale.com/",
+      "communityUrl": "https://reddit.com/r/PostgreSQL",
+      "slug": "timescale-cloud",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "VictoriaMetrics Cloud",
+      "status": "operational",
+      "statusUrl": "https://status.victoriametrics.com/",
+      "communityUrl": "https://reddit.com/r/monitoring",
+      "slug": "victoriametrics-cloud",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "Grafana Cloud",
+      "status": "operational",
+      "statusUrl": "https://status.grafana.com/",
+      "communityUrl": "https://reddit.com/r/grafana",
+      "slug": "grafana-cloud",
+      "tags": ["Database Provider"]
+    },
+    {
+      "name": "Stripe Billing",
+      "status": "operational",
+      "statusUrl": "https://status.stripe.com/",
+      "communityUrl": "https://reddit.com/r/stripe",
+      "slug": "stripe-billing",
+      "tags": ["Billing & Subscriptions FinTech API"]
+    },
+    {
+      "name": "Chargebee",
+      "status": "operational",
+      "statusUrl": "https://status.chargebee.com/",
+      "communityUrl": "https://reddit.com/r/SaaS",
+      "slug": "chargebee",
+      "tags": ["Billing & Subscriptions FinTech API"]
+    },
+    {
+      "name": "Recurly",
+      "status": "operational",
+      "statusUrl": "https://status.recurly.com/",
+      "communityUrl": "https://reddit.com/r/SaaS",
+      "slug": "recurly",
+      "tags": ["Billing & Subscriptions FinTech API"]
+    },
+    {
+      "name": "Zuora",
+      "status": "operational",
+      "statusUrl": "https://trust.zuora.com/",
+      "communityUrl": "https://reddit.com/r/SaaS",
+      "slug": "zuora",
+      "tags": ["Billing & Subscriptions FinTech API"]
+    },
+    {
+      "name": "Paddle",
+      "status": "operational",
+      "statusUrl": "https://status.paddle.com/",
+      "communityUrl": "https://reddit.com/r/SaaS",
+      "slug": "paddle",
+      "tags": ["Billing & Subscriptions FinTech API"]
+    },
+    {
+      "name": "Braintree Recurring",
+      "status": "operational",
+      "statusUrl": "https://status.braintreepayments.com/",
+      "communityUrl": "https://reddit.com/r/payments",
+      "slug": "braintree-recurring",
+      "tags": ["Billing & Subscriptions FinTech API"]
+    },
+    {
+      "name": "Stripe Checkout",
+      "status": "operational",
+      "statusUrl": "https://status.stripe.com/",
+      "communityUrl": "https://reddit.com/r/stripe",
+      "slug": "stripe-checkout",
+      "tags": ["Checkouts & Payment Gateway FinTech API"]
+    },
+    {
+      "name": "PayPal Checkout",
+      "status": "operational",
+      "statusUrl": "https://www.paypal-status.com/",
+      "communityUrl": "https://reddit.com/r/paypal",
+      "slug": "paypal-checkout",
+      "tags": ["Checkouts & Payment Gateway FinTech API"]
+    },
+    {
+      "name": "Square",
+      "status": "operational",
+      "statusUrl": "https://status.squareup.com/",
+      "communityUrl": "https://reddit.com/r/Square",
+      "slug": "square",
+      "tags": ["Checkouts & Payment Gateway FinTech API"]
+    },
+    {
+      "name": "Adyen",
+      "status": "operational",
+      "statusUrl": "https://status.adyen.com/",
+      "communityUrl": "https://reddit.com/r/payments",
+      "slug": "adyen",
+      "tags": ["Checkouts & Payment Gateway FinTech API"]
+    },
+    {
+      "name": "Checkout.com",
+      "status": "operational",
+      "statusUrl": "https://status.checkout.com/",
+      "communityUrl": "https://reddit.com/r/payments",
+      "slug": "checkout-com",
+      "tags": ["Checkouts & Payment Gateway FinTech API"]
+    },
+    {
+      "name": "Razorpay",
+      "status": "operational",
+      "statusUrl": "https://status.razorpay.com/",
+      "communityUrl": "https://reddit.com/r/india",
+      "slug": "razorpay",
+      "tags": ["Checkouts & Payment Gateway FinTech API"]
+    },
+    {
+      "name": "QuickBooks Online API",
+      "status": "operational",
+      "statusUrl": "https://status.developer.intuit.com/",
+      "communityUrl": "https://reddit.com/r/QuickBooks",
+      "slug": "quickbooks-online-api",
+      "tags": ["Invoicing FinTech API"]
+    },
+    {
+      "name": "Xero API",
+      "status": "operational",
+      "statusUrl": "https://status.xero.com/",
+      "communityUrl": "https://reddit.com/r/xero",
+      "slug": "xero-api",
+      "tags": ["Invoicing FinTech API"]
+    },
+    {
+      "name": "FreshBooks API",
+      "status": "operational",
+      "statusUrl": "https://status.freshbooks.com/",
+      "communityUrl": "https://reddit.com/r/smallbusiness",
+      "slug": "freshbooks-api",
+      "tags": ["Invoicing FinTech API"]
+    },
+    {
+      "name": "Zoho Invoice",
+      "status": "operational",
+      "statusUrl": "https://status.zoho.com/",
+      "communityUrl": "https://reddit.com/r/zoho",
+      "slug": "zoho-invoice",
+      "tags": ["Invoicing FinTech API"]
+    },
+    {
+      "name": "Stripe Invoicing",
+      "status": "operational",
+      "statusUrl": "https://status.stripe.com/",
+      "communityUrl": "https://reddit.com/r/stripe",
+      "slug": "stripe-invoicing",
+      "tags": ["Invoicing FinTech API"]
+    },
+    {
+      "name": "Bill.com",
+      "status": "operational",
+      "statusUrl": "https://status.bill.com/",
+      "communityUrl": "https://reddit.com/r/smallbusiness",
+      "slug": "bill-com",
+      "tags": ["Invoicing FinTech API"]
+    },
+    {
+      "name": "Twilio",
+      "status": "operational",
+      "statusUrl": "https://status.twilio.com/",
+      "communityUrl": "https://reddit.com/r/twilio",
+      "slug": "twilio",
+      "tags": ["SMS Communication API"]
+    },
+    {
+      "name": "Vonage/Nexmo",
+      "status": "operational",
+      "statusUrl": "https://status.vonage.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "vonage-nexmo",
+      "tags": ["SMS Communication API"]
+    },
+    {
+      "name": "Plivo",
+      "status": "operational",
+      "statusUrl": "https://status.plivo.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "plivo",
+      "tags": ["SMS Communication API"]
+    },
+    {
+      "name": "Sinch",
+      "status": "operational",
+      "statusUrl": "https://status.sinch.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "sinch",
+      "tags": ["SMS Communication API"]
+    },
+    {
+      "name": "MessageBird",
+      "status": "operational",
+      "statusUrl": "https://status.messagebird.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "messagebird",
+      "tags": ["SMS Communication API"]
+    },
+    {
+      "name": "Telnyx",
+      "status": "operational",
+      "statusUrl": "https://status.telnyx.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "telnyx",
+      "tags": ["SMS Communication API"]
+    },
+    {
+      "name": "SendGrid",
+      "status": "operational",
+      "statusUrl": "https://status.sendgrid.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "sendgrid",
+      "tags": ["Email Communication API"]
+    },
+    {
+      "name": "Mailgun",
+      "status": "operational",
+      "statusUrl": "https://status.mailgun.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "mailgun",
+      "tags": ["Email Communication API"]
+    },
+    {
+      "name": "Postmark",
+      "status": "operational",
+      "statusUrl": "https://status.postmarkapp.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "postmark",
+      "tags": ["Email Communication API"]
+    },
+    {
+      "name": "Amazon SES",
+      "status": "operational",
+      "statusUrl": "https://health.aws.amazon.com/health/status",
+      "communityUrl": "https://reddit.com/r/aws",
+      "slug": "amazon-ses",
+      "tags": ["Email Communication API"]
+    },
+    {
+      "name": "SparkPost",
+      "status": "operational",
+      "statusUrl": "https://status.sparkpost.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "sparkpost",
+      "tags": ["Email Communication API"]
+    },
+    {
+      "name": "Mailjet",
+      "status": "operational",
+      "statusUrl": "https://status.mailjet.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "mailjet",
+      "tags": ["Email Communication API"]
+    },
+    {
+      "name": "Firebase Cloud Messaging",
+      "status": "operational",
+      "statusUrl": "https://status.firebase.google.com/",
+      "communityUrl": "https://reddit.com/r/Firebase",
+      "slug": "firebase-cloud-messaging",
+      "tags": ["Push Communication API"]
+    },
+    {
+      "name": "OneSignal",
+      "status": "operational",
+      "statusUrl": "https://status.onesignal.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "onesignal",
+      "tags": ["Push Communication API"]
+    },
+    {
+      "name": "Pusher Beams",
+      "status": "operational",
+      "statusUrl": "https://status.pusher.com/",
+      "communityUrl": "https://reddit.com/r/webdev",
+      "slug": "pusher-beams",
+      "tags": ["Push Communication API"]
+    },
+    {
+      "name": "Airship",
+      "status": "operational",
+      "statusUrl": "https://status.airship.com/",
+      "communityUrl": "https://reddit.com/r/marketing",
+      "slug": "airship",
+      "tags": ["Push Communication API"]
+    },
+    {
+      "name": "AWS SNS",
+      "status": "operational",
+      "statusUrl": "https://health.aws.amazon.com/health/status",
+      "communityUrl": "https://reddit.com/r/aws",
+      "slug": "aws-sns",
+      "tags": ["Push Communication API"]
+    },
+    {
+      "name": "Expo Push",
+      "status": "operational",
+      "statusUrl": "https://status.expo.io/",
+      "communityUrl": "https://reddit.com/r/reactnative",
+      "slug": "expo-push",
+      "tags": ["Push Communication API"]
+    },
+    {
+      "name": "Twilio Voice",
+      "status": "operational",
+      "statusUrl": "https://status.twilio.com/",
+      "communityUrl": "https://reddit.com/r/twilio",
+      "slug": "twilio-voice",
+      "tags": ["Voice/Calls Communication API"]
+    },
+    {
+      "name": "Vonage Voice",
+      "status": "operational",
+      "statusUrl": "https://status.vonage.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "vonage-voice",
+      "tags": ["Voice/Calls Communication API"]
+    },
+    {
+      "name": "Plivo Voice",
+      "status": "operational",
+      "statusUrl": "https://status.plivo.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "plivo-voice",
+      "tags": ["Voice/Calls Communication API"]
+    },
+    {
+      "name": "Sinch Voice",
+      "status": "operational",
+      "statusUrl": "https://status.sinch.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "sinch-voice",
+      "tags": ["Voice/Calls Communication API"]
+    },
+    {
+      "name": "Telnyx Voice",
+      "status": "operational",
+      "statusUrl": "https://status.telnyx.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "telnyx-voice",
+      "tags": ["Voice/Calls Communication API"]
+    },
+    {
+      "name": "Bandwidth",
+      "status": "operational",
+      "statusUrl": "https://status.bandwidth.com/",
+      "communityUrl": "https://reddit.com/r/VoIP",
+      "slug": "bandwidth",
+      "tags": ["Voice/Calls Communication API"]
+    }
 ]
 
 function StatusIndicator({ status }: { status: string }) {

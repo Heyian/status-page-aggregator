@@ -6,8 +6,25 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ExternalLink, Github, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import { getStatusColor, getStatusText } from '@/lib/status'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table"
+import React, { useMemo, useState } from "react"
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 
-type ServiceStatus = 'operational' | 'degraded' | 'outage' | 'unknown'
+type ServiceStatus = 'operational' | 'degraded' | 'outage' | 'incident' | 'unknown'
 
 interface Service {
   name: string
@@ -52,7 +69,6 @@ function getTagColor(tag: string) {
     Email: "bg-teal-100 text-teal-800",
     CDN: "bg-violet-100 text-violet-800",
     "E-commerce": "bg-emerald-100 text-emerald-800",
-    Hosting: "bg-lime-100 text-lime-800",
     Security: "bg-rose-100 text-rose-800",
   }
   return colors[tag as keyof typeof colors] || "bg-gray-100 text-gray-800"
@@ -65,6 +81,100 @@ export function StatusMonitorClient({
   services: Service[], 
   statusMap: StatusMap 
 }) {
+  // Extract all unique categories from tags
+  const allCategories = useMemo(() => {
+    const set = new Set<string>()
+    services.forEach(s => s.tags.forEach(tag => set.add(tag)))
+    return Array.from(set).sort()
+  }, [services])
+
+  // State for filter and sorting
+  const [category, setCategory] = useState<string>("all")
+  const [sortCol, setSortCol] = useState<string>("status")
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc")
+  const [search, setSearch] = useState("")
+
+  // Helper for status sort order
+  function getStatusOrder(status: ServiceStatus) {
+    if (status === "outage" || status === "degraded") return 0 // incident
+    if (status === "operational") return 1
+    return 2 // unknown
+  }
+
+  // Helper for sharp status color
+  function getSharpStatusColor(status: ServiceStatus) {
+    switch (status) {
+      case "operational":
+        return "bg-green-600"
+      case "degraded":
+        return "bg-yellow-500"
+      case "outage":
+        return "bg-red-600"
+      case "incident":
+        return "bg-red-600"
+      default:
+        return "bg-gray-400"
+    }
+  }
+
+  // Compose filtered and sorted services
+  const filteredServices = useMemo(() => {
+    let filtered = services
+    if (category !== "all") {
+      filtered = filtered.filter(s => s.tags.includes(category))
+    }
+    if (search.trim() !== "") {
+      const q = search.trim().toLowerCase()
+      filtered = filtered.filter(s =>
+        s.name.toLowerCase().includes(q) ||
+        s.tags.some(tag => tag.toLowerCase().includes(q)) ||
+        (statusMap[s.slug]?.status || "unknown").toLowerCase().includes(q)
+      )
+    }
+    // Attach computed status for sorting
+    const withStatus = filtered.map(s => ({
+      ...s,
+      computedStatus: statusMap[s.slug]?.status || "unknown",
+      lastIncident: statusMap[s.slug]?.last_incident?.createdAt || null,
+    }))
+    // Sorting logic
+    return withStatus.sort((a, b) => {
+      let cmp = 0
+      if (sortCol === "status") {
+        cmp = getStatusOrder(a.computedStatus) - getStatusOrder(b.computedStatus)
+      } else if (sortCol === "provider") {
+        cmp = a.name.localeCompare(b.name)
+      } else if (sortCol === "lastIncident") {
+        if (a.lastIncident && b.lastIncident) {
+          cmp = new Date(a.lastIncident).getTime() - new Date(b.lastIncident).getTime()
+        } else if (a.lastIncident) {
+          cmp = -1
+        } else if (b.lastIncident) {
+          cmp = 1
+        } else {
+          cmp = 0
+        }
+      } else if (sortCol === "tags") {
+        cmp = a.tags.join(",").localeCompare(b.tags.join(","))
+      }
+      return sortDir === "asc" ? cmp : -cmp
+    })
+  }, [services, statusMap, category, sortCol, sortDir, search])
+
+  // Sort indicator
+  const sortArrow = (col: string) =>
+    sortCol === col ? (sortDir === "asc" ? " ▲" : " ▼") : ""
+
+  // Click handler for sorting
+  function handleSort(col: string) {
+    if (sortCol === col) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc")
+    } else {
+      setSortCol(col)
+      setSortDir(col === "status" ? "asc" : "asc") // default direction
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -106,67 +216,103 @@ export function StatusMonitorClient({
           </div>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-          {services.map((service: Service) => {
-            const serviceStatus = statusMap[service.slug]?.status || 'unknown' as ServiceStatus
-            const lastIncident = statusMap[service.slug]?.last_incident
-            return (
-              <Card key={service.slug} className="hover:shadow-lg transition-shadow">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-semibold">{service.name}</h3>
-                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm ${getStatusColor(serviceStatus)}`}>
-                      {getStatusText(serviceStatus)}
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {service.tags.map((tag: string) => (
-                      <Badge key={tag} variant="secondary" className={getTagColor(tag)}>
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  {lastIncident && (
-                    <>
-                      {/* Debug log */}
-                      {console.log('Last Incident Data:', {
-                        raw: lastIncident,
-                        createdAt: lastIncident.createdAt,
-                        parsedDate: new Date(lastIncident.createdAt)
-                      })}
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Last incident: {new Date(lastIncident.createdAt).toLocaleDateString(undefined, {
+        {/* Search Bar */}
+        <div className="flex items-center gap-4 mb-4">
+          <Input
+            className="w-64"
+            placeholder="Search providers, tags, status..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <span className="font-medium">Filter by Category:</span>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="w-56">
+              <SelectValue>{category === "all" ? "All Categories" : category}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {allCategories.map(cat => (
+                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Services Table */}
+        <div className="overflow-x-auto mb-12">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="cursor-pointer select-none" onClick={() => handleSort("provider")}>Provider{sortArrow("provider")}</TableHead>
+                <TableHead className="cursor-pointer select-none" onClick={() => handleSort("status")}>Status{sortArrow("status")}</TableHead>
+                <TableHead className="cursor-pointer select-none" onClick={() => handleSort("lastIncident")}>Last Incident{sortArrow("lastIncident")}</TableHead>
+                <TableHead>Links</TableHead>
+                <TableHead className="cursor-pointer select-none" onClick={() => handleSort("tags")}>Tags{sortArrow("tags")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredServices.map((service) => {
+                const serviceStatus = service.computedStatus as ServiceStatus
+                return (
+                  <TableRow key={service.slug}>
+                    {/* Provider */}
+                    <TableCell className="font-medium">{service.name}</TableCell>
+                    {/* Status */}
+                    <TableCell>
+                      <span className="inline-flex items-center gap-2">
+                        <span className={`w-3 h-3 rounded-full ${getSharpStatusColor(serviceStatus)}`}></span>
+                        {getStatusText(serviceStatus)}
+                      </span>
+                    </TableCell>
+                    {/* Last Incident */}
+                    <TableCell>
+                      {service.lastIncident ? (
+                        new Date(service.lastIncident).toLocaleDateString("en-US", {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit'
-                        })}
-                      </p>
-                    </>
-                  )}
-                  <div className="flex gap-2">
-                    <Button size="sm" asChild className="flex-1">
-                      <Link href={`/${service.slug}`} className="flex items-center gap-2">
-                        View Details
-                      </Link>
-                    </Button>
-                    <Button size="sm" variant="outline" asChild>
-                      <Link href={service.statusUrl} className="flex items-center gap-2">
-                        <ExternalLink className="w-4 h-4" />
-                      </Link>
-                    </Button>
-                    <Button size="sm" variant="outline" asChild>
-                      <Link href={service.communityUrl} className="flex items-center gap-2">
-                        <MessageCircle className="w-4 h-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
+                        })
+                      ) : (
+                        <span className="text-muted-foreground">None</span>
+                      )}
+                    </TableCell>
+                    {/* Links */}
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href={`/${service.slug}`} className="flex items-center gap-2">
+                            Details
+                          </Link>
+                        </Button>
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href={service.statusUrl} className="flex items-center gap-2" target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="w-4 h-4" />
+                          </Link>
+                        </Button>
+                        <Button size="sm" variant="outline" asChild>
+                          <Link href={service.communityUrl} className="flex items-center gap-2" target="_blank" rel="noopener noreferrer">
+                            <MessageCircle className="w-4 h-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </TableCell>
+                    {/* Tags */}
+                    <TableCell>
+                      <div className="flex flex-wrap gap-2">
+                        {service.tags.map((tag: string) => (
+                          <Badge key={tag} variant="secondary" className={getTagColor(tag)}>
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
         </div>
 
         {/* Fork & Customize Section */}
