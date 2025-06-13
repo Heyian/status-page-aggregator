@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ExternalLink, Github, MessageCircle } from "lucide-react"
-import Link from "next/link"
-import { getStatusColor, getStatusText } from '@/lib/status'
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ExternalLink, Github, MessageCircle } from "lucide-react";
+import Link from "next/link";
+import { getStatusColor, getStatusText } from "@/lib/status";
 import {
   Table,
   TableHeader,
@@ -13,38 +13,43 @@ import {
   TableHead,
   TableRow,
   TableCell,
-} from "@/components/ui/table"
-import React, { useMemo, useState } from "react"
+} from "@/components/ui/table";
+import React, { useMemo, useState } from "react";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
-type ServiceStatus = 'operational' | 'degraded' | 'outage' | 'incident' | 'unknown'
+type ServiceStatus =
+  | "operational"
+  | "degraded"
+  | "outage"
+  | "incident"
+  | "unknown";
 
 interface Service {
-  name: string
-  status: ServiceStatus
-  statusUrl: string
-  communityUrl: string
-  slug: string
-  tags: string[]
+  name: string;
+  status: ServiceStatus;
+  statusUrl: string;
+  communityUrl: string;
+  slug: string;
+  tags: string[];
 }
 
 interface StatusMap {
   [key: string]: {
-    status: ServiceStatus
+    status: ServiceStatus;
     last_incident?: {
-      title: string
-      status: string
-      createdAt: string
-      htmlDescription: string
-    }
-  }
+      title: string;
+      status: string;
+      createdAt: string;
+      htmlDescription: string;
+    };
+  };
 }
 
 function getTagColor(tag: string) {
@@ -70,108 +75,113 @@ function getTagColor(tag: string) {
     CDN: "bg-violet-100 text-violet-800",
     "E-commerce": "bg-emerald-100 text-emerald-800",
     Security: "bg-rose-100 text-rose-800",
-  }
-  return colors[tag as keyof typeof colors] || "bg-gray-100 text-gray-800"
+  };
+  return colors[tag as keyof typeof colors] || "bg-gray-100 text-gray-800";
 }
 
-export function StatusMonitorClient({ 
-  services, 
-  statusMap 
-}: { 
-  services: Service[], 
-  statusMap: StatusMap 
+export function StatusMonitorClient({
+  services,
+  statusMap,
+}: {
+  services: Service[];
+  statusMap: StatusMap;
 }) {
   // Extract all unique categories from tags
   const allCategories = useMemo(() => {
-    const set = new Set<string>()
-    services.forEach(s => s.tags.forEach(tag => set.add(tag)))
-    return Array.from(set).sort()
-  }, [services])
+    const set = new Set<string>();
+    services.forEach((s) => s.tags.forEach((tag) => set.add(tag)));
+    return Array.from(set).sort();
+  }, [services]);
 
   // State for filter and sorting
-  const [category, setCategory] = useState<string>("all")
-  const [sortCol, setSortCol] = useState<string>("status")
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc")
-  const [search, setSearch] = useState("")
+  const [category, setCategory] = useState<string>("all");
+  const [sortCol, setSortCol] = useState<string>("status");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [search, setSearch] = useState("");
 
   // Helper for status sort order
   function getStatusOrder(status: ServiceStatus) {
-    if (status === "outage" || status === "degraded") return 0 // incident
-    if (status === "operational") return 1
-    return 2 // unknown
+    if (status === "outage" || status === "degraded" || status == "incident")
+      return 0; // incident
+    if (status === "operational") return 1;
+    return 2; // unknown
   }
 
   // Helper for sharp status color
   function getSharpStatusColor(status: ServiceStatus) {
     switch (status) {
       case "operational":
-        return "bg-green-600"
+        return "bg-green-600";
       case "degraded":
-        return "bg-yellow-500"
+        return "bg-yellow-500";
       case "outage":
-        return "bg-red-600"
+        return "bg-red-600";
       case "incident":
-        return "bg-red-600"
+        return "bg-red-600";
       default:
-        return "bg-gray-400"
+        return "bg-gray-400";
     }
   }
 
   // Compose filtered and sorted services
   const filteredServices = useMemo(() => {
-    let filtered = services
+    let filtered = services;
     if (category !== "all") {
-      filtered = filtered.filter(s => s.tags.includes(category))
+      filtered = filtered.filter((s) => s.tags.includes(category));
     }
     if (search.trim() !== "") {
-      const q = search.trim().toLowerCase()
-      filtered = filtered.filter(s =>
-        s.name.toLowerCase().includes(q) ||
-        s.tags.some(tag => tag.toLowerCase().includes(q)) ||
-        (statusMap[s.slug]?.status || "unknown").toLowerCase().includes(q)
-      )
+      const q = search.trim().toLowerCase();
+      filtered = filtered.filter(
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          s.tags.some((tag) => tag.toLowerCase().includes(q)) ||
+          (statusMap[s.slug]?.status || "unknown").toLowerCase().includes(q)
+      );
     }
     // Attach computed status for sorting
-    const withStatus = filtered.map(s => ({
+    const withStatus = filtered.map((s) => ({
       ...s,
       computedStatus: statusMap[s.slug]?.status || "unknown",
       lastIncident: statusMap[s.slug]?.last_incident?.createdAt || null,
-    }))
+    }));
     // Sorting logic
     return withStatus.sort((a, b) => {
-      let cmp = 0
+      let cmp = 0;
       if (sortCol === "status") {
-        cmp = getStatusOrder(a.computedStatus) - getStatusOrder(b.computedStatus)
+        cmp =
+          getStatusOrder(a.computedStatus) - getStatusOrder(b.computedStatus);
       } else if (sortCol === "provider") {
-        cmp = a.name.localeCompare(b.name)
+        cmp = a.name.localeCompare(b.name);
       } else if (sortCol === "lastIncident") {
         if (a.lastIncident && b.lastIncident) {
-          cmp = new Date(a.lastIncident).getTime() - new Date(b.lastIncident).getTime()
+          cmp =
+            new Date(a.lastIncident).getTime() -
+            new Date(b.lastIncident).getTime();
         } else if (a.lastIncident) {
-          cmp = -1
+          cmp = -1;
         } else if (b.lastIncident) {
-          cmp = 1
+          cmp = 1;
         } else {
-          cmp = 0
+          cmp = 0;
         }
       } else if (sortCol === "tags") {
-        cmp = a.tags.join(",").localeCompare(b.tags.join(","))
+        cmp = a.tags.join(",").localeCompare(b.tags.join(","));
       }
-      return sortDir === "asc" ? cmp : -cmp
-    })
-  }, [services, statusMap, category, sortCol, sortDir, search])
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+  }, [services, statusMap, category, sortCol, sortDir, search]);
 
   // Sort indicator
   const sortArrow = (col: string) =>
-    sortCol === col ? (sortDir === "asc" ? " ▲" : " ▼") : ""
+    sortCol === col ? (sortDir === "asc" ? " ▲" : " ▼") : "";
 
   // Click handler for sorting
   function handleSort(col: string) {
     if (sortCol === col) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc")
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
     } else {
-      setSortCol(col)
-      setSortDir(col === "status" ? "asc" : "asc") // default direction
+      setSortCol(col);
+      setSortDir(col === "status" ? "asc" : "asc"); // default direction
     }
   }
 
@@ -188,7 +198,10 @@ export function StatusMonitorClient({
               </Badge>
             </div>
             <Button variant="outline" size="sm" asChild>
-              <Link href="https://github.com/drdroid/statuspage-aggregator" className="flex items-center gap-2">
+              <Link
+                href="https://github.com/drdroid/statuspage-aggregator"
+                className="flex items-center gap-2"
+              >
                 <Github className="w-4 h-4" />
                 Star on GitHub
               </Link>
@@ -202,15 +215,20 @@ export function StatusMonitorClient({
         <div className="text-center mb-8">
           <h2 className="text-4xl font-bold mb-4">Is It Down?</h2>
           <p className="text-xl text-muted-foreground mb-2">
-            Real-time status monitoring for popular cloud, AI, and infrastructure services
+            Real-time status monitoring for popular cloud, AI, and
+            infrastructure services
           </p>
           <p className="text-sm text-muted-foreground mb-4">
-            Built for engineers, by engineers. Check service status and join community discussions.
+            Built for engineers, by engineers. Check service status and join
+            community discussions.
           </p>
           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
             <span>💡</span>
             <span>Don't see your tools? Fork this project and add them!</span>
-            <Link href="#customize" className="underline hover:no-underline font-medium">
+            <Link
+              href="#customize"
+              className="underline hover:no-underline font-medium"
+            >
               Learn how
             </Link>
           </div>
@@ -222,17 +240,21 @@ export function StatusMonitorClient({
             className="w-64"
             placeholder="Search providers, tags, status..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
           />
           <span className="font-medium">Filter by Category:</span>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="w-56">
-              <SelectValue>{category === "all" ? "All Categories" : category}</SelectValue>
+              <SelectValue>
+                {category === "all" ? "All Categories" : category}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {allCategories.map(cat => (
-                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+              {allCategories.map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -243,37 +265,66 @@ export function StatusMonitorClient({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="cursor-pointer select-none" onClick={() => handleSort("provider")}>Provider{sortArrow("provider")}</TableHead>
-                <TableHead className="cursor-pointer select-none" onClick={() => handleSort("status")}>Status{sortArrow("status")}</TableHead>
-                <TableHead className="cursor-pointer select-none" onClick={() => handleSort("lastIncident")}>Last Incident{sortArrow("lastIncident")}</TableHead>
+                <TableHead
+                  className="cursor-pointer select-none"
+                  onClick={() => handleSort("provider")}
+                >
+                  Provider{sortArrow("provider")}
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer select-none"
+                  onClick={() => handleSort("status")}
+                >
+                  Status{sortArrow("status")}
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer select-none"
+                  onClick={() => handleSort("lastIncident")}
+                >
+                  Last Incident{sortArrow("lastIncident")}
+                </TableHead>
                 <TableHead>Links</TableHead>
-                <TableHead className="cursor-pointer select-none" onClick={() => handleSort("tags")}>Tags{sortArrow("tags")}</TableHead>
+                <TableHead
+                  className="cursor-pointer select-none"
+                  onClick={() => handleSort("tags")}
+                >
+                  Tags{sortArrow("tags")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredServices.map((service) => {
-                const serviceStatus = service.computedStatus as ServiceStatus
+                const serviceStatus = service.computedStatus as ServiceStatus;
                 return (
                   <TableRow key={service.slug}>
                     {/* Provider */}
-                    <TableCell className="font-medium">{service.name}</TableCell>
+                    <TableCell className="font-medium">
+                      {service.name}
+                    </TableCell>
                     {/* Status */}
                     <TableCell>
                       <span className="inline-flex items-center gap-2">
-                        <span className={`w-3 h-3 rounded-full ${getSharpStatusColor(serviceStatus)}`}></span>
+                        <span
+                          className={`w-3 h-3 rounded-full ${getSharpStatusColor(
+                            serviceStatus
+                          )}`}
+                        ></span>
                         {getStatusText(serviceStatus)}
                       </span>
                     </TableCell>
                     {/* Last Incident */}
                     <TableCell>
                       {service.lastIncident ? (
-                        new Date(service.lastIncident).toLocaleDateString("en-US", {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })
+                        new Date(service.lastIncident).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )
                       ) : (
                         <span className="text-muted-foreground">None</span>
                       )}
@@ -282,17 +333,30 @@ export function StatusMonitorClient({
                     <TableCell>
                       <div className="flex gap-2">
                         <Button size="sm" variant="outline" asChild>
-                          <Link href={`/${service.slug}`} className="flex items-center gap-2">
+                          <Link
+                            href={`/${service.slug}`}
+                            className="flex items-center gap-2"
+                          >
                             Details
                           </Link>
                         </Button>
                         <Button size="sm" variant="outline" asChild>
-                          <Link href={service.statusUrl} className="flex items-center gap-2" target="_blank" rel="noopener noreferrer">
+                          <Link
+                            href={service.statusUrl}
+                            className="flex items-center gap-2"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <ExternalLink className="w-4 h-4" />
                           </Link>
                         </Button>
                         <Button size="sm" variant="outline" asChild>
-                          <Link href={service.communityUrl} className="flex items-center gap-2" target="_blank" rel="noopener noreferrer">
+                          <Link
+                            href={service.communityUrl}
+                            className="flex items-center gap-2"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <MessageCircle className="w-4 h-4" />
                           </Link>
                         </Button>
@@ -302,14 +366,18 @@ export function StatusMonitorClient({
                     <TableCell>
                       <div className="flex flex-wrap gap-2">
                         {service.tags.map((tag: string) => (
-                          <Badge key={tag} variant="secondary" className={getTagColor(tag)}>
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className={getTagColor(tag)}
+                          >
                             {tag}
                           </Badge>
                         ))}
                       </div>
                     </TableCell>
                   </TableRow>
-                )
+                );
               })}
             </TableBody>
           </Table>
@@ -320,10 +388,14 @@ export function StatusMonitorClient({
           <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
             <CardContent className="pt-6">
               <div className="text-center">
-                <h3 className="text-2xl font-bold mb-3">Want to customize for your tools?</h3>
+                <h3 className="text-2xl font-bold mb-3">
+                  Want to customize for your tools?
+                </h3>
                 <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
-                  Fork this project and create your own status dashboard with the services your team actually uses. Add
-                  your internal tools, remove what you don't need, and deploy it for your organization.
+                  Fork this project and create your own status dashboard with
+                  the services your team actually uses. Add your internal tools,
+                  remove what you don't need, and deploy it for your
+                  organization.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                   <Button size="lg" asChild>
@@ -345,7 +417,10 @@ export function StatusMonitorClient({
                   </Button>
                 </div>
                 <div className="mt-4 text-sm text-muted-foreground">
-                  <p>✨ Add your internal services • 🎨 Customize the design • 🚀 Deploy anywhere</p>
+                  <p>
+                    ✨ Add your internal services • 🎨 Customize the design • 🚀
+                    Deploy anywhere
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -379,21 +454,36 @@ export function StatusMonitorClient({
       <footer className="border-t mt-16">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-sm text-muted-foreground">
-            <p className="mb-2">Made with ❤️ by the DrDroid team • Open source and community driven</p>
+            <p className="mb-2">
+              Made with ❤️ by the DrDroid team • Open source and community
+              driven
+            </p>
             <p className="mb-4">
               Want to add a service or report an issue?{" "}
-              <Link href="https://github.com/drdroid/statuspage-aggregator" className="underline hover:no-underline">
+              <Link
+                href="https://github.com/drdroid/statuspage-aggregator"
+                className="underline hover:no-underline"
+              >
                 Contribute on GitHub
               </Link>
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-xs">
-              <Link href="https://github.com/drdroid/statuspage-aggregator/fork" className="hover:underline">
+              <Link
+                href="https://github.com/drdroid/statuspage-aggregator/fork"
+                className="hover:underline"
+              >
                 🍴 Fork & Customize
               </Link>
-              <Link href="https://github.com/drdroid/statuspage-aggregator/issues" className="hover:underline">
+              <Link
+                href="https://github.com/drdroid/statuspage-aggregator/issues"
+                className="hover:underline"
+              >
                 🐛 Report Issues
               </Link>
-              <Link href="https://github.com/drdroid/statuspage-aggregator/discussions" className="hover:underline">
+              <Link
+                href="https://github.com/drdroid/statuspage-aggregator/discussions"
+                className="hover:underline"
+              >
                 💬 Discussions
               </Link>
               <Link href="https://drdroid.io" className="hover:underline">
@@ -404,5 +494,5 @@ export function StatusMonitorClient({
         </div>
       </footer>
     </div>
-  )
-} 
+  );
+}
