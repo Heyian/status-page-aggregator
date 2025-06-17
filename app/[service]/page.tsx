@@ -588,3 +588,5 @@ export async function generateMetadata({
     },
   };
 }
+
+export const dynamic = "force-dynamic";
