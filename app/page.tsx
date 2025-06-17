@@ -1,3 +1,5 @@
+"use client";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1248,56 +1250,67 @@ function getTagColor(tag: string) {
   return colors[tag as keyof typeof colors] || "bg-gray-100 text-gray-800";
 }
 
-export default async function StatusMonitor() {
-  // Debug: Log environment variables (they will be undefined in the browser due to NEXT_PUBLIC_ prefix)
-  console.log(
-    "Supabase URL:",
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 10) + "..."
-  );
-  console.log(
-    "Supabase Key exists:",
-    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+function StatusMonitor() {
+  const [statusRows, setStatusRows] = useState<any[] | null>(null);
+  const [error, setError] = useState<any>(null);
+  const [statusMap, setStatusMap] = useState<Record<string, any>>({});
 
-  // Fetch statuses from Supabase
-  const { data: statusRows, error } = await supabase
-    .from("service_status")
-    .select("*");
+  useEffect(() => {
+    // Debug: Log environment variables (they will be undefined in the browser due to NEXT_PUBLIC_ prefix)
+    console.log(
+      "Supabase URL:",
+      process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 10) + "..."
+    );
+    console.log(
+      "Supabase Key exists:",
+      !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+
+    // Fetch statuses from Supabase
+    const fetchStatuses = async () => {
+      const { data, error } = await supabase.from("service_status").select("*");
+      setStatusRows(data);
+      setError(error);
+      // Map statuses by slug for easy lookup
+      const statusMap = (data || []).reduce(
+        (acc: Record<string, any>, row: any) => {
+          acc[row.service_slug] = {
+            status: row.status,
+            last_incident: row.last_incident
+              ? {
+                  createdAt: row.last_incident,
+                }
+              : undefined,
+          };
+          return acc;
+        },
+        {} as Record<string, any>
+      );
+      setStatusMap(statusMap);
+      // Debug: Log the final status map with more details
+      console.log("Status Map:", {
+        serviceCount: Object.keys(statusMap).length,
+        services: Object.keys(statusMap),
+        sampleService: statusMap[Object.keys(statusMap)[0]],
+      });
+    };
+    fetchStatuses();
+  }, []);
 
   // Debug: Log the query results
-  console.log("Supabase Query Results:", {
-    hasData: !!statusRows,
-    rowCount: statusRows?.length,
-    error: error?.message,
-    firstRow: statusRows?.[0],
-  });
-
-  if (error) {
-    console.error("Supabase Error:", error);
-  }
-
-  // Map statuses by slug for easy lookup
-  const statusMap = (statusRows || []).reduce(
-    (acc: Record<string, any>, row: any) => {
-      acc[row.service_slug] = {
-        status: row.status,
-        last_incident: row.last_incident
-          ? {
-              createdAt: row.last_incident,
-            }
-          : undefined,
-      };
-      return acc;
-    },
-    {} as Record<string, any>
-  );
-
-  // Debug: Log the final status map with more details
-  console.log("Status Map:", {
-    serviceCount: Object.keys(statusMap).length,
-    services: Object.keys(statusMap),
-    sampleService: statusMap[Object.keys(statusMap)[0]],
-  });
+  useEffect(() => {
+    console.log("Supabase Query Results:", {
+      hasData: !!statusRows,
+      rowCount: statusRows?.length,
+      error: error?.message,
+      firstRow: statusRows?.[0],
+    });
+    if (error) {
+      console.error("Supabase Error:", error);
+    }
+  }, [statusRows, error]);
 
   return <StatusMonitorClient services={services} statusMap={statusMap} />;
 }
+
+export default StatusMonitor;
