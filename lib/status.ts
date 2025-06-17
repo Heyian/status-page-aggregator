@@ -56,7 +56,10 @@ export async function fetchServiceStatus(
   rssUrl: string
 ): Promise<ServiceStatusData> {
   try {
-    const response = await fetch(rssUrl, { next: { revalidate: 300 } }); // Cache for 5 minutes
+    const response = await fetch(rssUrl, {
+      next: { revalidate: 300 },
+      cache: "no-store",
+    }); // Cache for 5 minutes
     const xmlText = await response.text();
     const parser = new XMLParser({
       ignoreAttributes: false,
