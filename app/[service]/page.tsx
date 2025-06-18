@@ -71,8 +71,8 @@ const serviceData = {
   "google-cloud": {
     name: "Google Cloud Platform (GCP)",
     slug: "google-cloud",
-    statusUrl: "https://status.cloud.google.com/",
-    communityUrl: "https://reddit.com/r/googlecloud",
+    statusUrl: "https://status.google.com/",
+    communityUrl: "https://reddit.com/r/GoogleCloud",
     tags: ["Cloud", "Infrastructure"],
     description:
       "Google Cloud Platform provides cloud computing services including compute, storage, big data, machine learning and application development.",
@@ -108,7 +108,7 @@ const serviceData = {
     name: "Microsoft Azure",
     slug: "azure",
     statusUrl: "https://status.azure.com/",
-    communityUrl: "https://reddit.com/r/azure",
+    communityUrl: "https://reddit.com/r/AZURE",
     tags: ["Cloud", "Infrastructure"],
     description:
       "Microsoft Azure is a cloud computing platform offering services for building, testing, deploying, and managing applications through Microsoft-managed data centers.",
@@ -144,7 +144,7 @@ const serviceData = {
     name: "OpenAI",
     slug: "openai",
     statusUrl: "https://status.openai.com/",
-    communityUrl: "https://reddit.com/r/openai",
+    communityUrl: "https://community.openai.com/",
     tags: ["AI/ML", "LLM"],
     description:
       "OpenAI provides cutting-edge AI models including GPT-4, DALL-E, and Whisper through their API platform for developers and businesses.",
@@ -180,7 +180,7 @@ const serviceData = {
     name: "Anthropic (Claude)",
     slug: "anthropic",
     statusUrl: "https://status.anthropic.com/",
-    communityUrl: "https://reddit.com/r/anthropic",
+    communityUrl: "https://reddit.com/r/Anthropic",
     tags: ["AI/ML", "LLM"],
     description:
       "Anthropic develops Claude, a helpful, harmless, and honest AI assistant, offering API access for developers and businesses.",
@@ -216,7 +216,7 @@ const serviceData = {
     name: "Atlassian Jira",
     slug: "jira",
     statusUrl: "https://status.atlassian.com/",
-    communityUrl: "https://reddit.com/r/jira",
+    communityUrl: "https://community.atlassian.com/forums/Jira/ct-p/jira",
     tags: ["Productivity", "Project Management"],
     description:
       "Jira is a project management and issue tracking tool used by agile teams to plan, track, and manage software development projects.",
@@ -320,6 +320,295 @@ const serviceData = {
       },
     ],
   },
+  slack: {
+    name: "Slack",
+    slug: "slack",
+    statusUrl: "https://status.slack.com/",
+    communityUrl:
+      "https://trailhead.salesforce.com/trailblazer-community/neighborhoods/slack",
+    tags: ["Communication", "Productivity"],
+    description:
+      "Slack is a business communication platform offering organized team conversations in channels, direct messaging, and file sharing for modern workplaces.",
+    faq: [
+      {
+        question: "Is Slack down right now?",
+        answer:
+          "Check the current status above. Slack maintains high availability across their global infrastructure. Visit status.slack.com for real-time service health updates.",
+      },
+      {
+        question: "Why can't I send messages on Slack?",
+        answer:
+          "Message delivery issues can be due to network connectivity, Slack service disruptions, or workspace settings. Check the status page and your internet connection first.",
+      },
+      {
+        question: "How to troubleshoot Slack connectivity issues?",
+        answer:
+          "Try refreshing the app, clearing cache, checking firewall settings, or switching networks. Ensure your Slack app is updated to the latest version.",
+      },
+      {
+        question: "What to do during Slack outages?",
+        answer:
+          "Use alternative communication channels like email or phone. Monitor the official status page for updates and estimated resolution times.",
+      },
+      {
+        question: "How reliable is Slack's uptime?",
+        answer:
+          "Slack maintains 99.99% uptime SLA for paid plans with redundant infrastructure across multiple data centers and regions worldwide.",
+      },
+    ],
+  },
+  render: {
+    name: "Render",
+    slug: "render",
+    statusUrl: "https://status.render.com/",
+    communityUrl: "https://community.render.com/",
+    tags: ["Cloud", "Hosting", "DevOps"],
+    description:
+      "Render is a cloud platform for hosting static sites, web services, databases, and more with automatic deployments from Git.",
+    faq: [
+      {
+        question: "Is Render down?",
+        answer:
+          "Check the current status above. Render provides reliable cloud hosting with automatic scaling. Visit status.render.com for detailed service health information.",
+      },
+      {
+        question: "Why is my Render service not deploying?",
+        answer:
+          "Deployment issues can be due to build failures, resource limits, or service disruptions. Check your build logs and the Render status page for any ongoing issues.",
+      },
+      {
+        question: "How to troubleshoot Render connectivity?",
+        answer:
+          "Verify your service URL, check DNS settings, and ensure your service is running. Review deployment logs and resource usage in your Render dashboard.",
+      },
+      {
+        question: "What to do during Render outages?",
+        answer:
+          "Monitor the status page for updates, consider backup hosting options, and implement health checks for automatic failover if needed.",
+      },
+      {
+        question: "How reliable is Render's infrastructure?",
+        answer:
+          "Render provides enterprise-grade reliability with automatic scaling, health checks, and distributed infrastructure for high availability.",
+      },
+    ],
+  },
+  vercel: {
+    name: "Vercel",
+    slug: "vercel",
+    statusUrl: "https://status.vercel.com/",
+    communityUrl: "https://community.vercel.com/",
+    tags: ["Cloud", "Hosting", "Frontend"],
+    description:
+      "Vercel is a cloud platform for static sites and serverless functions, offering instant global deployments with automatic scaling.",
+    faq: [
+      {
+        question: "Is Vercel down?",
+        answer:
+          "Check the current status above. Vercel operates a global edge network with high availability. Visit vercel-status.com for real-time service updates.",
+      },
+      {
+        question: "Why is my Vercel deployment failing?",
+        answer:
+          "Deployment failures can be due to build errors, function timeouts, or service limits. Check your build logs and function logs in the Vercel dashboard.",
+      },
+      {
+        question: "How to troubleshoot Vercel performance issues?",
+        answer:
+          "Review your bundle size, optimize images, check function execution times, and verify edge caching settings. Use Vercel Analytics for insights.",
+      },
+      {
+        question: "What to do during Vercel outages?",
+        answer:
+          "Monitor the status page, consider backup deployment strategies, and implement proper error handling for your applications.",
+      },
+      {
+        question: "How reliable is Vercel's edge network?",
+        answer:
+          "Vercel provides 99.99% uptime with a global edge network spanning 40+ regions, automatic failover, and instant cache invalidation.",
+      },
+    ],
+  },
+  clerk: {
+    name: "Clerk",
+    slug: "clerk",
+    statusUrl: "https://status.clerk.dev/",
+    communityUrl: "https://dev.to/clerk",
+    tags: ["Authentication", "Security"],
+    description:
+      "Clerk provides complete user management and authentication solutions with built-in security features for modern web applications.",
+    faq: [
+      {
+        question: "Is Clerk authentication down?",
+        answer:
+          "Check the current status above. Clerk maintains high availability for authentication services. Visit status.clerk.com for real-time service health.",
+      },
+      {
+        question: "Why can't users sign in with Clerk?",
+        answer:
+          "Sign-in issues can be due to service disruptions, incorrect configuration, or network problems. Check the status page and your Clerk dashboard settings.",
+      },
+      {
+        question: "How to troubleshoot Clerk integration issues?",
+        answer:
+          "Verify API keys, check CORS settings, review webhook configurations, and ensure your domain is properly configured in the Clerk dashboard.",
+      },
+      {
+        question: "What to do during Clerk outages?",
+        answer:
+          "Implement graceful degradation, cache user sessions when possible, and provide clear error messages. Monitor the status page for updates.",
+      },
+      {
+        question: "How secure and reliable is Clerk?",
+        answer:
+          "Clerk provides enterprise-grade security with 99.99% uptime, SOC 2 compliance, and redundant infrastructure across multiple regions.",
+      },
+    ],
+  },
+  xai: {
+    name: "xAI",
+    slug: "xai",
+    statusUrl: "https://status.x.ai/",
+    communityUrl: "https://reddit.com/r/xAI",
+    tags: ["AI/ML", "LLM"],
+    description:
+      "xAI develops Grok, an AI assistant with real-time knowledge and advanced reasoning capabilities, offering API access for developers.",
+    faq: [
+      {
+        question: "Is xAI API down?",
+        answer:
+          "Check the current status above. xAI maintains reliable service for their Grok AI model. Visit status.x.ai for detailed service health information.",
+      },
+      {
+        question: "Why is Grok not responding?",
+        answer:
+          "API issues can be due to rate limits, service disruptions, or incorrect request formatting. Check your API usage and the xAI status page.",
+      },
+      {
+        question: "How to handle xAI rate limits?",
+        answer:
+          "Implement exponential backoff, monitor your usage limits, and consider request batching. Check your xAI dashboard for current rate limit information.",
+      },
+      {
+        question: "What to do during xAI outages?",
+        answer:
+          "Implement fallback mechanisms, cache responses when possible, and monitor the status page for estimated resolution times.",
+      },
+      {
+        question: "How reliable is xAI's service?",
+        answer:
+          "xAI provides enterprise-grade reliability with comprehensive monitoring, automatic scaling, and transparent status reporting for all services.",
+      },
+    ],
+  },
+  elevenlabs: {
+    name: "ElevenLabs",
+    slug: "elevenlabs",
+    statusUrl: "https://status.elevenlabs.io/",
+    communityUrl: "https://reddit.com/r/ElevenLabs",
+    tags: ["AI/ML", "Voice", "Audio"],
+    description:
+      "ElevenLabs provides AI-powered voice synthesis and cloning technology, offering realistic text-to-speech and voice generation APIs.",
+    faq: [
+      {
+        question: "Is ElevenLabs API down?",
+        answer:
+          "Check the current status above. ElevenLabs maintains high availability for voice generation services. Visit status.elevenlabs.io for real-time updates.",
+      },
+      {
+        question: "Why is voice generation failing?",
+        answer:
+          "Generation issues can be due to service limits, API errors, or invalid input. Check your API usage, input text format, and the ElevenLabs status page.",
+      },
+      {
+        question: "How to troubleshoot ElevenLabs voice quality?",
+        answer:
+          "Verify input text formatting, check voice model settings, adjust stability and clarity parameters, and ensure proper audio format specifications.",
+      },
+      {
+        question: "What to do during ElevenLabs outages?",
+        answer:
+          "Implement retry logic with exponential backoff, cache generated audio when possible, and consider backup voice generation services.",
+      },
+      {
+        question: "How reliable is ElevenLabs' voice API?",
+        answer:
+          "ElevenLabs provides enterprise-grade reliability with global infrastructure, automatic scaling, and comprehensive API monitoring for consistent service delivery.",
+      },
+    ],
+  },
+  pinecone: {
+    name: "Pinecone",
+    slug: "pinecone",
+    statusUrl: "https://status.pinecone.io/",
+    communityUrl: "https://reddit.com/r/MachineLearning",
+    tags: ["Database", "AI/ML", "Vector Search"],
+    description:
+      "Pinecone is a fully managed vector database for machine learning applications, providing fast similarity search and recommendations at scale.",
+    faq: [
+      {
+        question: "Is Pinecone down?",
+        answer:
+          "Check the current status above. Pinecone maintains high availability for vector database operations. Visit status.pinecone.io for service health details.",
+      },
+      {
+        question: "Why are my Pinecone queries slow?",
+        answer:
+          "Slow queries can be due to index size, query complexity, or service load. Check your index configuration, query parameters, and the Pinecone status page.",
+      },
+      {
+        question: "How to troubleshoot Pinecone indexing issues?",
+        answer:
+          "Verify your vector dimensions, check API limits, ensure proper authentication, and review your index configuration in the Pinecone console.",
+      },
+      {
+        question: "What to do during Pinecone outages?",
+        answer:
+          "Implement local caching for critical queries, use read replicas if available, and monitor the status page for estimated resolution times.",
+      },
+      {
+        question: "How reliable is Pinecone's vector database?",
+        answer:
+          "Pinecone provides enterprise-grade reliability with 99.99% uptime, automatic scaling, multi-region support, and comprehensive monitoring.",
+      },
+    ],
+  },
+  "mongodb-atlas": {
+    name: "MongoDB Atlas",
+    slug: "mongodb-atlas",
+    statusUrl: "https://status.mongodb.com/",
+    communityUrl: "https://reddit.com/r/mongodb",
+    tags: ["Database", "Cloud", "NoSQL"],
+    description:
+      "MongoDB Atlas is a fully managed cloud database service for modern applications, offering automated scaling, backup, and security features.",
+    faq: [
+      {
+        question: "Is MongoDB Atlas down?",
+        answer:
+          "Check the current status above. MongoDB Atlas maintains high availability across global regions. Visit status.mongodb.com for detailed service health.",
+      },
+      {
+        question: "Why can't I connect to my Atlas cluster?",
+        answer:
+          "Connection issues can be due to network settings, authentication problems, or service disruptions. Check your connection string, IP whitelist, and Atlas status.",
+      },
+      {
+        question: "How to troubleshoot Atlas performance issues?",
+        answer:
+          "Review your queries, check index usage, monitor cluster metrics in Atlas, and ensure proper connection pooling in your application.",
+      },
+      {
+        question: "What to do during Atlas outages?",
+        answer:
+          "Use replica sets for automatic failover, implement connection retry logic, and consider multi-region deployments for critical applications.",
+      },
+      {
+        question: "How reliable is MongoDB Atlas?",
+        answer:
+          "MongoDB Atlas provides 99.95%+ uptime with automated backups, point-in-time recovery, and global cluster deployments for maximum availability.",
+      },
+    ],
+  },
 };
 
 type PageProps = {
@@ -358,7 +647,35 @@ const getRssUrl = (service: any) => {
     case "openai":
       return "https://status.openai.com/feed.rss";
     case "azure":
-      return "https://rssfeed.azure.status.microsoft/en-us/status/feed/"; // https://status.azure.com/
+      return "https://rssfeed.azure.status.microsoft/en-us/status/feed/";
+    case "slack":
+      return "https://slack-status.com/feed/rss";
+    case "render":
+      return "https://status.render.com/history.rss";
+    case "vercel":
+      return "https://www.vercel-status.com/history.rss";
+    case "clerk":
+      return "https://status.clerk.com/feed.rss";
+    case "xai":
+      return "https://status.x.ai/feed.xml";
+    case "elevenlabs":
+      return "https://status.elevenlabs.io/feed.rss";
+    case "pinecone":
+      return "https://status.pinecone.io/history.rss";
+    case "mongodb-atlas":
+      return "https://status.mongodb.com/history.rss";
+    default:
+      return null;
+  }
+};
+
+const getStatusAPIUrl = (service: any) => {
+  switch (service.slug) {
+    case "cloudflare":
+      return {
+        status: "https://www.cloudflarestatus.com/api/v2/summary.json",
+        incidents: "https://www.cloudflarestatus.com/api/v2/incidents.json",
+      };
     default:
       return null;
   }
