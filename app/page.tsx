@@ -58,11 +58,11 @@ const services: Service[] = [
     tags: ["LLM Provider"],
   },
   {
-    name: "Google",
+    name: "Google Cloud",
     status: "operational",
     statusUrl: "https://status.google.com/",
     communityUrl: "https://reddit.com/r/GoogleCloud",
-    slug: "google",
+    slug: "google-cloud",
     tags: ["LLM Provider"],
   },
   {
