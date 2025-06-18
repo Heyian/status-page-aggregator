@@ -109,6 +109,80 @@ export async function fetchServiceStatus(
   }
 }
 
+export async function fetchServiceStatusFromAtom(
+  atomUrl: string
+): Promise<ServiceStatusData> {
+  try {
+    const response = await fetch(atomUrl, {
+      next: { revalidate: 300 },
+      cache: "no-store",
+    }); // Cache for 5 minutes
+    const xmlText = await response.text();
+
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: "@_",
+      cdataTagName: "__cdata",
+      textNodeName: "__text",
+      parseTagValue: false, // Keep as strings to preserve HTML entities
+      parseAttributeValue: true,
+      trimValues: true,
+      cdataPositionChar: "\\c",
+    });
+
+    const result = parser.parse(xmlText);
+
+    // Handle both single entry and array of entries
+    let entryData = result.feed?.entry || [];
+    if (!Array.isArray(entryData)) {
+      entryData = [entryData];
+    }
+
+    // Process incidents from Atom entries
+    const incidents: StatusIncident[] = entryData.map((entry: any) => {
+      // Handle different content structures in Atom feeds
+      const content =
+        entry.content?.__cdata || entry.content?.__text || entry.content || "";
+      const summary =
+        entry.summary?.__cdata || entry.summary?.__text || entry.summary || "";
+      const title =
+        entry.title?.__cdata || entry.title?.__text || entry.title || "";
+
+      // For Google Cloud, prioritize summary over content
+      const description = summary || content;
+
+      // Handle different date formats in Atom
+      const publishDate = entry.published || entry.updated || "";
+      const updateDate = entry.updated || entry.published || "";
+
+      return {
+        title: title,
+        description: stripHtml(description), // Plain text version
+        htmlDescription: description, // Keep HTML version
+        status: determineIncidentStatus(description),
+        createdAt: publishDate,
+        updatedAt: updateDate,
+        components: extractComponents(description),
+      };
+    });
+
+    // Determine overall status using the same logic as RSS
+    const status = determineOverallStatus(incidents);
+
+    return {
+      status,
+      lastIncident: incidents[0],
+      incidents,
+    };
+  } catch (error) {
+    console.error("Error fetching service status from Atom feed:", error);
+    return {
+      status: "unknown",
+      incidents: [],
+    };
+  }
+}
+
 export async function fetchServiceStatusFromAPI(
   statusApiUrl: string,
   incidentsApiUrl: string
@@ -157,10 +231,13 @@ function stripHtml(html: string): string {
   return html
     .replace(/<[^>]*>/g, "") // Remove HTML tags
     .replace(/&nbsp;/g, " ") // Replace &nbsp; with space
+    .replace(/&amp;#39;/g, "'") // Replace &amp;#39; with '
     .replace(/&amp;/g, "&") // Replace &amp; with &
     .replace(/&lt;/g, "<") // Replace &lt; with <
     .replace(/&gt;/g, ">") // Replace &gt; with >
     .replace(/&quot;/g, '"') // Replace &quot; with "
+    .replace(/&#39;/g, "'") // Replace &#39; with '
+    .replace(/&apos;/g, "'") // Replace &apos; with '
     .replace(/\n\s*\n/g, "\n") // Remove multiple newlines
     .trim();
 }

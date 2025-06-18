@@ -27,6 +27,7 @@ import type { Metadata } from "next";
 import {
   fetchServiceStatus,
   fetchServiceStatusFromAPI,
+  fetchServiceStatusFromAtom,
   getStatusColor,
   getStatusText,
   type ServiceStatusData,
@@ -1283,8 +1284,9 @@ export default async function ServiceStatusPage({ params }: PageProps) {
     notFound();
   }
 
-  // Fetch real-time status if RSS feed or API endpoints are available
+  // Fetch real-time status if RSS feed, Atom feed, or API endpoints are available
   const rssUrl = getRssUrl(service);
+  const atomUrl = getAtomUrl(service);
   const apiUrls = getStatusAPIUrl(service);
 
   let statusData: ServiceStatusData;
@@ -1292,6 +1294,9 @@ export default async function ServiceStatusPage({ params }: PageProps) {
   if (rssUrl) {
     // Use RSS feed if available
     statusData = await fetchServiceStatus(rssUrl);
+  } else if (atomUrl) {
+    // Use Atom feed if available
+    statusData = await fetchServiceStatusFromAtom(atomUrl);
   } else if (apiUrls) {
     // Use API endpoints if available
     statusData = await fetchServiceStatusFromAPI(
@@ -1349,7 +1354,7 @@ export default async function ServiceStatusPage({ params }: PageProps) {
               {new Date(statusData.lastIncident.createdAt).toLocaleDateString()}
             </p>
           )}
-          {!rssUrl && !apiUrls && (
+          {!rssUrl && !atomUrl && !apiUrls && (
             <p className="text-muted-foreground mt-2">
               Real-time status updates are not available for this service.
             </p>
