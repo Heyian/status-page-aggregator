@@ -26,6 +26,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
   fetchServiceStatus,
+  fetchServiceStatusFromAPI,
   getStatusColor,
   getStatusText,
   type ServiceStatusData,
@@ -1270,6 +1271,15 @@ const getStatusAPIUrl = (service: any) => {
   }
 };
 
+const getAtomUrl = (service: any) => {
+  switch (service.slug) {
+    case "google-cloud":
+      return "https://status.cloud.google.com/en/feed.atom";
+    default:
+      return null;
+  }
+};
+
 export default async function ServiceStatusPage({ params }: PageProps) {
   // Use Promise.resolve to properly handle dynamic params
   const { service: serviceSlug } = await Promise.resolve(params);
@@ -1279,14 +1289,28 @@ export default async function ServiceStatusPage({ params }: PageProps) {
     notFound();
   }
 
-  // Fetch real-time status if RSS feed is available
+  // Fetch real-time status if RSS feed or API endpoints are available
   const rssUrl = getRssUrl(service);
-  const statusData = rssUrl
-    ? await fetchServiceStatus(rssUrl)
-    : {
-        status: "unknown" as const,
-        incidents: [],
-      };
+  const apiUrls = getStatusAPIUrl(service);
+
+  let statusData: ServiceStatusData;
+
+  if (rssUrl) {
+    // Use RSS feed if available
+    statusData = await fetchServiceStatus(rssUrl);
+  } else if (apiUrls) {
+    // Use API endpoints if available
+    statusData = await fetchServiceStatusFromAPI(
+      apiUrls.status,
+      apiUrls.incidents
+    );
+  } else {
+    // No status source available
+    statusData = {
+      status: "unknown" as const,
+      incidents: [],
+    };
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -1331,7 +1355,7 @@ export default async function ServiceStatusPage({ params }: PageProps) {
               {new Date(statusData.lastIncident.createdAt).toLocaleDateString()}
             </p>
           )}
-          {!rssUrl && (
+          {!rssUrl && !apiUrls && (
             <p className="text-muted-foreground mt-2">
               Real-time status updates are not available for this service.
             </p>

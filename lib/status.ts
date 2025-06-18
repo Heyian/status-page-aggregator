@@ -109,6 +109,50 @@ export async function fetchServiceStatus(
   }
 }
 
+export async function fetchServiceStatusFromAPI(
+  statusApiUrl: string,
+  incidentsApiUrl: string
+): Promise<ServiceStatusData> {
+  try {
+    // Fetch both status and incidents in parallel
+    const [statusResponse, incidentsResponse] = await Promise.all([
+      fetch(statusApiUrl, {
+        next: { revalidate: 300 },
+        cache: "no-store",
+      }),
+      fetch(incidentsApiUrl, {
+        next: { revalidate: 300 },
+        cache: "no-store",
+      }),
+    ]);
+
+    const [statusData, incidentsData] = await Promise.all([
+      statusResponse.json(),
+      incidentsResponse.json(),
+    ]);
+
+    // Parse overall status
+    const overallStatus = parseStatusFromAPI(statusData);
+
+    // Parse incidents
+    const incidents: StatusIncident[] = (incidentsData.incidents || []).map(
+      (incident: any) => parseIncidentFromAPI(incident)
+    );
+
+    return {
+      status: overallStatus,
+      lastIncident: incidents[0],
+      incidents,
+    };
+  } catch (error) {
+    console.error("Error fetching service status from API:", error);
+    return {
+      status: "unknown",
+      incidents: [],
+    };
+  }
+}
+
 function stripHtml(html: string): string {
   return html
     .replace(/<[^>]*>/g, "") // Remove HTML tags
@@ -164,4 +208,70 @@ function extractComponents(description: string): string[] {
     .filter((line) => line && !line.startsWith("<") && !line.endsWith(">"))
     .map((line) => line.replace(/\(Operational\)/i, "").trim())
     .filter(Boolean);
+}
+
+function parseStatusFromAPI(statusData: any): ServiceStatus {
+  // Handle different API response formats
+  const status =
+    statusData.status?.indicator ||
+    statusData.status?.description ||
+    statusData.indicator ||
+    "none";
+
+  switch (status.toLowerCase()) {
+    case "none":
+    case "operational":
+    case "all systems operational":
+      return "operational";
+    case "minor":
+    case "degraded_performance":
+    case "partial_outage":
+    case "partial outage":
+      return "degraded";
+    case "major":
+    case "major_outage":
+    case "major outage":
+    case "critical":
+      return "outage";
+    default:
+      return "unknown";
+  }
+}
+
+function parseIncidentFromAPI(incident: any): StatusIncident {
+  // Get the latest incident update for the description
+  const latestUpdate = incident.incident_updates?.[0];
+  const description = latestUpdate?.body || incident.body || "";
+
+  // Extract affected components
+  const components =
+    incident.components?.map((comp: any) => comp.name) ||
+    latestUpdate?.affected_components?.map((comp: any) => comp.name) ||
+    [];
+
+  return {
+    title: incident.name || incident.title || "Unknown Incident",
+    description: stripHtml(description),
+    htmlDescription: description,
+    status: mapAPIStatusToIncidentStatus(incident.status),
+    createdAt: incident.created_at || incident.created_at,
+    updatedAt: incident.updated_at || incident.updated_at,
+    components: components,
+  };
+}
+
+function mapAPIStatusToIncidentStatus(
+  status: string
+): StatusIncident["status"] {
+  switch (status?.toLowerCase()) {
+    case "resolved":
+      return "resolved";
+    case "monitoring":
+      return "monitoring";
+    case "identified":
+      return "identified";
+    case "investigating":
+    default:
+      return "investigating";
+  }
 }
