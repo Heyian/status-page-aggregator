@@ -35,14 +35,11 @@ const serviceData = {
   aws: {
     name: "Amazon Web Services (AWS)",
     slug: "aws",
-    status: "operational",
     statusUrl: "https://status.aws.amazon.com/",
     communityUrl: "https://reddit.com/r/aws",
     tags: ["Cloud", "Infrastructure"],
     description:
       "Amazon Web Services is a comprehensive cloud computing platform offering over 200 services including compute, storage, database, networking, and more.",
-    lastIncident: "2024-01-15",
-    uptime: "99.95%",
     faq: [
       {
         question: "Is AWS down right now?",
@@ -74,14 +71,11 @@ const serviceData = {
   "google-cloud": {
     name: "Google Cloud Platform (GCP)",
     slug: "google-cloud",
-    status: "operational",
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/googlecloud",
     tags: ["Cloud", "Infrastructure"],
     description:
       "Google Cloud Platform provides cloud computing services including compute, storage, big data, machine learning and application development.",
-    lastIncident: "2024-01-10",
-    uptime: "99.97%",
     faq: [
       {
         question: "Is Google Cloud down?",
@@ -113,14 +107,11 @@ const serviceData = {
   azure: {
     name: "Microsoft Azure",
     slug: "azure",
-    status: "operational",
     statusUrl: "https://status.azure.com/",
     communityUrl: "https://reddit.com/r/azure",
     tags: ["Cloud", "Infrastructure"],
     description:
       "Microsoft Azure is a cloud computing platform offering services for building, testing, deploying, and managing applications through Microsoft-managed data centers.",
-    lastIncident: "2024-01-12",
-    uptime: "99.96%",
     faq: [
       {
         question: "Is Microsoft Azure down?",
@@ -152,14 +143,11 @@ const serviceData = {
   openai: {
     name: "OpenAI",
     slug: "openai",
-    status: "operational",
     statusUrl: "https://status.openai.com/",
     communityUrl: "https://reddit.com/r/openai",
     tags: ["AI/ML", "LLM"],
     description:
       "OpenAI provides cutting-edge AI models including GPT-4, DALL-E, and Whisper through their API platform for developers and businesses.",
-    lastIncident: "2024-01-08",
-    uptime: "99.9%",
     faq: [
       {
         question: "Is OpenAI API down?",
@@ -191,14 +179,11 @@ const serviceData = {
   anthropic: {
     name: "Anthropic (Claude)",
     slug: "anthropic",
-    status: "operational",
     statusUrl: "https://status.anthropic.com/",
     communityUrl: "https://reddit.com/r/anthropic",
     tags: ["AI/ML", "LLM"],
     description:
       "Anthropic develops Claude, a helpful, harmless, and honest AI assistant, offering API access for developers and businesses.",
-    lastIncident: "2024-01-05",
-    uptime: "99.8%",
     faq: [
       {
         question: "Is Claude API down?",
@@ -230,14 +215,11 @@ const serviceData = {
   jira: {
     name: "Atlassian Jira",
     slug: "jira",
-    status: "operational",
     statusUrl: "https://status.atlassian.com/",
     communityUrl: "https://reddit.com/r/jira",
     tags: ["Productivity", "Project Management"],
     description:
       "Jira is a project management and issue tracking tool used by agile teams to plan, track, and manage software development projects.",
-    lastIncident: "2024-01-12",
-    uptime: "99.9%",
     faq: [
       {
         question: "Is Jira down right now?",
@@ -269,14 +251,11 @@ const serviceData = {
   stripe: {
     name: "Stripe",
     slug: "stripe",
-    status: "operational",
     statusUrl: "https://status.stripe.com/",
     communityUrl: "https://reddit.com/r/stripe",
     tags: ["Payments", "E-commerce"],
     description:
       "Stripe is a payment processing platform that enables businesses to accept payments online and in mobile apps.",
-    lastIncident: "2024-01-10",
-    uptime: "99.99%",
     faq: [
       {
         question: "Is Stripe down?",
@@ -302,6 +281,42 @@ const serviceData = {
         question: "How to get Stripe status notifications?",
         answer:
           "Subscribe to status updates at status.stripe.com, follow @StripeDev on Twitter, or integrate with Stripe's webhook system for real-time updates.",
+      },
+    ],
+  },
+  cloudflare: {
+    name: "Cloudflare",
+    slug: "cloudflare",
+    statusUrl: "https://www.cloudflarestatus.com/",
+    communityUrl: "https://reddit.com/r/CloudFlare",
+    tags: ["CDN", "Security", "DNS", "Infrastructure"],
+    description:
+      "Cloudflare provides global CDN, DDoS protection, DNS services, and web security solutions to millions of websites and applications worldwide.",
+    faq: [
+      {
+        question: "Is Cloudflare down?",
+        answer:
+          "Check the current status above. Cloudflare operates a global network with built-in redundancy. For real-time updates, visit cloudflarestatus.com or follow @cloudflare on Twitter.",
+      },
+      {
+        question: "Why is my website slow despite using Cloudflare?",
+        answer:
+          "Slow performance can be due to origin server issues, cache misses, or network congestion. Check your origin server performance, cache settings, and Cloudflare analytics for optimization opportunities.",
+      },
+      {
+        question: "How to troubleshoot Cloudflare DNS issues?",
+        answer:
+          "Use DNS lookup tools to verify records, check TTL settings, and ensure proper configuration. Cloudflare's DNS propagation can take up to 24 hours for new changes to fully propagate globally.",
+      },
+      {
+        question: "What to do during Cloudflare outages?",
+        answer:
+          "Enable 'Always Online' mode, consider DNS failover to backup providers, and implement proper error handling. Monitor the status page and consider using multiple CDN providers for critical applications.",
+      },
+      {
+        question: "How reliable is Cloudflare's network?",
+        answer:
+          "Cloudflare maintains 99.99%+ uptime across their global network of 300+ data centers. They provide detailed incident reports and real-time status updates for complete transparency.",
       },
     ],
   },
