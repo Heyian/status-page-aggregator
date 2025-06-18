@@ -609,6 +609,512 @@ const serviceData = {
       },
     ],
   },
+  supabase: {
+    name: "Supabase",
+    slug: "supabase",
+    statusUrl: "https://status.supabase.com/",
+    communityUrl: "https://github.com/orgs/supabase/discussions",
+    tags: ["Database Provider"],
+    description:
+      "Supabase is an open source Firebase alternative providing a Postgres database, Authentication, instant APIs, Edge Functions, and Real-time subscriptions.",
+    faq: [
+      {
+        question: "Is Supabase down?",
+        answer:
+          "Check the current status above. Supabase maintains high availability for their hosted platform. Visit status.supabase.com for detailed service health information.",
+      },
+      {
+        question: "Why can't I connect to my Supabase project?",
+        answer:
+          "Connection issues can be due to database limits, API rate limiting, or service disruptions. Check your project dashboard and the Supabase status page.",
+      },
+      {
+        question: "How to troubleshoot Supabase API issues?",
+        answer:
+          "Verify your API keys, check row level security policies, review database connection limits, and ensure your requests are properly formatted.",
+      },
+      {
+        question: "What to do during Supabase outages?",
+        answer:
+          "Implement connection retry logic, cache data when possible, and monitor the status page for updates. Consider implementing graceful degradation.",
+      },
+      {
+        question: "How reliable is Supabase?",
+        answer:
+          "Supabase provides enterprise-grade reliability with automatic backups, read replicas, and point-in-time recovery for production workloads.",
+      },
+    ],
+  },
+  redis: {
+    name: "Redis",
+    slug: "redis",
+    statusUrl: "https://status.redis.com/",
+    communityUrl: "https://forum.redis.io/",
+    tags: ["Database Provider"],
+    description:
+      "Redis is an open source, in-memory data structure store used as a database, cache, and message broker with support for various data structures.",
+    faq: [
+      {
+        question: "Is Redis Cloud down?",
+        answer:
+          "Check the current status above. Redis Cloud maintains high availability across global regions. Visit status.redis.com for real-time service updates.",
+      },
+      {
+        question: "Why is my Redis instance slow?",
+        answer:
+          "Performance issues can be due to memory limits, complex operations, or network latency. Check your memory usage and optimize your Redis commands.",
+      },
+      {
+        question: "How to troubleshoot Redis connectivity?",
+        answer:
+          "Verify connection strings, check firewall settings, ensure proper authentication, and review memory and connection limits in your Redis dashboard.",
+      },
+      {
+        question: "What to do during Redis outages?",
+        answer:
+          "Implement connection pooling with retries, use local caching when possible, and consider setting up Redis Sentinel for high availability.",
+      },
+      {
+        question: "How reliable is Redis Cloud?",
+        answer:
+          "Redis Cloud provides 99.99% uptime with automatic failover, data persistence, and multi-zone deployments for mission-critical applications.",
+      },
+    ],
+  },
+  cohere: {
+    name: "Cohere",
+    slug: "cohere",
+    statusUrl: "https://status.cohere.ai/",
+    communityUrl: "https://cohere.com/blog/building-community",
+    tags: ["LLM Provider"],
+    description:
+      "Cohere provides large language models and NLP tools designed for business applications, offering text generation, embeddings, and classification APIs.",
+    faq: [
+      {
+        question: "Is Cohere API down?",
+        answer:
+          "Check the current status above. Cohere maintains reliable API services for language model inference. Visit status.cohere.ai for service health details.",
+      },
+      {
+        question: "Why are my Cohere API calls failing?",
+        answer:
+          "API failures can be due to rate limits, authentication issues, or input validation errors. Check your API key and request format.",
+      },
+      {
+        question: "How to handle Cohere rate limits?",
+        answer:
+          "Implement exponential backoff, monitor your usage quotas, and consider upgrading your plan for higher rate limits if needed.",
+      },
+      {
+        question: "What to do during Cohere outages?",
+        answer:
+          "Implement fallback mechanisms, queue requests for retry, and monitor the status page for estimated resolution times.",
+      },
+      {
+        question: "How reliable is Cohere's API?",
+        answer:
+          "Cohere provides enterprise-grade reliability with global infrastructure, automatic scaling, and comprehensive monitoring for consistent API performance.",
+      },
+    ],
+  },
+  linode: {
+    name: "Linode",
+    slug: "linode",
+    statusUrl: "https://status.linode.com/",
+    communityUrl: "https://www.linode.com/community/questions/",
+    tags: ["Cloud", "Infrastructure", "VPS", "Akamai"],
+    description:
+      "Linode provides cloud computing services including virtual private servers, managed databases, and developer tools with predictable pricing.",
+    faq: [
+      {
+        question: "Is Linode down?",
+        answer:
+          "Check the current status above. Linode maintains high availability across global data centers. Visit status.linode.com for real-time service updates.",
+      },
+      {
+        question: "Why is my Linode instance unreachable?",
+        answer:
+          "Connectivity issues can be due to network problems, server configuration, or data center issues. Check the status page and your server logs.",
+      },
+      {
+        question: "How to troubleshoot Linode performance issues?",
+        answer:
+          "Monitor CPU, memory, and disk usage through Linode's dashboard. Check for network issues and consider upgrading your plan if resources are maxed out.",
+      },
+      {
+        question: "What to do during Linode outages?",
+        answer:
+          "Implement multi-region deployments, use load balancers for failover, and monitor the status page for updates and estimated resolution times.",
+      },
+      {
+        question: "How reliable is Linode's infrastructure?",
+        answer:
+          "Linode provides 99.9%+ uptime with global data centers, automated backups, and enterprise-grade hardware for reliable cloud services.",
+      },
+    ],
+  },
+  digitalocean: {
+    name: "DigitalOcean",
+    slug: "digitalocean",
+    statusUrl: "https://status.digitalocean.com/",
+    communityUrl: "https://www.digitalocean.com/community",
+    tags: ["Cloud", "Infrastructure", "VPS"],
+    description:
+      "DigitalOcean provides cloud infrastructure for developers with virtual machines, managed databases, and application deployment platforms.",
+    faq: [
+      {
+        question: "Is DigitalOcean down?",
+        answer:
+          "Check the current status above. DigitalOcean maintains high availability across multiple regions. Visit status.digitalocean.com for service health details.",
+      },
+      {
+        question: "Why is my Droplet not responding?",
+        answer:
+          "Droplet issues can be due to resource exhaustion, network problems, or configuration errors. Check your monitoring dashboard and server logs.",
+      },
+      {
+        question: "How to troubleshoot DigitalOcean networking issues?",
+        answer:
+          "Verify firewall rules, check VPC settings, ensure proper DNS configuration, and review network usage in your DigitalOcean dashboard.",
+      },
+      {
+        question: "What to do during DigitalOcean outages?",
+        answer:
+          "Use multiple regions for redundancy, implement health checks, and monitor the status page for incident updates and resolution timelines.",
+      },
+      {
+        question: "How reliable is DigitalOcean?",
+        answer:
+          "DigitalOcean provides 99.99% uptime SLA with automated backups, monitoring, and distributed infrastructure across global data centers.",
+      },
+    ],
+  },
+  replicate: {
+    name: "Replicate",
+    slug: "replicate",
+    statusUrl: "https://status.replicate.com/",
+    communityUrl: "https://replicate.com/explore",
+    tags: ["LLM Inference Layer Companies"],
+    description:
+      "Replicate lets you run machine learning models in the cloud with a simple API, offering access to popular open-source models and custom deployments.",
+    faq: [
+      {
+        question: "Is Replicate down?",
+        answer:
+          "Check the current status above. Replicate maintains reliable infrastructure for ML model inference. Visit status.replicate.com for service updates.",
+      },
+      {
+        question: "Why are my Replicate predictions failing?",
+        answer:
+          "Prediction failures can be due to invalid inputs, model timeouts, or service limits. Check your input format and the model's requirements.",
+      },
+      {
+        question: "How to troubleshoot Replicate API issues?",
+        answer:
+          "Verify your API token, check input validation, review prediction logs, and ensure your requests match the model's expected format.",
+      },
+      {
+        question: "What to do during Replicate outages?",
+        answer:
+          "Implement retry logic with backoff, cache results when possible, and consider using multiple ML providers for critical applications.",
+      },
+      {
+        question: "How reliable is Replicate's platform?",
+        answer:
+          "Replicate provides enterprise-grade reliability with automatic scaling, global infrastructure, and comprehensive monitoring for ML workloads.",
+      },
+    ],
+  },
+  bitbucket: {
+    name: "BitBucket",
+    slug: "bitbucket",
+    statusUrl: "https://bitbucket.status.atlassian.com/",
+    communityUrl:
+      "https://community.atlassian.com/forums/Bitbucket/ct-p/bitbucket",
+    tags: ["CDN & Hosting"],
+    description:
+      "Bitbucket is a Git-based code and CI/CD tool that teams use to collaborate on code, build, test, and deploy applications.",
+    faq: [
+      {
+        question: "Is Bitbucket down?",
+        answer:
+          "Check the current status above. Bitbucket maintains high availability for code repositories and CI/CD pipelines. Visit bitbucket.status.atlassian.com for updates.",
+      },
+      {
+        question: "Why can't I push to my Bitbucket repository?",
+        answer:
+          "Push issues can be due to permission problems, repository size limits, or service disruptions. Check your access rights and repository settings.",
+      },
+      {
+        question: "How to troubleshoot Bitbucket Pipelines issues?",
+        answer:
+          "Review pipeline logs, check your bitbucket-pipelines.yml file, verify environment variables, and ensure proper Docker image configurations.",
+      },
+      {
+        question: "What to do during Bitbucket outages?",
+        answer:
+          "Use local Git repositories for temporary work, implement backup remote repositories, and monitor the status page for incident updates.",
+      },
+      {
+        question: "How reliable is Bitbucket?",
+        answer:
+          "Bitbucket provides enterprise-grade reliability with automatic backups, global CDN, and 99.9%+ uptime for code hosting and CI/CD services.",
+      },
+    ],
+  },
+  confluence: {
+    name: "Confluence",
+    slug: "confluence",
+    statusUrl: "https://status.atlassian.com/",
+    communityUrl:
+      "https://community.atlassian.com/forums/Confluence/ct-p/confluence",
+    tags: ["Documentation", "Collaboration", "Atlassian"],
+    description:
+      "Confluence is a collaboration and documentation platform where teams create, organize, and discuss work in a central, searchable location.",
+    faq: [
+      {
+        question: "Is Confluence down?",
+        answer:
+          "Check the current status above. Confluence maintains high availability for documentation and collaboration. Visit status.atlassian.com for service health.",
+      },
+      {
+        question: "Why is Confluence running slowly?",
+        answer:
+          "Performance issues can be due to large page loads, indexing operations, or high user activity. Check your space content and user activity.",
+      },
+      {
+        question: "How to troubleshoot Confluence sync issues?",
+        answer:
+          "Verify your permissions, check network connectivity, clear browser cache, and ensure your Confluence app is updated to the latest version.",
+      },
+      {
+        question: "What to do during Confluence outages?",
+        answer:
+          "Use offline documentation tools, save work locally, and monitor the Atlassian status page for estimated resolution times.",
+      },
+      {
+        question: "How reliable is Confluence Cloud?",
+        answer:
+          "Confluence Cloud provides 99.9%+ uptime with enterprise-grade security, automatic backups, and global infrastructure for reliable collaboration.",
+      },
+    ],
+  },
+  trello: {
+    name: "Trello",
+    slug: "trello",
+    statusUrl: "https://trello.status.atlassian.com/",
+    communityUrl: "https://community.atlassian.com/forums/Trello/ct-p/trello",
+    tags: ["Project Management", "Kanban", "Atlassian"],
+    description:
+      "Trello is a visual project management tool that uses boards, lists, and cards to help teams organize and prioritize projects.",
+    faq: [
+      {
+        question: "Is Trello down?",
+        answer:
+          "Check the current status above. Trello maintains high availability for project management workflows. Visit trello.status.atlassian.com for updates.",
+      },
+      {
+        question: "Why aren't my Trello cards syncing?",
+        answer:
+          "Sync issues can be due to network connectivity, browser cache, or temporary service disruptions. Try refreshing your browser or clearing cache.",
+      },
+      {
+        question: "How to troubleshoot Trello notification issues?",
+        answer:
+          "Check your notification settings, verify email preferences, ensure browser notifications are enabled, and review your Trello account settings.",
+      },
+      {
+        question: "What to do during Trello outages?",
+        answer:
+          "Use offline project management tools, document current progress locally, and monitor the status page for service restoration updates.",
+      },
+      {
+        question: "How reliable is Trello?",
+        answer:
+          "Trello provides 99.9%+ uptime with enterprise-grade infrastructure, automatic data synchronization, and reliable project management capabilities.",
+      },
+    ],
+  },
+  snowflake: {
+    name: "Snowflake",
+    slug: "snowflake",
+    statusUrl: "https://status.snowflake.com/",
+    communityUrl: "https://community.snowflake.com/s/",
+    tags: ["Data Warehouse Provider"],
+    description:
+      "Snowflake is a cloud-based data platform that provides data warehousing, data lakes, data engineering, and data science solutions.",
+    faq: [
+      {
+        question: "Is Snowflake down?",
+        answer:
+          "Check the current status above. Snowflake maintains high availability across cloud regions. Visit status.snowflake.com for detailed service health.",
+      },
+      {
+        question: "Why are my Snowflake queries slow?",
+        answer:
+          "Query performance can be affected by warehouse size, data clustering, or complex operations. Optimize your queries and consider warehouse scaling.",
+      },
+      {
+        question: "How to troubleshoot Snowflake connection issues?",
+        answer:
+          "Verify connection parameters, check network configuration, ensure proper authentication, and review warehouse state in your Snowflake console.",
+      },
+      {
+        question: "What to do during Snowflake outages?",
+        answer:
+          "Use cached data when possible, implement query retry logic, and monitor the status page for incident updates and resolution timelines.",
+      },
+      {
+        question: "How reliable is Snowflake?",
+        answer:
+          "Snowflake provides 99.9%+ uptime with automatic scaling, data replication, and enterprise-grade reliability across multiple cloud providers.",
+      },
+    ],
+  },
+  confluent: {
+    name: "Confluent",
+    slug: "confluent",
+    statusUrl: "https://status.confluent.io/",
+    communityUrl: "https://developer.confluent.io/community/",
+    tags: ["Database Provider"],
+    description:
+      "Confluent provides a cloud-native Apache Kafka platform for real-time data streaming and event-driven architectures.",
+    faq: [
+      {
+        question: "Is Confluent Cloud down?",
+        answer:
+          "Check the current status above. Confluent maintains high availability for streaming data platforms. Visit status.confluent.io for service updates.",
+      },
+      {
+        question: "Why are my Kafka messages not being delivered?",
+        answer:
+          "Message delivery issues can be due to producer/consumer configuration, topic partitioning, or network connectivity. Check your Kafka settings.",
+      },
+      {
+        question: "How to troubleshoot Confluent streaming issues?",
+        answer:
+          "Monitor consumer lag, verify topic configurations, check producer acknowledgments, and review connector status in your Confluent dashboard.",
+      },
+      {
+        question: "What to do during Confluent outages?",
+        answer:
+          "Implement message buffering, use multiple clusters for redundancy, and monitor the status page for incident resolution updates.",
+      },
+      {
+        question: "How reliable is Confluent Cloud?",
+        answer:
+          "Confluent Cloud provides 99.95%+ uptime with multi-zone replication, automatic scaling, and enterprise-grade reliability for streaming data.",
+      },
+    ],
+  },
+  chargebee: {
+    name: "Chargebee",
+    slug: "chargebee",
+    statusUrl: "https://status.chargebee.com/",
+    communityUrl: "https://www.chargebee.com/community/",
+    tags: ["Billing & Subscriptions FinTech API"],
+    description:
+      "Chargebee is a subscription billing and revenue management platform that automates recurring billing, invoicing, and subscription analytics.",
+    faq: [
+      {
+        question: "Is Chargebee down?",
+        answer:
+          "Check the current status above. Chargebee maintains high availability for billing operations. Visit status.chargebee.com for real-time service health.",
+      },
+      {
+        question: "Why are subscription charges failing?",
+        answer:
+          "Billing failures can be due to payment method issues, gateway problems, or service disruptions. Check your payment gateway and customer billing details.",
+      },
+      {
+        question: "How to troubleshoot Chargebee webhook issues?",
+        answer:
+          "Verify webhook endpoints, check authentication settings, review webhook logs, and ensure your server can handle incoming notifications.",
+      },
+      {
+        question: "What to do during Chargebee outages?",
+        answer:
+          "Queue billing operations for retry, notify customers of potential delays, and monitor the status page for service restoration updates.",
+      },
+      {
+        question: "How reliable is Chargebee?",
+        answer:
+          "Chargebee provides 99.99% uptime with redundant infrastructure, automatic failover, and enterprise-grade reliability for subscription billing.",
+      },
+    ],
+  },
+  twilio: {
+    name: "Twilio",
+    slug: "twilio",
+    statusUrl: "https://status.twilio.com/",
+    communityUrl: "https://reddit.com/r/twilio",
+    tags: ["SMS Communication API"],
+    description:
+      "Twilio provides cloud communications APIs for SMS, voice, video, and authentication, enabling developers to build communication features into applications.",
+    faq: [
+      {
+        question: "Is Twilio down?",
+        answer:
+          "Check the current status above. Twilio maintains high availability for communication services. Visit status.twilio.com for detailed service health.",
+      },
+      {
+        question: "Why are my SMS messages not being delivered?",
+        answer:
+          "Message delivery issues can be due to carrier filtering, invalid numbers, or service limits. Check your message content and recipient validation.",
+      },
+      {
+        question: "How to troubleshoot Twilio API issues?",
+        answer:
+          "Verify your Account SID and Auth Token, check API request format, review error codes, and ensure proper webhook configuration.",
+      },
+      {
+        question: "What to do during Twilio outages?",
+        answer:
+          "Implement retry logic for failed messages, use backup communication channels, and monitor the status page for incident updates.",
+      },
+      {
+        question: "How reliable is Twilio?",
+        answer:
+          "Twilio provides 99.95%+ uptime with global infrastructure, redundant carriers, and enterprise-grade reliability for communication services.",
+      },
+    ],
+  },
+  sendgrid: {
+    name: "SendGrid",
+    slug: "sendgrid",
+    statusUrl: "https://status.sendgrid.com/",
+    communityUrl: "https://sendgrid.com/en-us/blog/category/community",
+    tags: ["Email Communication API"],
+    description:
+      "SendGrid is a cloud-based email delivery platform that provides transactional and marketing email services with advanced analytics and deliverability tools.",
+    faq: [
+      {
+        question: "Is SendGrid down?",
+        answer:
+          "Check the current status above. SendGrid maintains high availability for email delivery services. Visit status.sendgrid.com for service health details.",
+      },
+      {
+        question: "Why are my emails not being delivered?",
+        answer:
+          "Delivery issues can be due to reputation problems, content filtering, or recipient blocking. Check your sender reputation and email content.",
+      },
+      {
+        question: "How to troubleshoot SendGrid delivery issues?",
+        answer:
+          "Review activity logs, check suppression lists, verify domain authentication, and monitor your sender reputation in the SendGrid dashboard.",
+      },
+      {
+        question: "What to do during SendGrid outages?",
+        answer:
+          "Use backup email providers, queue emails for retry, implement fallback notification methods, and monitor the status page for updates.",
+      },
+      {
+        question: "How reliable is SendGrid?",
+        answer:
+          "SendGrid provides 99.99% uptime with global infrastructure, redundant email delivery paths, and enterprise-grade reliability for email services.",
+      },
+    ],
+  },
 };
 
 type PageProps = {
@@ -675,6 +1181,89 @@ const getStatusAPIUrl = (service: any) => {
       return {
         status: "https://www.cloudflarestatus.com/api/v2/summary.json",
         incidents: "https://www.cloudflarestatus.com/api/v2/incidents.json",
+      };
+    case "supabase":
+      return {
+        status: "https://status.supabase.com/api/v2/status.json",
+        incidents: "https://status.supabase.com/api/v2/incidents.json",
+      };
+    case "redis":
+      return {
+        status: "https://status.redis.io/api/v2/status.json",
+        incidents: "https://status.redis.io/api/v2/incidents.json",
+      };
+    case "anthropic":
+      return {
+        status: "https://status.anthropic.com/api/v2/status.json",
+        incidents: "https://status.anthropic.com/api/v2/incidents.json",
+      };
+    case "cohere":
+      return {
+        status: "https://status.cohere.com/api/v2/status.json",
+        incidents: "https://status.cohere.com/api/v2/incidents.json",
+      };
+    case "linode":
+      return {
+        status: "https://status.linode.com/api/v2/status.json",
+        incidents: "https://status.linode.com/api/v2/incidents.json",
+      };
+    case "digitalocean":
+      return {
+        status: "https://status.digitalocean.com/api/v2/status.json",
+        incidents: "https://status.digitalocean.com/api/v2/incidents.json",
+      };
+    case "replicate":
+      return {
+        status: "https://replicatestatus.com/api/v2/status.json",
+        incidents: "https://replicatestatus.com/api/v2/incidents.json",
+      };
+    case "jira":
+      return {
+        status: "https://jira-software.status.atlassian.com/api/v2/status.json",
+        incidents:
+          "https://jira-software.status.atlassian.com/api/v2/incidents.json",
+      };
+    case "bitbucket":
+      return {
+        status: "https://bitbucket.status.atlassian.com/api/v2/status.json",
+        incidents:
+          "https://bitbucket.status.atlassian.com/api/v2/incidents.json",
+      };
+    case "confluence":
+      return {
+        status: "https://confluence.status.atlassian.com/api/v2/status.json",
+        incidents:
+          "https://confluence.status.atlassian.com/api/v2/incidents.json",
+      };
+    case "trello":
+      return {
+        status: "https://trello.status.atlassian.com/api/v2/status.json",
+        incidents: "https://trello.status.atlassian.com/api/v2/incidents.json",
+      };
+    case "snowflake":
+      return {
+        status: "https://status.snowflake.com/api/v2/summary.json",
+        incidents: "https://status.snowflake.com/api/v2/incidents.json",
+      };
+    case "confluent":
+      return {
+        status: "https://status.confluent.cloud/api/v2/summary.json",
+        incidents: "https://status.confluent.cloud/api/v2/incidents.json",
+      };
+    case "chargebee":
+      return {
+        status: "https://status.chargebee.com/api/v2/summary.json",
+        incidents: "https://status.chargebee.com/api/v2/incidents.json",
+      };
+    case "twilio":
+      return {
+        status: "https://status.twilio.com/api/v2/summary.json",
+        incidents: "https://status.twilio.com/api/v2/incidents.json",
+      };
+    case "sendgrid":
+      return {
+        status: "https://status.sendgrid.com/api/v2/summary.json",
+        incidents: "https://status.sendgrid.com/api/v2/incidents.json",
       };
     default:
       return null;
