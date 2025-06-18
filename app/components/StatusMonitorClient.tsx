@@ -199,7 +199,7 @@ export function StatusMonitorClient({
             </div>
             <Button variant="outline" size="sm" asChild>
               <Link
-                href="https://github.com/drdroid/statuspage-aggregator"
+                href="https://github.com/DrDroidLab/status-page-aggregator"
                 className="flex items-center gap-2"
               >
                 <Github className="w-4 h-4" />
