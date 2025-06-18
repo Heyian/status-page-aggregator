@@ -1145,12 +1145,6 @@ function getTagColor(tag: string) {
 
 const getRssUrl = (service: any) => {
   switch (service.slug) {
-    case "supabase":
-      return "https://status.supabase.com/history.rss";
-    case "anthropic":
-      return "https://status.anthropic.com/history.rss";
-    case "cohere":
-      return "https://status.cohere.com/feed.rss";
     case "openai":
       return "https://status.openai.com/feed.rss";
     case "azure":
