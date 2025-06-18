@@ -59,7 +59,7 @@ const services: Service[] = [
   },
   {
     name: "Google",
-    status: "incident",
+    status: "operational",
     statusUrl: "https://status.google.com/",
     communityUrl: "https://reddit.com/r/GoogleCloud",
     slug: "google",
@@ -464,6 +464,22 @@ const services: Service[] = [
     communityUrl: "https://reddit.com/r/snowflake",
     slug: "snowflake",
     tags: ["Data Warehouse Provider"],
+  },
+  {
+    name: "Vercel",
+    status: "operational",
+    statusUrl: "https://status.vercel.com/",
+    communityUrl: "https://reddit.com/r/vercel",
+    slug: "vercel",
+    tags: ["CDN & Hosting", "Serverless"],
+  },
+  {
+    name: "Render",
+    status: "operational",
+    statusUrl: "https://status.render.com/",
+    communityUrl: "https://reddit.com/r/render",
+    slug: "render",
+    tags: ["CDN & Hosting", "Serverless"],
   },
   {
     name: "Google BigQuery",
