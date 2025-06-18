@@ -178,19 +178,82 @@ function determineIncidentStatus(
 function determineOverallStatus(incidents: StatusIncident[]): ServiceStatus {
   if (incidents.length === 0) return "operational";
 
-  const activeIncidents = incidents.filter(
-    (incident) => incident.status !== "resolved"
-  );
+  const lastIncident = incidents[0];
+  if (!lastIncident) return "operational";
 
-  if (activeIncidents.length === 0) return "operational";
+  // Check if the last incident was more than 24 hours ago
+  const lastIncidentTime = new Date(lastIncident.createdAt).getTime();
+  const now = Date.now();
+  const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
 
-  const hasOutage = activeIncidents.some(
-    (incident) =>
-      incident.description.toLowerCase().includes("outage") ||
-      incident.description.toLowerCase().includes("down")
-  );
+  if (lastIncidentTime < twentyFourHoursAgo) {
+    return "operational";
+  }
 
-  if (hasOutage) return "outage";
+  // If the incident is within 24 hours, check the text content
+  const incidentText = (
+    lastIncident.title +
+    " " +
+    lastIncident.description
+  ).toLowerCase();
+
+  // Words that indicate operational status
+  const operationalKeywords = [
+    "resolved",
+    "functional",
+    "operational",
+    "fixed",
+    "restored",
+    "completed",
+    "working",
+    "normal",
+    "stable",
+    "healthy",
+    "available",
+  ];
+
+  // Words that indicate degraded performance
+  const degradedKeywords = [
+    "partial outage",
+    "degraded",
+    "slow",
+    "delayed",
+    "intermittent",
+    "some users",
+    "limited",
+    "reduced performance",
+    "partial",
+  ];
+
+  // Words that indicate major outage
+  const outageKeywords = [
+    "outage",
+    "down",
+    "unavailable",
+    "offline",
+    "major",
+    "critical",
+    "complete failure",
+    "total",
+    "service disruption",
+  ];
+
+  // Check for outage keywords first (highest priority)
+  if (outageKeywords.some((keyword) => incidentText.includes(keyword))) {
+    return "outage";
+  }
+
+  // Check for operational keywords
+  if (operationalKeywords.some((keyword) => incidentText.includes(keyword))) {
+    return "operational";
+  }
+
+  // Check for degraded keywords
+  if (degradedKeywords.some((keyword) => incidentText.includes(keyword))) {
+    return "degraded";
+  }
+
+  // Default to degraded if within 24 hours but no specific keywords found
   return "degraded";
 }
 
