@@ -29,18 +29,21 @@ A comprehensive status monitoring dashboard for production engineers managing mu
 ## 📊 Vendor Categories Covered
 
 ### **AI & ML Infrastructure**
+
 - **LLM Providers**: OpenAI, Anthropic, Google Cloud AI, AWS Bedrock, xAI, Mistral AI
 - **LLM Inference Layers**: Together AI, Fireworks AI, Replicate, Anyscale, Modal, RunPod
 - **Voice AI APIs**: ElevenLabs, AssemblyAI, Deepgram, OpenAI TTS, AWS Polly
 - **Vector Databases**: Pinecone, Weaviate, Qdrant, Chroma, Milvus
 
 ### **Cloud Infrastructure**
+
 - **Hyperscalers**: AWS, Google Cloud, Microsoft Azure
 - **Next-gen Cloud**: Vercel, Render, Railway, Fly.io
 - **CDN & Edge**: Cloudflare, Fastly, AWS CloudFront, Vercel Edge
 - **Serverless Platforms**: Vercel Functions, Netlify Functions, AWS Lambda
 
 ### **Databases & Data**
+
 - **SQL Databases**: PlanetScale, Neon, Supabase, CockroachDB Cloud
 - **NoSQL Databases**: MongoDB Atlas, Redis, Upstash
 - **Data Warehouses**: Snowflake, Google BigQuery, Amazon Redshift, Databricks
@@ -48,17 +51,20 @@ A comprehensive status monitoring dashboard for production engineers managing mu
 - **Analytics**: Grafana Cloud, Mixpanel, Amplitude
 
 ### **Communication APIs**
+
 - **SMS/Voice**: Twilio, Vonage/Nexmo, Plivo, Sinch, MessageBird, Telnyx
 - **Email**: SendGrid, Mailgun, Postmark, Amazon SES, SparkPost, Mailjet
 - **Push Notifications**: Firebase FCM, OneSignal, Pusher Beams, AWS SNS
 - **Video/Calls**: Twilio Video, Agora, Daily.co, Zoom APIs
 
 ### **FinTech & Payments**
+
 - **Payment Gateways**: Stripe, PayPal, Square, Adyen, Checkout.com, Razorpay
 - **Billing & Subscriptions**: Stripe Billing, Chargebee, Recurly, Zuora, Paddle
 - **Invoicing**: QuickBooks API, Xero API, FreshBooks, Zoho Invoice, Bill.com
 
 ### **Developer Tools & APIs**
+
 - **Authentication**: Auth0, Firebase Auth, AWS Cognito, Okta
 - **Search**: Algolia, Elasticsearch Service, AWS OpenSearch
 - **File Storage**: AWS S3, Google Cloud Storage, Cloudinary
