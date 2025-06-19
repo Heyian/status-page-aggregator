@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ExternalLink, Github, MessageCircle } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getStatusColor, getStatusText } from "@/lib/status";
 import {
   Table,
@@ -14,7 +16,7 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Select,
   SelectTrigger,
@@ -86,6 +88,9 @@ export function StatusMonitorClient({
   services: Service[];
   statusMap: StatusMap;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   // Extract all unique categories from tags
   const allCategories = useMemo(() => {
     const set = new Set<string>();
@@ -93,11 +98,37 @@ export function StatusMonitorClient({
     return Array.from(set).sort();
   }, [services]);
 
-  // State for filter and sorting
-  const [category, setCategory] = useState<string>("all");
+  // Get initial values from URL params
+  const category = searchParams.get('category') || 'all';
+  const search = searchParams.get('search') || '';
+
+  // State for sorting and pagination (these don't need to be in URL)
   const [sortCol, setSortCol] = useState<string>("status");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
-  const [search, setSearch] = useState("");
+  const [displayCount, setDisplayCount] = useState(25);
+
+  // Function to update URL params
+  const updateUrlParams = (newSearch?: string, newCategory?: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (newSearch !== undefined) {
+      if (newSearch) {
+        params.set('search', newSearch);
+      } else {
+        params.delete('search');
+      }
+    }
+    
+    if (newCategory !== undefined) {
+      if (newCategory && newCategory !== 'all') {
+        params.set('category', newCategory);
+      } else {
+        params.delete('category');
+      }
+    }
+    
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
   // Helper for status sort order
   function getStatusOrder(status: ServiceStatus) {
@@ -171,6 +202,24 @@ export function StatusMonitorClient({
     });
   }, [services, statusMap, category, sortCol, sortDir, search]);
 
+  // Get displayed services based on displayCount
+  const displayedServices = useMemo(() => {
+    return filteredServices.slice(0, displayCount);
+  }, [filteredServices, displayCount]);
+
+  // Check if there are more services to load
+  const hasMoreServices = filteredServices.length > displayCount;
+
+  // Load more handler
+  const handleLoadMore = () => {
+    setDisplayCount(prev => prev + 25);
+  };
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setDisplayCount(25);
+  }, [searchParams]);
+
   // Sort indicator
   const sortArrow = (col: string) =>
     sortCol === col ? (sortDir === "asc" ? " ▲" : " ▼") : "";
@@ -192,7 +241,16 @@ export function StatusMonitorClient({
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-primary">DrDroid</h1>
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/logos/drdroid-logo.svg"
+                  alt="DrDroid Logo"
+                  width={100}
+                  height={100}
+                  className="object-contain"
+                />
+                <h1 className="text-2xl font-bold text-primary"></h1>
+              </div>
               <Badge variant="outline" className="text-xs">
                 Open Source
               </Badge>
@@ -240,10 +298,10 @@ export function StatusMonitorClient({
             className="w-64"
             placeholder="Search providers, tags, status..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => updateUrlParams(e.target.value)}
           />
           <span className="font-medium">Filter by Category:</span>
-          <Select value={category} onValueChange={setCategory}>
+          <Select value={category} onValueChange={(value) => updateUrlParams(undefined, value)}>
             <SelectTrigger className="w-56">
               <SelectValue>
                 {category === "all" ? "All Categories" : category}
@@ -293,7 +351,7 @@ export function StatusMonitorClient({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredServices.map((service) => {
+              {displayedServices.map((service) => {
                 const serviceStatus = service.computedStatus as ServiceStatus;
                 return (
                   <TableRow key={service.slug}>
@@ -383,13 +441,30 @@ export function StatusMonitorClient({
           </Table>
         </div>
 
+        {/* Results Counter and Load More */}
+        <div className="text-center mb-8">
+          <p className="text-sm text-muted-foreground mb-4">
+            Showing {displayedServices.length} of {filteredServices.length} services
+          </p>
+          {hasMoreServices && (
+            <Button 
+              onClick={handleLoadMore}
+              variant="outline"
+              size="lg"
+              className="px-8"
+            >
+              Load More Services
+            </Button>
+          )}
+        </div>
+
         {/* Fork & Customize Section */}
         <div className="mb-12" id="customize">
           <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
             <CardContent className="pt-6">
               <div className="text-center">
                 <h3 className="text-2xl font-bold mb-3">
-                  Want to customize for your tools?
+                  Want to customize for your integrations & vendors?
                 </h3>
                 <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
                   Fork this project and create your own status dashboard with
@@ -400,7 +475,7 @@ export function StatusMonitorClient({
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                   <Button size="lg" asChild>
                     <Link
-                      href="https://github.com/drdroid/statuspage-aggregator/fork"
+                      href="https://github.com/DrDroidLab/status-page-aggregator/fork"
                       className="flex items-center gap-2"
                     >
                       <Github className="w-4 h-4" />
@@ -409,7 +484,7 @@ export function StatusMonitorClient({
                   </Button>
                   <Button variant="outline" size="lg" asChild>
                     <Link
-                      href="https://github.com/drdroid/statuspage-aggregator#customization"
+                      href="https://github.com/DrDroidLab/status-page-aggregator#customization"
                       className="flex items-center gap-2"
                     >
                       📖 Customization Guide
@@ -452,6 +527,82 @@ export function StatusMonitorClient({
 
       {/* Footer */}
       <footer className="border-t mt-16">
+        {/* Built with Banner */}
+        <div className="bg-gradient-to-r from-purple-50 via-blue-50 to-green-50 border-b">
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                Built with:
+              </h3>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logos/cursor_logo.jpeg"
+                      alt="Cursor Logo"
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Cursor</div>
+                    <div className="text-sm text-gray-600">AI-powered code editor</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logos/v0_logo.png"
+                      alt="v0 Logo"
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">v0</div>
+                    <div className="text-sm text-gray-600">AI-model used in Cursor</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logos/vercel-icon-light.png"
+                      alt="Vercel Logo"
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Vercel</div>
+                    <div className="text-sm text-gray-600">Deployment & hosting</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logos/supabase_logo.jpg"
+                      alt="Supabase Logo"
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Supabase</div>
+                    <div className="text-sm text-gray-600">Database & backend</div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Original Footer Content */}
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-sm text-muted-foreground">
             <p className="mb-2">
@@ -461,7 +612,7 @@ export function StatusMonitorClient({
             <p className="mb-4">
               Want to add a service or report an issue?{" "}
               <Link
-                href="https://github.com/drdroid/statuspage-aggregator"
+                href="https://github.com/DrDroidLab/status-page-aggregator"
                 className="underline hover:no-underline"
               >
                 Contribute on GitHub
@@ -469,19 +620,19 @@ export function StatusMonitorClient({
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-xs">
               <Link
-                href="https://github.com/drdroid/statuspage-aggregator/fork"
+                href="https://github.com/DrDroidLab/status-page-aggregator"
                 className="hover:underline"
               >
                 🍴 Fork & Customize
               </Link>
               <Link
-                href="https://github.com/drdroid/statuspage-aggregator/issues"
+                href="https://github.com/DrDroidLab/status-page-aggregatorissues"
                 className="hover:underline"
               >
                 🐛 Report Issues
               </Link>
               <Link
-                href="https://github.com/drdroid/statuspage-aggregator/discussions"
+                href="https://github.com/DrDroidLab/status-page-aggregator/discussions"
                 className="hover:underline"
               >
                 💬 Discussions
