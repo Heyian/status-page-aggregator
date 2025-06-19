@@ -15,7 +15,7 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Select,
   SelectTrigger,
@@ -99,6 +99,7 @@ export function StatusMonitorClient({
   const [sortCol, setSortCol] = useState<string>("status");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [search, setSearch] = useState("");
+  const [displayCount, setDisplayCount] = useState(25); // New state for pagination
 
   // Helper for status sort order
   function getStatusOrder(status: ServiceStatus) {
@@ -172,6 +173,24 @@ export function StatusMonitorClient({
     });
   }, [services, statusMap, category, sortCol, sortDir, search]);
 
+  // Get displayed services based on displayCount
+  const displayedServices = useMemo(() => {
+    return filteredServices.slice(0, displayCount);
+  }, [filteredServices, displayCount]);
+
+  // Check if there are more services to load
+  const hasMoreServices = filteredServices.length > displayCount;
+
+  // Load more handler
+  const handleLoadMore = () => {
+    setDisplayCount(prev => prev + 25);
+  };
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setDisplayCount(25);
+  }, [search, category]);
+
   // Sort indicator
   const sortArrow = (col: string) =>
     sortCol === col ? (sortDir === "asc" ? " ▲" : " ▼") : "";
@@ -193,7 +212,16 @@ export function StatusMonitorClient({
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-primary">DrDroid</h1>
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/logos/drdroid-logo.svg"
+                  alt="DrDroid Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+                <h1 className="text-2xl font-bold text-primary">DrDroid</h1>
+              </div>
               <Badge variant="outline" className="text-xs">
                 Open Source
               </Badge>
@@ -294,7 +322,7 @@ export function StatusMonitorClient({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredServices.map((service) => {
+              {displayedServices.map((service) => {
                 const serviceStatus = service.computedStatus as ServiceStatus;
                 return (
                   <TableRow key={service.slug}>
@@ -382,6 +410,23 @@ export function StatusMonitorClient({
               })}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Results Counter and Load More */}
+        <div className="text-center mb-8">
+          <p className="text-sm text-muted-foreground mb-4">
+            Showing {displayedServices.length} of {filteredServices.length} services
+          </p>
+          {hasMoreServices && (
+            <Button 
+              onClick={handleLoadMore}
+              variant="outline"
+              size="lg"
+              className="px-8"
+            >
+              Load More Services
+            </Button>
+          )}
         </div>
 
         {/* Fork & Customize Section */}
