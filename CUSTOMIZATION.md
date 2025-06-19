@@ -3,21 +3,28 @@
 ## Quick Start
 
 1. **Fork the repository**
-   \`\`\`bash
+   ```bash
    # Click "Fork" on GitHub or use GitHub CLI
-   gh repo fork drdroid/statuspage-aggregator
-   \`\`\`
+   gh repo fork drdroidlab/status-page-aggregator
+   ```
 
 2. **Clone your fork**
    \`\`\`bash
-   git clone https://github.com/YOUR_USERNAME/statuspage-aggregator
-   cd statuspage-aggregator
+   git clone https://github.com/YOUR_USERNAME/status-page-aggregator
+   cd status-page-aggregator
    \`\`\`
 
 3. **Install dependencies**
    \`\`\`bash
    npm install
    \`\`\`
+
+## ENV VARIABLES:
+Make sure to create a free instance of Supabase and add 
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
 
 ## Adding Your Services
 
@@ -49,42 +56,6 @@ const services = [
 - Modify colors in `tailwind.config.ts`
 - Add your logo by replacing the text in the header
 
-## Deployment Options
-
-### Vercel (Recommended)
-\`\`\`bash
-npm i -g vercel
-vercel --prod
-\`\`\`
-
-### Netlify
-\`\`\`bash
-npm run build
-# Upload the `out` folder to Netlify
-\`\`\`
-
-### Docker
-\`\`\`dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-\`\`\`
-
-## Environment Variables
-
-For real-time status monitoring, add these to your `.env.local`:
-
-\`\`\`bash
-# Optional: Add API keys for real-time status checking
-STATUSPAGE_API_KEY=your_key_here
-DATADOG_API_KEY=your_key_here
-\`\`\`
-
 ## Contributing Back
 
 Found a popular service missing? Submit a PR to add it to the main repository!
@@ -96,6 +67,4 @@ Found a popular service missing? Submit a PR to add it to the main repository!
 
 ## Need Help?
 
-- 📖 [Full Documentation](https://github.com/drdroid/statuspage-aggregator/wiki)
-- 💬 [GitHub Discussions](https://github.com/drdroid/statuspage-aggregator/discussions)
-- 🐛 [Report Issues](https://github.com/drdroid/statuspage-aggregator/issues)
+- 🐛 💬 [Raise an issue](https://github.com/DrDroidLab/status-page-aggregator)

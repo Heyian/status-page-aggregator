@@ -245,11 +245,11 @@ export function StatusMonitorClient({
                 <Image
                   src="/logos/drdroid-logo.svg"
                   alt="DrDroid Logo"
-                  width={32}
-                  height={32}
+                  width={100}
+                  height={100}
                   className="object-contain"
                 />
-                <h1 className="text-2xl font-bold text-primary">DrDroid</h1>
+                <h1 className="text-2xl font-bold text-primary"></h1>
               </div>
               <Badge variant="outline" className="text-xs">
                 Open Source
