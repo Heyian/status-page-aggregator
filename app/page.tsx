@@ -1,3 +1,5 @@
+"use client";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,7 +45,7 @@ const services: Service[] = [
     name: "OpenAI",
     status: "operational",
     statusUrl: "https://status.openai.com/",
-    communityUrl: "https://reddit.com/r/OpenAI",
+    communityUrl: "https://community.openai.com/",
     slug: "openai",
     tags: ["LLM Provider"],
   },
@@ -56,11 +58,11 @@ const services: Service[] = [
     tags: ["LLM Provider"],
   },
   {
-    name: "Google",
-    status: "incident",
+    name: "Google Cloud",
+    status: "operational",
     statusUrl: "https://status.google.com/",
     communityUrl: "https://reddit.com/r/GoogleCloud",
-    slug: "google",
+    slug: "google-cloud",
     tags: ["LLM Provider"],
   },
   {
@@ -91,7 +93,7 @@ const services: Service[] = [
     name: "Cohere",
     status: "operational",
     statusUrl: "https://status.cohere.ai/",
-    communityUrl: "https://reddit.com/r/MachineLearning",
+    communityUrl: "https://cohere.com/blog/building-community",
     slug: "cohere",
     tags: ["LLM Provider"],
   },
@@ -139,7 +141,7 @@ const services: Service[] = [
     name: "Replicate",
     status: "operational",
     statusUrl: "https://status.replicate.com/",
-    communityUrl: "https://reddit.com/r/MachineLearning",
+    communityUrl: "https://replicate.com/explore",
     slug: "replicate",
     tags: ["LLM Inference Layer Companies"],
   },
@@ -395,7 +397,7 @@ const services: Service[] = [
     name: "Vercel Edge",
     status: "operational",
     statusUrl: "https://www.vercel-status.com/",
-    communityUrl: "https://reddit.com/r/nextjs",
+    communityUrl: "https://github.com/vercel/vercel/discussions",
     slug: "vercel-edge",
     tags: ["CDN & Hosting"],
   },
@@ -419,7 +421,8 @@ const services: Service[] = [
     name: "BitBucket",
     status: "operational",
     statusUrl: "https://bitbucket.status.atlassian.com/",
-    communityUrl: "https://reddit.com/r/git",
+    communityUrl:
+      "https://community.atlassian.com/forums/Bitbucket/ct-p/bitbucket",
     slug: "bitbucket",
     tags: ["CDN & Hosting"],
   },
@@ -427,7 +430,7 @@ const services: Service[] = [
     name: "Redis",
     status: "operational",
     statusUrl: "https://status.redis.com/",
-    communityUrl: "https://reddit.com/r/redis",
+    communityUrl: "https://forum.redis.io/",
     slug: "redis",
     tags: ["Database Provider"],
   },
@@ -443,7 +446,7 @@ const services: Service[] = [
     name: "Confluent",
     status: "operational",
     statusUrl: "https://status.confluent.io/",
-    communityUrl: "https://reddit.com/r/apachekafka",
+    communityUrl: "https://developer.confluent.io/community/",
     slug: "confluent",
     tags: ["Database Provider"],
   },
@@ -459,9 +462,25 @@ const services: Service[] = [
     name: "Snowflake",
     status: "operational",
     statusUrl: "https://status.snowflake.com/",
-    communityUrl: "https://reddit.com/r/snowflake",
+    communityUrl: "https://community.snowflake.com/s/",
     slug: "snowflake",
     tags: ["Data Warehouse Provider"],
+  },
+  {
+    name: "Vercel",
+    status: "operational",
+    statusUrl: "https://status.vercel.com/",
+    communityUrl: "https://community.vercel.com/",
+    slug: "vercel",
+    tags: ["CDN & Hosting", "Serverless"],
+  },
+  {
+    name: "Render",
+    status: "operational",
+    statusUrl: "https://status.render.com/",
+    communityUrl: "https://community.render.com/",
+    slug: "render",
+    tags: ["CDN & Hosting", "Serverless"],
   },
   {
     name: "Google BigQuery",
@@ -547,7 +566,7 @@ const services: Service[] = [
     name: "Supabase",
     status: "operational",
     statusUrl: "https://status.supabase.com/",
-    communityUrl: "https://reddit.com/r/Supabase",
+    communityUrl: "https://github.com/orgs/supabase/discussions",
     slug: "supabase",
     tags: ["Database Provider"],
   },
@@ -595,7 +614,7 @@ const services: Service[] = [
     name: "Chargebee",
     status: "operational",
     statusUrl: "https://status.chargebee.com/",
-    communityUrl: "https://reddit.com/r/SaaS",
+    communityUrl: "https://www.chargebee.com/community/",
     slug: "chargebee",
     tags: ["Billing & Subscriptions FinTech API"],
   },
@@ -779,7 +798,7 @@ const services: Service[] = [
     name: "SendGrid",
     status: "operational",
     statusUrl: "https://status.sendgrid.com/",
-    communityUrl: "https://reddit.com/r/webdev",
+    communityUrl: "https://sendgrid.com/en-us/blog/category/community",
     slug: "sendgrid",
     tags: ["Email Communication API"],
   },
@@ -923,7 +942,8 @@ const services: Service[] = [
     name: "Slack",
     status: "operational",
     statusUrl: "https://status.slack.com/",
-    communityUrl: "https://reddit.com/r/slack",
+    communityUrl:
+      "https://trailhead.salesforce.com/trailblazer-community/neighborhoods/slack",
     slug: "slack",
     tags: ["Communication", "Collaboration", "Chat"],
   },
@@ -947,7 +967,7 @@ const services: Service[] = [
     name: "JIRA",
     status: "operational",
     statusUrl: "https://status.atlassian.com/",
-    communityUrl: "https://reddit.com/r/jira",
+    communityUrl: "https://community.atlassian.com/forums/Jira/ct-p/jira",
     slug: "jira",
     tags: ["Project Management", "Issue Tracking", "Atlassian"],
   },
@@ -963,7 +983,8 @@ const services: Service[] = [
     name: "Confluence",
     status: "operational",
     statusUrl: "https://status.atlassian.com/",
-    communityUrl: "https://reddit.com/r/confluence",
+    communityUrl:
+      "https://community.atlassian.com/forums/Confluence/ct-p/confluence",
     slug: "confluence",
     tags: ["Documentation", "Collaboration", "Atlassian"],
   },
@@ -971,7 +992,7 @@ const services: Service[] = [
     name: "Trello",
     status: "operational",
     statusUrl: "https://trello.status.atlassian.com/",
-    communityUrl: "https://reddit.com/r/trello",
+    communityUrl: "https://community.atlassian.com/forums/Trello/ct-p/trello",
     slug: "trello",
     tags: ["Project Management", "Kanban", "Atlassian"],
   },
@@ -1003,7 +1024,7 @@ const services: Service[] = [
     name: "Clerk",
     status: "operational",
     statusUrl: "https://status.clerk.dev/",
-    communityUrl: "https://reddit.com/r/clerk",
+    communityUrl: "https://dev.to/clerk",
     slug: "clerk",
     tags: ["Authentication", "Identity", "User Management"],
   },
@@ -1091,7 +1112,7 @@ const services: Service[] = [
     name: "DigitalOcean",
     status: "operational",
     statusUrl: "https://status.digitalocean.com/",
-    communityUrl: "https://reddit.com/r/digital_ocean",
+    communityUrl: "https://www.digitalocean.com/community",
     slug: "digitalocean",
     tags: ["Cloud", "Infrastructure", "VPS"],
   },
@@ -1115,7 +1136,7 @@ const services: Service[] = [
     name: "Linode",
     status: "operational",
     statusUrl: "https://status.linode.com/",
-    communityUrl: "https://reddit.com/r/linode",
+    communityUrl: "https://www.linode.com/community/questions/",
     slug: "linode",
     tags: ["Cloud", "Infrastructure", "VPS", "Akamai"],
   },
@@ -1248,56 +1269,67 @@ function getTagColor(tag: string) {
   return colors[tag as keyof typeof colors] || "bg-gray-100 text-gray-800";
 }
 
-export default async function StatusMonitor() {
-  // Debug: Log environment variables (they will be undefined in the browser due to NEXT_PUBLIC_ prefix)
-  console.log(
-    "Supabase URL:",
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 10) + "..."
-  );
-  console.log(
-    "Supabase Key exists:",
-    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+function StatusMonitor() {
+  const [statusRows, setStatusRows] = useState<any[] | null>(null);
+  const [error, setError] = useState<any>(null);
+  const [statusMap, setStatusMap] = useState<Record<string, any>>({});
 
-  // Fetch statuses from Supabase
-  const { data: statusRows, error } = await supabase
-    .from("service_status")
-    .select("*");
+  useEffect(() => {
+    // Debug: Log environment variables (they will be undefined in the browser due to NEXT_PUBLIC_ prefix)
+    console.log(
+      "Supabase URL:",
+      process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 10) + "..."
+    );
+    console.log(
+      "Supabase Key exists:",
+      !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
+
+    // Fetch statuses from Supabase
+    const fetchStatuses = async () => {
+      const { data, error } = await supabase.from("service_status").select("*");
+      setStatusRows(data);
+      setError(error);
+      // Map statuses by slug for easy lookup
+      const statusMap = (data || []).reduce(
+        (acc: Record<string, any>, row: any) => {
+          acc[row.service_slug] = {
+            status: row.status,
+            last_incident: row.last_incident
+              ? {
+                  createdAt: row.last_incident,
+                }
+              : undefined,
+          };
+          return acc;
+        },
+        {} as Record<string, any>
+      );
+      setStatusMap(statusMap);
+      // Debug: Log the final status map with more details
+      console.log("Status Map:", {
+        serviceCount: Object.keys(statusMap).length,
+        services: Object.keys(statusMap),
+        sampleService: statusMap[Object.keys(statusMap)[0]],
+      });
+    };
+    fetchStatuses();
+  }, []);
 
   // Debug: Log the query results
-  console.log("Supabase Query Results:", {
-    hasData: !!statusRows,
-    rowCount: statusRows?.length,
-    error: error?.message,
-    firstRow: statusRows?.[0],
-  });
-
-  if (error) {
-    console.error("Supabase Error:", error);
-  }
-
-  // Map statuses by slug for easy lookup
-  const statusMap = (statusRows || []).reduce(
-    (acc: Record<string, any>, row: any) => {
-      acc[row.service_slug] = {
-        status: row.status,
-        last_incident: row.last_incident
-          ? {
-              createdAt: row.last_incident,
-            }
-          : undefined,
-      };
-      return acc;
-    },
-    {} as Record<string, any>
-  );
-
-  // Debug: Log the final status map with more details
-  console.log("Status Map:", {
-    serviceCount: Object.keys(statusMap).length,
-    services: Object.keys(statusMap),
-    sampleService: statusMap[Object.keys(statusMap)[0]],
-  });
+  useEffect(() => {
+    console.log("Supabase Query Results:", {
+      hasData: !!statusRows,
+      rowCount: statusRows?.length,
+      error: error?.message,
+      firstRow: statusRows?.[0],
+    });
+    if (error) {
+      console.error("Supabase Error:", error);
+    }
+  }, [statusRows, error]);
 
   return <StatusMonitorClient services={services} statusMap={statusMap} />;
 }
+
+export default StatusMonitor;
