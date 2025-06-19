@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ExternalLink, Github, MessageCircle } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { getStatusColor, getStatusText } from "@/lib/status";
 import {
   Table,
@@ -389,7 +390,7 @@ export function StatusMonitorClient({
             <CardContent className="pt-6">
               <div className="text-center">
                 <h3 className="text-2xl font-bold mb-3">
-                  Want to customize for your tools?
+                  Want to customize for your integrations & vendors?
                 </h3>
                 <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
                   Fork this project and create your own status dashboard with
@@ -400,7 +401,7 @@ export function StatusMonitorClient({
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                   <Button size="lg" asChild>
                     <Link
-                      href="https://github.com/drdroid/statuspage-aggregator/fork"
+                      href="https://github.com/DrDroidLab/status-page-aggregator/fork"
                       className="flex items-center gap-2"
                     >
                       <Github className="w-4 h-4" />
@@ -409,7 +410,7 @@ export function StatusMonitorClient({
                   </Button>
                   <Button variant="outline" size="lg" asChild>
                     <Link
-                      href="https://github.com/drdroid/statuspage-aggregator#customization"
+                      href="https://github.com/DrDroidLab/status-page-aggregator#customization"
                       className="flex items-center gap-2"
                     >
                       📖 Customization Guide
@@ -452,6 +453,82 @@ export function StatusMonitorClient({
 
       {/* Footer */}
       <footer className="border-t mt-16">
+        {/* Built with Banner */}
+        <div className="bg-gradient-to-r from-purple-50 via-blue-50 to-green-50 border-b">
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                Built with:
+              </h3>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logos/cursor_logo.jpeg"
+                      alt="Cursor Logo"
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Cursor</div>
+                    <div className="text-sm text-gray-600">AI-powered code editor</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logos/v0_logo.png"
+                      alt="v0 Logo"
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">v0</div>
+                    <div className="text-sm text-gray-600">AI-model used in Cursor</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logos/vercel-icon-light.png"
+                      alt="Vercel Logo"
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Vercel</div>
+                    <div className="text-sm text-gray-600">Deployment & hosting</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logos/supabase_logo.jpg"
+                      alt="Supabase Logo"
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Supabase</div>
+                    <div className="text-sm text-gray-600">Database & backend</div>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Original Footer Content */}
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-sm text-muted-foreground">
             <p className="mb-2">
@@ -461,7 +538,7 @@ export function StatusMonitorClient({
             <p className="mb-4">
               Want to add a service or report an issue?{" "}
               <Link
-                href="https://github.com/drdroid/statuspage-aggregator"
+                href="https://github.com/DrDroidLab/status-page-aggregator"
                 className="underline hover:no-underline"
               >
                 Contribute on GitHub
@@ -469,19 +546,19 @@ export function StatusMonitorClient({
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-xs">
               <Link
-                href="https://github.com/drdroid/statuspage-aggregator/fork"
+                href="https://github.com/DrDroidLab/status-page-aggregator"
                 className="hover:underline"
               >
                 🍴 Fork & Customize
               </Link>
               <Link
-                href="https://github.com/drdroid/statuspage-aggregator/issues"
+                href="https://github.com/DrDroidLab/status-page-aggregatorissues"
                 className="hover:underline"
               >
                 🐛 Report Issues
               </Link>
               <Link
-                href="https://github.com/drdroid/statuspage-aggregator/discussions"
+                href="https://github.com/DrDroidLab/status-page-aggregator/discussions"
                 className="hover:underline"
               >
                 💬 Discussions
