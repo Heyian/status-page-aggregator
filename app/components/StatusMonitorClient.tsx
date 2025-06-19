@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ExternalLink, Github, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getStatusColor, getStatusText } from "@/lib/status";
 import {
   Table,
@@ -87,6 +88,9 @@ export function StatusMonitorClient({
   services: Service[];
   statusMap: StatusMap;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   // Extract all unique categories from tags
   const allCategories = useMemo(() => {
     const set = new Set<string>();
@@ -94,12 +98,37 @@ export function StatusMonitorClient({
     return Array.from(set).sort();
   }, [services]);
 
-  // State for filter and sorting
-  const [category, setCategory] = useState<string>("all");
+  // Get initial values from URL params
+  const category = searchParams.get('category') || 'all';
+  const search = searchParams.get('search') || '';
+
+  // State for sorting and pagination (these don't need to be in URL)
   const [sortCol, setSortCol] = useState<string>("status");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
-  const [search, setSearch] = useState("");
-  const [displayCount, setDisplayCount] = useState(25); // New state for pagination
+  const [displayCount, setDisplayCount] = useState(25);
+
+  // Function to update URL params
+  const updateUrlParams = (newSearch?: string, newCategory?: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (newSearch !== undefined) {
+      if (newSearch) {
+        params.set('search', newSearch);
+      } else {
+        params.delete('search');
+      }
+    }
+    
+    if (newCategory !== undefined) {
+      if (newCategory && newCategory !== 'all') {
+        params.set('category', newCategory);
+      } else {
+        params.delete('category');
+      }
+    }
+    
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
   // Helper for status sort order
   function getStatusOrder(status: ServiceStatus) {
@@ -189,7 +218,7 @@ export function StatusMonitorClient({
   // Reset pagination when filters change
   useEffect(() => {
     setDisplayCount(25);
-  }, [search, category]);
+  }, [searchParams]);
 
   // Sort indicator
   const sortArrow = (col: string) =>
@@ -269,10 +298,10 @@ export function StatusMonitorClient({
             className="w-64"
             placeholder="Search providers, tags, status..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => updateUrlParams(e.target.value)}
           />
           <span className="font-medium">Filter by Category:</span>
-          <Select value={category} onValueChange={setCategory}>
+          <Select value={category} onValueChange={(value) => updateUrlParams(undefined, value)}>
             <SelectTrigger className="w-56">
               <SelectValue>
                 {category === "all" ? "All Categories" : category}
