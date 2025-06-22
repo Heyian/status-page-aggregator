@@ -178,6 +178,42 @@ const serviceData = {
       },
     ],
   },
+  cursor: {
+    name: "Cursor",
+    slug: "cursor",
+    statusUrl: "https://status.cursor.com/",
+    communityUrl: "https://forum.cursor.com/",
+    tags: ["AI/ML", "LLM"],
+    description:
+      "Cursor is an AI-powered code editor that enhances developer productivity with smart code completion, error detection, and real-time collaboration features.",
+    faq: [
+      {
+        question: "Is Cursor API down?",
+        answer:
+          "Check the current status above. Cursor's API typically maintains high availability. For real-time updates, visit status.cursor.com or check their Twitter @cursor_ai.",
+      },
+      {
+        question: "Why is Cursor not working?",
+        answer:
+          "Cursor issues can be due to multiple reasons -- the platform having issues(authentication, service down) or LLM provider having issue (OpenAI/Claude having issue) or your internet having issues. Check the cursor status page for current service health and any ongoing incidents.",
+      },
+      {
+        question: "How to check cursor rate limits?",
+        answer:
+          "Check for warnings in your cursor IDE. Rate limits vary by model and subscription tier. If you're using a custom model (e.g. v0), monitor your usage in the API provider.",
+      },
+      {
+        question: "What to do during Cursor outages?",
+        answer:
+          "Use another IDE like VSCode or PyCharm.",
+      },
+      {
+        question: "How reliable is Cursor's service?",
+        answer:
+          "Cursor maintains high uptime for their services. They provide status updates and incident reports for transparency during any service disruptions.",
+      },
+    ],
+  },
   anthropic: {
     name: "Anthropic (Claude)",
     slug: "anthropic",
