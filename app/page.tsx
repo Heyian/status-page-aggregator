@@ -50,6 +50,14 @@ const services: Service[] = [
     tags: ["LLM Provider"],
   },
   {
+    name: "Cursor",
+    status: "operational",
+    statusUrl: "https://status.cursor.com/",
+    communityUrl: "https://forum.cursor.com/",
+    slug: "cursor",
+    tags: ["AI-Code Editor"],
+  },
+  {
     name: "Anthropic",
     status: "operational",
     statusUrl: "https://status.anthropic.com/",
