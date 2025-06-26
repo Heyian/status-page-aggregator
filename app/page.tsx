@@ -421,10 +421,19 @@ const services: Service[] = [
     name: "Bunny.net",
     status: "operational",
     statusUrl: "https://status.bunny.net/",
-    communityUrl: "https://reddit.com/r/webdev",
+    communityUrl: "https://bunny.net/blog/join-us-on-discord/",
     slug: "bunny-net",
     tags: ["CDN & Hosting"],
   },
+  {
+    name: "Netlify",
+    status: "operational",
+    statusUrl: "https://www.netlifystatus.com/",
+    communityUrl: "https://answers.netlify.com/",
+    slug: "netlify",
+    tags: ["CDN & Hosting"],
+  },
+
   {
     name: "BitBucket",
     status: "operational",
@@ -1338,12 +1347,16 @@ function StatusMonitor() {
   }, [statusRows, error]);
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Loading status dashboard...</p>
-      </div>
-    </div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading status dashboard...</p>
+          </div>
+        </div>
+      }
+    >
       <StatusMonitorClient services={services} statusMap={statusMap} />
     </Suspense>
   );

@@ -204,8 +204,7 @@ const serviceData = {
       },
       {
         question: "What to do during Cursor outages?",
-        answer:
-          "Use another IDE like VSCode or PyCharm.",
+        answer: "Use another IDE like VSCode or PyCharm.",
       },
       {
         question: "How reliable is Cursor's service?",
@@ -1153,6 +1152,186 @@ const serviceData = {
       },
     ],
   },
+  modal: {
+    name: "Modal",
+    slug: "modal",
+    statusUrl: "https://status.modal.com/",
+    communityUrl: "https://discord.gg/8nTGNSYWmA",
+    tags: ["AI/ML", "Serverless", "GPU Compute"],
+    description:
+      "Modal provides serverless GPU compute for AI/ML workloads, offering instant scaling, container-based deployments, and high-performance inference.",
+    faq: [
+      {
+        question: "Is Modal down?",
+        answer:
+          "Check the current status above. Modal maintains high availability for GPU compute workloads. Visit status.modal.com for real-time service health updates.",
+      },
+      {
+        question: "Why are my Modal functions failing?",
+        answer:
+          "Function failures can be due to resource limits, cold starts, or service disruptions. Check your function logs and the Modal status page for any ongoing incidents.",
+      },
+      {
+        question: "How to troubleshoot Modal GPU issues?",
+        answer:
+          "Verify your GPU requirements, check memory usage, review container configurations, and ensure proper dependencies are installed in your Modal environment.",
+      },
+      {
+        question: "What to do during Modal outages?",
+        answer:
+          "Implement fallback mechanisms, use local development environments for testing, and monitor the status page for estimated resolution times.",
+      },
+      {
+        question: "How reliable is Modal's infrastructure?",
+        answer:
+          "Modal provides enterprise-grade reliability with automatic scaling, distributed GPU clusters, and comprehensive monitoring for AI/ML workloads.",
+      },
+    ],
+  },
+  netlify: {
+    name: "Netlify",
+    slug: "netlify",
+    statusUrl: "https://status.netlify.com/",
+    communityUrl: "https://answers.netlify.com/",
+    tags: ["CDN & Hosting", "JAMstack", "Frontend"],
+    description:
+      "Netlify is a cloud platform for deploying and hosting static sites and serverless functions with continuous deployment from Git repositories.",
+    faq: [
+      {
+        question: "Is Netlify down?",
+        answer:
+          "Check the current status above. Netlify maintains high availability for static site hosting and deployments. Visit status.netlify.com for service health details.",
+      },
+      {
+        question: "Why is my Netlify site not deploying?",
+        answer:
+          "Deployment issues can be due to build failures, quota limits, or service disruptions. Check your build logs and deployment settings in the Netlify dashboard.",
+      },
+      {
+        question: "How to troubleshoot Netlify site issues?",
+        answer:
+          "Verify your build configuration, check DNS settings, review function logs, and ensure your repository is properly connected to Netlify.",
+      },
+      {
+        question: "What to do during Netlify outages?",
+        answer:
+          "Use alternative hosting providers, implement backup deployment strategies, and monitor the status page for incident updates.",
+      },
+      {
+        question: "How reliable is Netlify?",
+        answer:
+          "Netlify provides 99.99% uptime with global CDN, automatic scaling, and enterprise-grade infrastructure for frontend applications.",
+      },
+    ],
+  },
+  "bunny-net": {
+    name: "Bunny.net",
+    slug: "bunny-net",
+    statusUrl: "https://status.bunny.net/",
+    communityUrl: "https://support.bunny.net/",
+    tags: ["CDN", "Hosting", "Storage", "Video Streaming"],
+    description:
+      "Bunny.net is a next-generation CDN and edge storage platform offering global content delivery, video streaming, and storage solutions with performance optimization.",
+    faq: [
+      {
+        question: "Is Bunny.net down?",
+        answer:
+          "Check the current status above. Bunny.net maintains high availability across their global CDN network. Visit status.bunny.net for real-time service health updates.",
+      },
+      {
+        question: "Why is my content not loading from Bunny CDN?",
+        answer:
+          "Content delivery issues can be due to cache misses, origin server problems, or network connectivity. Check your pull zone configuration and origin server status.",
+      },
+      {
+        question: "How to troubleshoot Bunny.net performance issues?",
+        answer:
+          "Review your cache settings, check edge server locations, verify SSL certificates, and analyze traffic patterns in your Bunny.net dashboard.",
+      },
+      {
+        question: "What to do during Bunny.net outages?",
+        answer:
+          "Enable origin fallback, use multiple CDN providers, implement proper error handling, and monitor the status page for incident resolution updates.",
+      },
+      {
+        question: "How reliable is Bunny.net's CDN?",
+        answer:
+          "Bunny.net provides 99.9%+ uptime with a global network of edge servers, automatic failover, and real-time performance monitoring across all regions.",
+      },
+    ],
+  },
+  qdrant: {
+    name: "Qdrant",
+    slug: "qdrant",
+    statusUrl: "https://status.qdrant.io/",
+    communityUrl: "https://discord.gg/tdtYvXjC4h",
+    tags: ["Database", "Vector Search", "AI/ML", "Open Source"],
+    description:
+      "Qdrant is an open-source vector database and similarity search engine designed for machine learning applications, offering high-performance vector operations and filtering.",
+    faq: [
+      {
+        question: "Is Qdrant Cloud down?",
+        answer:
+          "Check the current status above. Qdrant Cloud maintains high availability for vector database operations. Visit status.qdrant.io for real-time service health updates.",
+      },
+      {
+        question: "Why are my vector searches slow?",
+        answer:
+          "Slow searches can be due to large vector dimensions, complex filters, or cluster load. Optimize your vector indexing, check HNSW parameters, and review query complexity.",
+      },
+      {
+        question: "How to troubleshoot Qdrant connection issues?",
+        answer:
+          "Verify your API endpoint, check authentication tokens, ensure proper network connectivity, and review collection configurations in your Qdrant dashboard.",
+      },
+      {
+        question: "What to do during Qdrant outages?",
+        answer:
+          "Implement local fallbacks, use read replicas if available, cache frequent queries, and monitor the status page for estimated resolution times.",
+      },
+      {
+        question: "How reliable is Qdrant Cloud?",
+        answer:
+          "Qdrant Cloud provides enterprise-grade reliability with automatic scaling, data replication, and comprehensive monitoring for vector search workloads.",
+      },
+    ],
+  },
+  huggingface: {
+    name: "Hugging Face",
+    slug: "huggingface",
+    statusUrl: "https://status.huggingface.co/",
+    communityUrl: "https://discuss.huggingface.co/",
+    tags: ["AI/ML", "Model Hosting", "Open Source", "LLM"],
+    description:
+      "Hugging Face is the AI community platform providing model hosting, datasets, and machine learning infrastructure for collaborative AI development and deployment.",
+    faq: [
+      {
+        question: "Is Hugging Face down?",
+        answer:
+          "Check the current status above. Hugging Face maintains high availability for model hosting and inference. Visit status.huggingface.co for real-time service health updates.",
+      },
+      {
+        question: "Why are my model inferences slow?",
+        answer:
+          "Slow inference can be due to model size, cold starts, or high demand. Consider using dedicated endpoints, optimizing model configurations, or caching frequently used models.",
+      },
+      {
+        question: "How to troubleshoot Hugging Face API issues?",
+        answer:
+          "Verify your API tokens, check rate limits, ensure proper model names, and review your request format. Monitor usage in your Hugging Face dashboard.",
+      },
+      {
+        question: "What to do during Hugging Face outages?",
+        answer:
+          "Use local model deployments, implement fallback providers, cache model outputs when possible, and monitor the status page for incident updates.",
+      },
+      {
+        question: "How reliable is Hugging Face's infrastructure?",
+        answer:
+          "Hugging Face provides enterprise-grade reliability with global CDN, automatic scaling, and comprehensive monitoring for AI/ML workloads and model hosting.",
+      },
+    ],
+  },
 };
 
 type PageProps = {
@@ -1182,8 +1361,8 @@ function getTagColor(tag: string) {
 
 const getRssUrl = (service: any) => {
   switch (service.slug) {
-    case "openai":
-      return "https://status.openai.com/feed.rss";
+    // case "openai":
+    //   return "https://status.openai.com/feed.rss";
     case "azure":
       return "https://rssfeed.azure.status.microsoft/en-us/status/feed/";
     case "slack":
@@ -1202,6 +1381,16 @@ const getRssUrl = (service: any) => {
       return "https://status.pinecone.io/history.rss";
     case "mongodb-atlas":
       return "https://status.mongodb.com/history.rss";
+    case "modal":
+      return "https://status.modal.com/feed.rss";
+    case "netlify":
+      return "https://www.netlifystatus.com/history.rss";
+    case "bunny-net":
+      return "https://status.bunny.net/history.rss";
+    case "qdrant":
+      return "https://status.qdrant.io/feed.rss";
+    case "huggingface":
+      return "https://status.huggingface.co/feed.rss";
     default:
       return null;
   }
@@ -1296,6 +1485,11 @@ const getStatusAPIUrl = (service: any) => {
       return {
         status: "https://status.sendgrid.com/api/v2/summary.json",
         incidents: "https://status.sendgrid.com/api/v2/incidents.json",
+      };
+    case "openai":
+      return {
+        status: "https://status.openai.com/api/v2/summary.json",
+        incidents: "https://status.openai.com/api/v2/incidents.json",
       };
     default:
       return null;
