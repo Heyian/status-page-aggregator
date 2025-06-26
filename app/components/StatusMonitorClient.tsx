@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ExternalLink, Github, MessageCircle } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getStatusColor, getStatusText } from "@/lib/status";
 import {
@@ -267,7 +266,11 @@ export function StatusMonitorClient({
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <img
-                  src="/logos/drdroid-logo-full.png"
+                  src={`${
+                    process.env.NODE_ENV === "production"
+                      ? "/status-page-aggregator"
+                      : ""
+                  }/logos/drdroid-logo-full.png`}
                   alt="DrDroid Logo"
                   width={100}
                   height={100}
@@ -569,8 +572,12 @@ export function StatusMonitorClient({
               <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
-                    <Image
-                      src="/logos/cursor_logo.jpeg"
+                    <img
+                      src={`${
+                        process.env.NODE_ENV === "production"
+                          ? "/status-page-aggregator"
+                          : ""
+                      }/logos/cursor_logo.jpeg`}
                       alt="Cursor Logo"
                       width={32}
                       height={32}
@@ -586,8 +593,12 @@ export function StatusMonitorClient({
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
-                    <Image
-                      src="/logos/v0_logo.png"
+                    <img
+                      src={`${
+                        process.env.NODE_ENV === "production"
+                          ? "/status-page-aggregator"
+                          : ""
+                      }/logos/v0_logo.png`}
                       alt="v0 Logo"
                       width={32}
                       height={32}
@@ -603,8 +614,12 @@ export function StatusMonitorClient({
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
-                    <Image
-                      src="/logos/vercel-icon-light.png"
+                    <img
+                      src={`${
+                        process.env.NODE_ENV === "production"
+                          ? "/status-page-aggregator"
+                          : ""
+                      }/logos/vercel-icon-light.png`}
                       alt="Vercel Logo"
                       width={32}
                       height={32}
@@ -620,8 +635,12 @@ export function StatusMonitorClient({
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
-                    <Image
-                      src="/logos/supabase_logo.jpg"
+                    <img
+                      src={`${
+                        process.env.NODE_ENV === "production"
+                          ? "/status-page-aggregator"
+                          : ""
+                      }/logos/supabase_logo.jpg`}
                       alt="Supabase Logo"
                       width={32}
                       height={32}
