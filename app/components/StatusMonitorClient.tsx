@@ -183,8 +183,28 @@ export function StatusMonitorClient({
     return withStatus.sort((a, b) => {
       let cmp = 0;
       if (sortCol === "status") {
+        // Primary sort: by status priority
         cmp =
           getStatusOrder(a.computedStatus) - getStatusOrder(b.computedStatus);
+
+        // Secondary sort: if same status, sort by last incident (most recent first)
+        if (cmp === 0) {
+          if (a.lastIncident && b.lastIncident) {
+            // Both have incidents - sort by most recent first (descending)
+            cmp =
+              new Date(b.lastIncident).getTime() -
+              new Date(a.lastIncident).getTime();
+          } else if (a.lastIncident) {
+            // a has incident, b doesn't - a comes first
+            cmp = -1;
+          } else if (b.lastIncident) {
+            // b has incident, a doesn't - b comes first
+            cmp = 1;
+          } else {
+            // Neither has incidents - maintain current order
+            cmp = 0;
+          }
+        }
       } else if (sortCol === "provider") {
         cmp = a.name.localeCompare(b.name);
       } else if (sortCol === "lastIncident") {
