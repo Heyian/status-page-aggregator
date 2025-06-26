@@ -1,4 +1,3 @@
-/** @type {import('next').NextConfig} */
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const getBasePath = () => {
@@ -20,7 +19,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Only use basePath in production
   ...(process.env.NODE_ENV === "production" && {
     basePath: "/status-page-aggregator",
     assetPrefix: "/status-page-aggregator",
