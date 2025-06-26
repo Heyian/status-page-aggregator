@@ -9,17 +9,12 @@ import {
   fetchServiceStatus,
   getStatusColor,
   getStatusText,
+  type ServiceStatus,
 } from "@/lib/status";
 import { supabase } from "@/lib/supabase";
 import { StatusMonitorClient } from "./components/StatusMonitorClient";
 
-// Add type definitions at the top of the file
-type ServiceStatus =
-  | "operational"
-  | "degraded"
-  | "outage"
-  | "incident"
-  | "unknown";
+// ServiceStatus type is imported from @/lib/status
 
 interface Service {
   name: string;
@@ -1257,6 +1252,8 @@ function StatusIndicator({ status }: { status: string }) {
         return "bg-yellow-500";
       case "outage":
         return "bg-red-500";
+      case "maintenance":
+        return "bg-blue-500";
       default:
         return "bg-gray-500";
     }

@@ -31,6 +31,7 @@ type ServiceStatus =
   | "degraded"
   | "outage"
   | "incident"
+  | "maintenance"
   | "unknown";
 
 interface Service {
@@ -134,8 +135,9 @@ export function StatusMonitorClient({
   function getStatusOrder(status: ServiceStatus) {
     if (status === "outage" || status === "degraded" || status == "incident")
       return 0; // incident
-    if (status === "operational") return 1;
-    return 2; // unknown
+    if (status === "maintenance") return 1; // maintenance
+    if (status === "operational") return 2;
+    return 3; // unknown
   }
 
   // Helper for sharp status color
@@ -149,6 +151,8 @@ export function StatusMonitorClient({
         return "bg-red-600";
       case "incident":
         return "bg-red-600";
+      case "maintenance":
+        return "bg-blue-600";
       default:
         return "bg-gray-400";
     }
@@ -522,6 +526,10 @@ export function StatusMonitorClient({
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-red-500" />
                   <span>Outage</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-blue-500" />
+                  <span>Maintenance</span>
                 </div>
               </div>
             </CardContent>

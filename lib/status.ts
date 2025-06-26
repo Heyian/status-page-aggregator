@@ -5,7 +5,8 @@ export type ServiceStatus =
   | "degraded"
   | "outage"
   | "unknown"
-  | "incident";
+  | "incident"
+  | "maintenance";
 
 export interface StatusIncident {
   title: string;
@@ -32,6 +33,8 @@ export function getStatusColor(status: ServiceStatus): string {
       return "bg-orange-100 text-orange-800";
     case "outage":
       return "bg-red-100 text-red-800";
+    case "maintenance":
+      return "bg-blue-100 text-blue-800";
     default:
       return "bg-gray-100 text-gray-800";
   }
@@ -47,6 +50,8 @@ export function getStatusText(status: ServiceStatus): string {
       return "Major Outage";
     case "incident":
       return "Incident";
+    case "maintenance":
+      return "Scheduled Maintenance";
     default:
       return "Unknown";
   }
@@ -315,7 +320,29 @@ function determineOverallStatus(incidents: StatusIncident[]): ServiceStatus {
     "service disruption",
   ];
 
-  // Check for outage keywords first (highest priority)
+  // Words that indicate maintenance
+  const maintenanceKeywords = [
+    "maintenance",
+    "scheduled maintenance",
+    "planned maintenance",
+    "system maintenance",
+    "routine maintenance",
+    "maintenance window",
+    "maintenance period",
+    "scheduled downtime",
+    "planned downtime",
+    "upgrade",
+    "system upgrade",
+    "scheduled update",
+    "planned update",
+  ];
+
+  // Check for maintenance keywords first (highest priority after outage)
+  if (maintenanceKeywords.some((keyword) => incidentText.includes(keyword))) {
+    return "maintenance";
+  }
+
+  // Check for outage keywords (highest priority)
   if (outageKeywords.some((keyword) => incidentText.includes(keyword))) {
     return "outage";
   }
@@ -373,6 +400,11 @@ function parseStatusFromAPI(statusData: any): ServiceStatus {
     case "major outage":
     case "critical":
       return "outage";
+    case "maintenance":
+    case "scheduled_maintenance":
+    case "planned_maintenance":
+    case "under_maintenance":
+      return "maintenance";
     default:
       return "unknown";
   }
