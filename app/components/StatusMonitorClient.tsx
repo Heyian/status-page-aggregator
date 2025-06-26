@@ -90,7 +90,7 @@ export function StatusMonitorClient({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Extract all unique categories from tags
   const allCategories = useMemo(() => {
     const set = new Set<string>();
@@ -99,8 +99,8 @@ export function StatusMonitorClient({
   }, [services]);
 
   // Get initial values from URL params
-  const category = searchParams.get('category') || 'all';
-  const search = searchParams.get('search') || '';
+  const category = searchParams.get("category") || "all";
+  const search = searchParams.get("search") || "";
 
   // State for sorting and pagination (these don't need to be in URL)
   const [sortCol, setSortCol] = useState<string>("status");
@@ -110,23 +110,23 @@ export function StatusMonitorClient({
   // Function to update URL params
   const updateUrlParams = (newSearch?: string, newCategory?: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    
+
     if (newSearch !== undefined) {
       if (newSearch) {
-        params.set('search', newSearch);
+        params.set("search", newSearch);
       } else {
-        params.delete('search');
+        params.delete("search");
       }
     }
-    
+
     if (newCategory !== undefined) {
-      if (newCategory && newCategory !== 'all') {
-        params.set('category', newCategory);
+      if (newCategory && newCategory !== "all") {
+        params.set("category", newCategory);
       } else {
-        params.delete('category');
+        params.delete("category");
       }
     }
-    
+
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
@@ -212,7 +212,7 @@ export function StatusMonitorClient({
 
   // Load more handler
   const handleLoadMore = () => {
-    setDisplayCount(prev => prev + 25);
+    setDisplayCount((prev) => prev + 25);
   };
 
   // Reset pagination when filters change
@@ -243,7 +243,7 @@ export function StatusMonitorClient({
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <Image
-                  src="/logos/drdroid-logo.svg"
+                  src="/logos/drdroid-logo-full.png"
                   alt="DrDroid Logo"
                   width={100}
                   height={100}
@@ -301,7 +301,10 @@ export function StatusMonitorClient({
             onChange={(e) => updateUrlParams(e.target.value)}
           />
           <span className="font-medium">Filter by Category:</span>
-          <Select value={category} onValueChange={(value) => updateUrlParams(undefined, value)}>
+          <Select
+            value={category}
+            onValueChange={(value) => updateUrlParams(undefined, value)}
+          >
             <SelectTrigger className="w-56">
               <SelectValue>
                 {category === "all" ? "All Categories" : category}
@@ -444,10 +447,11 @@ export function StatusMonitorClient({
         {/* Results Counter and Load More */}
         <div className="text-center mb-8">
           <p className="text-sm text-muted-foreground mb-4">
-            Showing {displayedServices.length} of {filteredServices.length} services
+            Showing {displayedServices.length} of {filteredServices.length}{" "}
+            services
           </p>
           {hasMoreServices && (
-            <Button 
+            <Button
               onClick={handleLoadMore}
               variant="outline"
               size="lg"
@@ -547,7 +551,9 @@ export function StatusMonitorClient({
                   </div>
                   <div>
                     <div className="font-medium text-gray-900">Cursor</div>
-                    <div className="text-sm text-gray-600">AI-powered code editor</div>
+                    <div className="text-sm text-gray-600">
+                      AI-powered code editor
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -562,7 +568,9 @@ export function StatusMonitorClient({
                   </div>
                   <div>
                     <div className="font-medium text-gray-900">v0</div>
-                    <div className="text-sm text-gray-600">AI-model used in Cursor</div>
+                    <div className="text-sm text-gray-600">
+                      AI-model used in Cursor
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -577,7 +585,9 @@ export function StatusMonitorClient({
                   </div>
                   <div>
                     <div className="font-medium text-gray-900">Vercel</div>
-                    <div className="text-sm text-gray-600">Deployment & hosting</div>
+                    <div className="text-sm text-gray-600">
+                      Deployment & hosting
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -592,16 +602,17 @@ export function StatusMonitorClient({
                   </div>
                   <div>
                     <div className="font-medium text-gray-900">Supabase</div>
-                    <div className="text-sm text-gray-600">Database & backend</div>
+                    <div className="text-sm text-gray-600">
+                      Database & backend
+                    </div>
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-gray-600 max-w-2xl mx-auto">
-              </p>
+              <p className="text-sm text-gray-600 max-w-2xl mx-auto"></p>
             </div>
           </div>
         </div>
-        
+
         {/* Original Footer Content */}
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-sm text-muted-foreground">
