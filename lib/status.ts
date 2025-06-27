@@ -51,7 +51,7 @@ export function getStatusText(status: ServiceStatus): string {
     case "incident":
       return "Incident";
     case "maintenance":
-      return "Scheduled Maintenance";
+      return "Maintenance";
     default:
       return "Unknown";
   }
