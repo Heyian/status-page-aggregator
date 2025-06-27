@@ -192,9 +192,9 @@ This project is open source and available under the [MIT License](./LICENSE).
 
 ## 📞 Support
 
-- 🐛 [Report Issues](https://github.com/your-username/status-page-aggregator/issues)
-- 💬 [GitHub Discussions](https://github.com/your-username/status-page-aggregator/discussions)
-- 📖 [Documentation](https://github.com/your-username/status-page-aggregator/wiki)
+- 🐛 [Report Issues](https://github.com/DrDroidLab/status-page-aggregator/issues)
+- 💬 [GitHub Discussions](https://github.com/DrDroidLab/status-page-aggregator/discussions)
+- 📖 [Documentation](https://github.com/DrDroidLab/status-page-aggregator/wiki)
 
 ---
 

@@ -304,17 +304,16 @@ export function StatusMonitorClient({
             infrastructure services
           </p>
           <p className="text-sm text-muted-foreground mb-4">
-            Built for engineers, by engineers. Check service status and join
-            community discussions.
+            Built for engineers, by engineers. Check service status and find community links.
           </p>
           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
             <span>💡</span>
-            <span>Don't see your tools? Fork this project and add them!</span>
+            <span>Setup 1 click automation to get Slack alert if any of them are down</span>
             <Link
-              href="#customize"
+              href="https://github.com/DrDroidLab/status-page-aggregator"
               className="underline hover:no-underline font-medium"
             >
-              Learn how
+              Clone now
             </Link>
           </div>
         </div>
@@ -498,27 +497,16 @@ export function StatusMonitorClient({
                   Want to customize for your integrations & vendors?
                 </h3>
                 <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
-                  Fork this project and create your own status dashboard with
-                  the services your team actually uses. Add your internal tools,
-                  remove what you don't need, and deploy it for your
-                  organization.
+                  Contribute to the repo or fork it and create your own status dashboard.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                   <Button size="lg" asChild>
                     <Link
-                      href="https://github.com/DrDroidLab/status-page-aggregator/fork"
+                      href="https://github.com/DrDroidLab/status-page-aggregator"
                       className="flex items-center gap-2"
                     >
                       <Github className="w-4 h-4" />
-                      Fork on GitHub
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="lg" asChild>
-                    <Link
-                      href="https://github.com/DrDroidLab/status-page-aggregator#customization"
-                      className="flex items-center gap-2"
-                    >
-                      📖 Customization Guide
+                      GitHub
                     </Link>
                   </Button>
                 </div>
@@ -684,7 +672,7 @@ export function StatusMonitorClient({
                 🍴 Fork & Customize
               </Link>
               <Link
-                href="https://github.com/DrDroidLab/status-page-aggregatorissues"
+                href="https://github.com/DrDroidLab/status-page-aggregator/issues"
                 className="hover:underline"
               >
                 🐛 Report Issues
