@@ -51,6 +51,7 @@ CREATE TABLE service_status (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Optional:
 -- Create indexes for optimal query performance
 CREATE INDEX idx_service_status_slug ON service_status(service_slug);
 CREATE INDEX idx_service_status_status ON service_status(status);
