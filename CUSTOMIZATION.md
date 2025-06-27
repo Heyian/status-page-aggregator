@@ -30,7 +30,7 @@ EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=sre-alerts@gmail.com
 EMAIL_PASS=your-app-password
-SLACK_EMAIL=sre-team@yourcompany.slack.com
+SLACK_EMAIL=sre-team@yourcompany.slack.com # For Slack integration: Use your Slack channel's email address to receive notifications directly in Slack channels. You can also use any standard email address for notifications.
 
 # Optional: Custom branding
 NEXT_PUBLIC_COMPANY_NAME="Your Company Name"
