@@ -29,8 +29,9 @@ export function getStatusColor(status: ServiceStatus): string {
     case "operational":
       return "bg-green-100 text-green-800";
     case "degraded":
-    case "incident":
       return "bg-orange-100 text-orange-800";
+    case "incident":
+      return "bg-red-100 text-red-800";
     case "outage":
       return "bg-red-100 text-red-800";
     case "maintenance":
@@ -45,7 +46,7 @@ export function getStatusText(status: ServiceStatus): string {
     case "operational":
       return "Operational";
     case "degraded":
-      return "Degraded Performance";
+      return "Degraded";
     case "outage":
       return "Major Outage";
     case "incident":

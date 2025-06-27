@@ -145,7 +145,7 @@ export function StatusMonitorClient({
       case "operational":
         return "bg-green-600";
       case "degraded":
-        return "bg-yellow-500";
+        return "bg-orange-500";
       case "outage":
         return "bg-red-600";
       case "incident":
@@ -304,11 +304,15 @@ export function StatusMonitorClient({
             infrastructure services
           </p>
           <p className="text-sm text-muted-foreground mb-4">
-            Built for engineers, by engineers. Check service status and find community links.
+            Built for engineers, by engineers. Check service status and find
+            community links.
           </p>
           <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
             <span>💡</span>
-            <span>Setup 1 click automation to get Slack alert if any of them are down</span>
+            <span>
+              Setup 1 click automation to get Slack alert if any of them are
+              down
+            </span>
             <Link
               href="https://github.com/DrDroidLab/status-page-aggregator"
               className="underline hover:no-underline font-medium"
@@ -497,7 +501,8 @@ export function StatusMonitorClient({
                   Want to customize for your integrations & vendors?
                 </h3>
                 <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
-                  Contribute to the repo or fork it and create your own status dashboard.
+                  Contribute to the repo or fork it and create your own status
+                  dashboard.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                   <Button size="lg" asChild>
@@ -531,7 +536,7 @@ export function StatusMonitorClient({
                   <span>Operational</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                  <div className="w-3 h-3 rounded-full bg-orange-500" />
                   <span>Degraded</span>
                 </div>
                 <div className="flex items-center gap-2">
