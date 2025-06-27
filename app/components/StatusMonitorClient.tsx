@@ -270,7 +270,7 @@ export function StatusMonitorClient({
                     process.env.NODE_ENV === "production"
                       ? "/status-page-aggregator"
                       : ""
-                  }/logos/drdroid-logo-full.png`}
+                  }/logos/drdroid-logo.svg`}
                   alt="DrDroid Logo"
                   width={100}
                   height={100}
