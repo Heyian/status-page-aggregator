@@ -32,11 +32,11 @@
 │   Next.js App   │◄───│   Supabase DB    │◄───│  Edge Function  │
 │  (Frontend)     │    │ (service_status) │    │  (Status Sync)  │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
-                                                        ▲
-                                                        │
+                                                         ▲
+                                                         │
                                                 ┌────────▼─────────┐
                                                 │ External APIs &  │
-                                                │   RSS/Atom      │
+                                                │   RSS/Atom       │
                                                 └──────────────────┘
 ```
 
