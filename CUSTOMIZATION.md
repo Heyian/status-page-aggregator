@@ -30,7 +30,7 @@ EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=sre-alerts@gmail.com
 EMAIL_PASS=your-app-password
-SLACK_EMAIL=sre-team@yourcompany.slack.com # For Slack integration: Use your Slack channel's email address to receive notifications directly in Slack channels. You can also use any standard email address for notifications.
+SLACK_EMAIL=sre-team@yourcompany.slack.com # You can receive any notification on any email ID, you can also add a slack channel's notification email to recieve email to any standard email ID.
 
 # Optional: Custom branding
 NEXT_PUBLIC_COMPANY_NAME="Your Company Name"
@@ -304,6 +304,41 @@ Update the header in `app/page.tsx`:
     Stay informed during incidents and planned maintenance.
   </p>
 </div>
+```
+
+### Create Individual Service Pages
+
+You can create dedicated pages for each service by adding `app/[service]/page.tsx`. Add your service data and update helper functions:
+
+```typescript
+// app/[service]/page.tsx - Add to serviceData object
+const serviceData = {
+  stripe: {
+    name: "Stripe",
+    slug: "stripe",
+    statusUrl: "https://status.stripe.com/",
+    communityUrl: "https://reddit.com/r/stripe",
+    tags: ["Payment", "API"],
+    description:
+      "Stripe is a payment processing platform for online businesses.",
+    faq: [
+      {
+        question: "Is Stripe down?",
+        answer:
+          "Check current status above. Stripe maintains 99.99% uptime for payment processing.",
+      },
+    ],
+  },
+};
+
+// Update helper functions
+function getRssUrl(service: string): string | null {
+  const rssUrls: Record<string, string> = {
+    stripe: "https://status.stripe.com/history.rss",
+    github: "https://www.githubstatus.com/history.rss",
+  };
+  return rssUrls[service] || null;
+}
 ```
 
 ## 📧 Email Provider Configuration
