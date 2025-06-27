@@ -492,40 +492,6 @@ export function StatusMonitorClient({
           )}
         </div>
 
-        {/* Fork & Customize Section */}
-        <div className="mb-12" id="customize">
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <h3 className="text-2xl font-bold mb-3">
-                  Want to customize for your integrations & vendors?
-                </h3>
-                <p className="text-muted-foreground mb-4 max-w-2xl mx-auto">
-                  Contribute to the repo or fork it and create your own status
-                  dashboard.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" asChild>
-                    <Link
-                      href="https://github.com/DrDroidLab/status-page-aggregator"
-                      className="flex items-center gap-2"
-                    >
-                      <Github className="w-4 h-4" />
-                      GitHub
-                    </Link>
-                  </Button>
-                </div>
-                <div className="mt-4 text-sm text-muted-foreground">
-                  <p>
-                    ✨ Add your internal services • 🎨 Customize the design • 🚀
-                    Deploy anywhere
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Legend */}
         <div className="flex justify-center">
           <Card className="w-fit">
