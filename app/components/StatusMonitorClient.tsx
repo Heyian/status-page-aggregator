@@ -35,7 +35,7 @@ type ServiceStatus =
 
 interface Service {
   name: string;
-  status: ServiceStatus;
+  status?: ServiceStatus;
   statusUrl: string;
   communityUrl: string;
   slug: string;

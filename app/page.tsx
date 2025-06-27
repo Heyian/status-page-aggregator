@@ -18,7 +18,7 @@ import { StatusMonitorClient } from "./components/StatusMonitorClient";
 
 interface Service {
   name: string;
-  status: ServiceStatus;
+  status?: ServiceStatus;
   statusUrl: string;
   communityUrl: string;
   slug: string;
@@ -38,7 +38,6 @@ const services: Service[] = [
   // Cloud Providers
   {
     name: "OpenAI",
-    status: "operational",
     statusUrl: "https://status.openai.com/",
     communityUrl: "https://community.openai.com/",
     slug: "openai",
@@ -46,7 +45,6 @@ const services: Service[] = [
   },
   {
     name: "Cursor",
-    status: "operational",
     statusUrl: "https://status.cursor.com/",
     communityUrl: "https://forum.cursor.com/",
     slug: "cursor",
@@ -54,7 +52,6 @@ const services: Service[] = [
   },
   {
     name: "Anthropic",
-    status: "operational",
     statusUrl: "https://status.anthropic.com/",
     communityUrl: "https://reddit.com/r/Anthropic",
     slug: "anthropic",
@@ -62,7 +59,6 @@ const services: Service[] = [
   },
   {
     name: "Google Cloud",
-    status: "operational",
     statusUrl: "https://status.google.com/",
     communityUrl: "https://reddit.com/r/GoogleCloud",
     slug: "google-cloud",
@@ -70,7 +66,6 @@ const services: Service[] = [
   },
   {
     name: "DeepMind",
-    status: "operational",
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "google-deepmind",
@@ -78,7 +73,6 @@ const services: Service[] = [
   },
   {
     name: "Meta",
-    status: "operational",
     statusUrl: "https://metastatus.com/",
     communityUrl: "https://reddit.com/r/Meta",
     slug: "meta-ai",
@@ -86,7 +80,6 @@ const services: Service[] = [
   },
   {
     name: "Mistral AI",
-    status: "operational",
     statusUrl: "https://status.mistral.ai/",
     communityUrl: "https://reddit.com/r/MistralAI",
     slug: "mistral-ai",
@@ -94,7 +87,6 @@ const services: Service[] = [
   },
   {
     name: "Cohere",
-    status: "operational",
     statusUrl: "https://status.cohere.ai/",
     communityUrl: "https://cohere.com/blog/building-community",
     slug: "cohere",
@@ -102,7 +94,6 @@ const services: Service[] = [
   },
   {
     name: "AWS Bedrock",
-    status: "operational",
     statusUrl: "https://health.aws.amazon.com/health/status",
     communityUrl: "https://reddit.com/r/aws",
     slug: "aws-bedrock",
@@ -110,7 +101,6 @@ const services: Service[] = [
   },
   {
     name: "xAI",
-    status: "operational",
     statusUrl: "https://status.x.ai/",
     communityUrl: "https://reddit.com/r/xAI",
     slug: "xai",
@@ -118,7 +108,6 @@ const services: Service[] = [
   },
   {
     name: "Together AI",
-    status: "operational",
     statusUrl: "https://status.together.ai/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "together-ai",
@@ -126,7 +115,6 @@ const services: Service[] = [
   },
   {
     name: "Fireworks AI",
-    status: "operational",
     statusUrl: "https://status.fireworks.ai/",
     communityUrl: "https://discord.gg/mMqQxvFD9A",
     slug: "fireworks-ai",
@@ -134,7 +122,6 @@ const services: Service[] = [
   },
   {
     name: "Hugging Face Inference Endpoints",
-    status: "operational",
     statusUrl: "https://status.huggingface.co/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "huggingface",
@@ -142,7 +129,6 @@ const services: Service[] = [
   },
   {
     name: "Replicate",
-    status: "operational",
     statusUrl: "https://status.replicate.com/",
     communityUrl: "https://replicate.com/explore",
     slug: "replicate",
@@ -150,7 +136,6 @@ const services: Service[] = [
   },
   {
     name: "Anyscale",
-    status: "operational",
     statusUrl: "https://status.anyscale.com/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "anyscale",
@@ -158,7 +143,6 @@ const services: Service[] = [
   },
   {
     name: "OctoML",
-    status: "operational",
     statusUrl: "https://status.octoml.ai/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "octoml",
@@ -166,7 +150,6 @@ const services: Service[] = [
   },
   {
     name: "Modal",
-    status: "operational",
     statusUrl: "https://status.modal.com/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "modal",
@@ -174,7 +157,6 @@ const services: Service[] = [
   },
   {
     name: "RunPod",
-    status: "operational",
     statusUrl: "https://status.runpod.io/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "runpod",
@@ -182,7 +164,6 @@ const services: Service[] = [
   },
   {
     name: "Hyperbolic",
-    status: "operational",
     statusUrl: "https://status.hyperbolic.xyz/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "hyperbolic",
@@ -190,7 +171,6 @@ const services: Service[] = [
   },
   {
     name: "AssemblyAI",
-    status: "operational",
     statusUrl: "https://status.assemblyai.com/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "assemblyai",
@@ -198,7 +178,6 @@ const services: Service[] = [
   },
   {
     name: "Deepgram",
-    status: "operational",
     statusUrl: "https://status.deepgram.com/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "deepgram",
@@ -206,7 +185,6 @@ const services: Service[] = [
   },
   {
     name: "Google Speech-to-Text",
-    status: "operational",
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/GoogleCloud",
     slug: "google-speech-to-text",
@@ -214,7 +192,6 @@ const services: Service[] = [
   },
   {
     name: "AWS Transcribe",
-    status: "operational",
     statusUrl: "https://health.aws.amazon.com/health/status",
     communityUrl: "https://reddit.com/r/aws",
     slug: "aws-transcribe",
@@ -222,7 +199,6 @@ const services: Service[] = [
   },
   {
     name: "Microsoft Azure Speech",
-    status: "operational",
     statusUrl: "https://status.azure.com/",
     communityUrl: "https://reddit.com/r/AZURE",
     slug: "azure-speech",
@@ -230,7 +206,6 @@ const services: Service[] = [
   },
   {
     name: "Speechmatics",
-    status: "operational",
     statusUrl: "https://status.speechmatics.com/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "speechmatics",
@@ -238,7 +213,6 @@ const services: Service[] = [
   },
   {
     name: "ElevenLabs",
-    status: "operational",
     statusUrl: "https://status.elevenlabs.io/",
     communityUrl: "https://reddit.com/r/ElevenLabs",
     slug: "elevenlabs",
@@ -246,7 +220,6 @@ const services: Service[] = [
   },
   {
     name: "OpenAI TTS",
-    status: "operational",
     statusUrl: "https://status.openai.com/",
     communityUrl: "https://reddit.com/r/OpenAI",
     slug: "openai-tts",
@@ -254,7 +227,6 @@ const services: Service[] = [
   },
   {
     name: "AWS Polly",
-    status: "operational",
     statusUrl: "https://health.aws.amazon.com/health/status",
     communityUrl: "https://reddit.com/r/aws",
     slug: "aws-polly",
@@ -262,7 +234,6 @@ const services: Service[] = [
   },
   {
     name: "Google WaveNet",
-    status: "operational",
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/GoogleCloud",
     slug: "google-wavenet",
@@ -270,7 +241,6 @@ const services: Service[] = [
   },
   {
     name: "Azure Neural TTS",
-    status: "operational",
     statusUrl: "https://status.azure.com/",
     communityUrl: "https://reddit.com/r/AZURE",
     slug: "azure-neural-tts",
@@ -278,7 +248,6 @@ const services: Service[] = [
   },
   {
     name: "Rev.ai",
-    status: "operational",
     statusUrl: "https://status.rev.ai/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "rev-ai",
@@ -286,7 +255,6 @@ const services: Service[] = [
   },
   {
     name: "Pinecone",
-    status: "operational",
     statusUrl: "https://status.pinecone.io/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "pinecone",
@@ -294,7 +262,6 @@ const services: Service[] = [
   },
   {
     name: "Weaviate",
-    status: "operational",
     statusUrl: "https://status.weaviate.io/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "weaviate",
@@ -302,7 +269,6 @@ const services: Service[] = [
   },
   {
     name: "Milvus (Zilliz Cloud)",
-    status: "operational",
     statusUrl: "https://status.zilliz.com/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "milvus-zilliz",
@@ -310,7 +276,6 @@ const services: Service[] = [
   },
   {
     name: "Qdrant",
-    status: "operational",
     statusUrl: "https://status.qdrant.io/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "qdrant",
@@ -318,7 +283,6 @@ const services: Service[] = [
   },
   {
     name: "Chroma",
-    status: "operational",
     statusUrl: "https://status.trychroma.com/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "chroma",
@@ -326,7 +290,6 @@ const services: Service[] = [
   },
   {
     name: "Vespa",
-    status: "operational",
     statusUrl: "https://status.vespa.ai/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "vespa",
@@ -334,7 +297,6 @@ const services: Service[] = [
   },
   {
     name: "Deep Lake",
-    status: "operational",
     statusUrl: "https://status.activeloop.ai/",
     communityUrl: "https://reddit.com/r/MachineLearning",
     slug: "deep-lake",
@@ -342,7 +304,6 @@ const services: Service[] = [
   },
   {
     name: "Cloudflare",
-    status: "operational",
     statusUrl: "https://www.cloudflarestatus.com/",
     communityUrl: "https://reddit.com/r/CloudFlare",
     slug: "cloudflare",
@@ -350,7 +311,6 @@ const services: Service[] = [
   },
   {
     name: "Fastly",
-    status: "operational",
     statusUrl: "https://status.fastly.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "fastly",
@@ -358,7 +318,6 @@ const services: Service[] = [
   },
   {
     name: "Akamai",
-    status: "operational",
     statusUrl: "https://cloudharmony.com/status-of-akamai",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "akamai",
@@ -366,7 +325,6 @@ const services: Service[] = [
   },
   {
     name: "AWS CloudFront",
-    status: "operational",
     statusUrl: "https://health.aws.amazon.com/health/status",
     communityUrl: "https://reddit.com/r/aws",
     slug: "aws-cloudfront",
@@ -374,7 +332,6 @@ const services: Service[] = [
   },
   {
     name: "Google Cloud CDN",
-    status: "operational",
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/GoogleCloud",
     slug: "google-cloud-cdn",
@@ -382,7 +339,6 @@ const services: Service[] = [
   },
   {
     name: "Azure Front Door/CDN",
-    status: "operational",
     statusUrl: "https://status.azure.com/",
     communityUrl: "https://reddit.com/r/AZURE",
     slug: "azure-front-door-cdn",
@@ -390,7 +346,6 @@ const services: Service[] = [
   },
   {
     name: "Netlify Edge",
-    status: "operational",
     statusUrl: "https://www.netlifystatus.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "netlify-edge",
@@ -398,7 +353,6 @@ const services: Service[] = [
   },
   {
     name: "Vercel Edge",
-    status: "operational",
     statusUrl: "https://www.vercel-status.com/",
     communityUrl: "https://github.com/vercel/vercel/discussions",
     slug: "vercel-edge",
@@ -406,7 +360,6 @@ const services: Service[] = [
   },
   {
     name: "StackPath",
-    status: "operational",
     statusUrl: "https://status.stackpath.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "stackpath",
@@ -414,7 +367,6 @@ const services: Service[] = [
   },
   {
     name: "Bunny.net",
-    status: "operational",
     statusUrl: "https://status.bunny.net/",
     communityUrl: "https://bunny.net/blog/join-us-on-discord/",
     slug: "bunny-net",
@@ -422,16 +374,13 @@ const services: Service[] = [
   },
   {
     name: "Netlify",
-    status: "operational",
     statusUrl: "https://www.netlifystatus.com/",
     communityUrl: "https://answers.netlify.com/",
     slug: "netlify",
     tags: ["CDN & Hosting"],
   },
-
   {
     name: "BitBucket",
-    status: "operational",
     statusUrl: "https://bitbucket.status.atlassian.com/",
     communityUrl:
       "https://community.atlassian.com/forums/Bitbucket/ct-p/bitbucket",
@@ -440,7 +389,6 @@ const services: Service[] = [
   },
   {
     name: "Redis",
-    status: "operational",
     statusUrl: "https://status.redis.com/",
     communityUrl: "https://forum.redis.io/",
     slug: "redis",
@@ -448,7 +396,6 @@ const services: Service[] = [
   },
   {
     name: "Upstash",
-    status: "operational",
     statusUrl: "https://status.upstash.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "upstash",
@@ -456,7 +403,6 @@ const services: Service[] = [
   },
   {
     name: "Confluent",
-    status: "operational",
     statusUrl: "https://status.confluent.io/",
     communityUrl: "https://developer.confluent.io/community/",
     slug: "confluent",
@@ -464,7 +410,6 @@ const services: Service[] = [
   },
   {
     name: "RedPanda",
-    status: "operational",
     statusUrl: "https://status.redpanda.com/",
     communityUrl: "https://reddit.com/r/apachekafka",
     slug: "redpanda",
@@ -472,7 +417,6 @@ const services: Service[] = [
   },
   {
     name: "Snowflake",
-    status: "operational",
     statusUrl: "https://status.snowflake.com/",
     communityUrl: "https://community.snowflake.com/s/",
     slug: "snowflake",
@@ -480,7 +424,6 @@ const services: Service[] = [
   },
   {
     name: "Vercel",
-    status: "operational",
     statusUrl: "https://status.vercel.com/",
     communityUrl: "https://community.vercel.com/",
     slug: "vercel",
@@ -488,7 +431,6 @@ const services: Service[] = [
   },
   {
     name: "Render",
-    status: "operational",
     statusUrl: "https://status.render.com/",
     communityUrl: "https://community.render.com/",
     slug: "render",
@@ -496,7 +438,6 @@ const services: Service[] = [
   },
   {
     name: "Google BigQuery",
-    status: "operational",
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/GoogleCloud",
     slug: "google-bigquery",
@@ -504,7 +445,6 @@ const services: Service[] = [
   },
   {
     name: "Amazon Redshift",
-    status: "operational",
     statusUrl: "https://health.aws.amazon.com/health/status",
     communityUrl: "https://reddit.com/r/aws",
     slug: "amazon-redshift",
@@ -512,7 +452,6 @@ const services: Service[] = [
   },
   {
     name: "Databricks SQL Warehouse",
-    status: "operational",
     statusUrl: "https://status.databricks.com/",
     communityUrl: "https://reddit.com/r/databricks",
     slug: "databricks-sql-warehouse",
@@ -520,7 +459,6 @@ const services: Service[] = [
   },
   {
     name: "Azure Synapse Analytics",
-    status: "operational",
     statusUrl: "https://status.azure.com/",
     communityUrl: "https://reddit.com/r/AZURE",
     slug: "azure-synapse-analytics",
@@ -528,7 +466,6 @@ const services: Service[] = [
   },
   {
     name: "MongoDB Atlas",
-    status: "operational",
     statusUrl: "https://status.mongodb.com/",
     communityUrl: "https://reddit.com/r/mongodb",
     slug: "mongodb-atlas",
@@ -536,7 +473,6 @@ const services: Service[] = [
   },
   {
     name: "PlanetScale",
-    status: "operational",
     statusUrl: "https://www.planetscalestatus.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "planetscale",
@@ -544,7 +480,6 @@ const services: Service[] = [
   },
   {
     name: "CockroachDB Cloud",
-    status: "operational",
     statusUrl: "https://status.cockroachlabs.cloud/",
     communityUrl: "https://reddit.com/r/CockroachDB",
     slug: "cockroachdb-cloud",
@@ -552,7 +487,6 @@ const services: Service[] = [
   },
   {
     name: "ClickHouse Cloud",
-    status: "operational",
     statusUrl: "https://status.clickhouse.com/",
     communityUrl: "https://reddit.com/r/ClickHouse",
     slug: "clickhouse-cloud",
@@ -560,7 +494,6 @@ const services: Service[] = [
   },
   {
     name: "Firebolt",
-    status: "operational",
     statusUrl: "https://status.firebolt.io/",
     communityUrl: "https://reddit.com/r/dataengineering",
     slug: "firebolt",
@@ -568,7 +501,6 @@ const services: Service[] = [
   },
   {
     name: "Neon",
-    status: "operational",
     statusUrl: "https://status.neon.tech/",
     communityUrl: "https://reddit.com/r/PostgreSQL",
     slug: "neon",
@@ -576,7 +508,6 @@ const services: Service[] = [
   },
   {
     name: "Supabase",
-    status: "operational",
     statusUrl: "https://status.supabase.com/",
     communityUrl: "https://github.com/orgs/supabase/discussions",
     slug: "supabase",
@@ -584,7 +515,6 @@ const services: Service[] = [
   },
   {
     name: "InfluxDB Cloud",
-    status: "operational",
     statusUrl: "https://status.influxdata.com/",
     communityUrl: "https://reddit.com/r/influxdb",
     slug: "influxdb-cloud",
@@ -592,7 +522,6 @@ const services: Service[] = [
   },
   {
     name: "Timescale Cloud",
-    status: "operational",
     statusUrl: "https://status.timescale.com/",
     communityUrl: "https://reddit.com/r/PostgreSQL",
     slug: "timescale-cloud",
@@ -600,7 +529,6 @@ const services: Service[] = [
   },
   {
     name: "VictoriaMetrics Cloud",
-    status: "operational",
     statusUrl: "https://status.victoriametrics.com/",
     communityUrl: "https://reddit.com/r/monitoring",
     slug: "victoriametrics-cloud",
@@ -608,7 +536,6 @@ const services: Service[] = [
   },
   {
     name: "Grafana Cloud",
-    status: "operational",
     statusUrl: "https://status.grafana.com/",
     communityUrl: "https://reddit.com/r/grafana",
     slug: "grafana-cloud",
@@ -616,7 +543,6 @@ const services: Service[] = [
   },
   {
     name: "Stripe Billing",
-    status: "operational",
     statusUrl: "https://status.stripe.com/",
     communityUrl: "https://reddit.com/r/stripe",
     slug: "stripe-billing",
@@ -624,7 +550,6 @@ const services: Service[] = [
   },
   {
     name: "Chargebee",
-    status: "operational",
     statusUrl: "https://status.chargebee.com/",
     communityUrl: "https://www.chargebee.com/community/",
     slug: "chargebee",
@@ -632,7 +557,6 @@ const services: Service[] = [
   },
   {
     name: "Recurly",
-    status: "operational",
     statusUrl: "https://status.recurly.com/",
     communityUrl: "https://reddit.com/r/SaaS",
     slug: "recurly",
@@ -640,7 +564,6 @@ const services: Service[] = [
   },
   {
     name: "Zuora",
-    status: "operational",
     statusUrl: "https://trust.zuora.com/",
     communityUrl: "https://reddit.com/r/SaaS",
     slug: "zuora",
@@ -648,7 +571,6 @@ const services: Service[] = [
   },
   {
     name: "Paddle",
-    status: "operational",
     statusUrl: "https://status.paddle.com/",
     communityUrl: "https://reddit.com/r/SaaS",
     slug: "paddle",
@@ -656,7 +578,6 @@ const services: Service[] = [
   },
   {
     name: "Braintree Recurring",
-    status: "operational",
     statusUrl: "https://status.braintreepayments.com/",
     communityUrl: "https://reddit.com/r/payments",
     slug: "braintree-recurring",
@@ -664,7 +585,6 @@ const services: Service[] = [
   },
   {
     name: "Stripe Checkout",
-    status: "operational",
     statusUrl: "https://status.stripe.com/",
     communityUrl: "https://reddit.com/r/stripe",
     slug: "stripe-checkout",
@@ -672,7 +592,6 @@ const services: Service[] = [
   },
   {
     name: "PayPal Checkout",
-    status: "operational",
     statusUrl: "https://www.paypal-status.com/",
     communityUrl: "https://reddit.com/r/paypal",
     slug: "paypal-checkout",
@@ -680,7 +599,6 @@ const services: Service[] = [
   },
   {
     name: "Square",
-    status: "operational",
     statusUrl: "https://status.squareup.com/",
     communityUrl: "https://reddit.com/r/Square",
     slug: "square",
@@ -688,7 +606,6 @@ const services: Service[] = [
   },
   {
     name: "Adyen",
-    status: "operational",
     statusUrl: "https://status.adyen.com/",
     communityUrl: "https://reddit.com/r/payments",
     slug: "adyen",
@@ -696,7 +613,6 @@ const services: Service[] = [
   },
   {
     name: "Checkout.com",
-    status: "operational",
     statusUrl: "https://status.checkout.com/",
     communityUrl: "https://reddit.com/r/payments",
     slug: "checkout-com",
@@ -704,7 +620,6 @@ const services: Service[] = [
   },
   {
     name: "Razorpay",
-    status: "operational",
     statusUrl: "https://status.razorpay.com/",
     communityUrl: "https://reddit.com/r/india",
     slug: "razorpay",
@@ -712,7 +627,6 @@ const services: Service[] = [
   },
   {
     name: "QuickBooks Online API",
-    status: "operational",
     statusUrl: "https://status.developer.intuit.com/",
     communityUrl: "https://reddit.com/r/QuickBooks",
     slug: "quickbooks-online-api",
@@ -720,7 +634,6 @@ const services: Service[] = [
   },
   {
     name: "Xero API",
-    status: "operational",
     statusUrl: "https://status.xero.com/",
     communityUrl: "https://reddit.com/r/xero",
     slug: "xero-api",
@@ -728,7 +641,6 @@ const services: Service[] = [
   },
   {
     name: "FreshBooks API",
-    status: "operational",
     statusUrl: "https://status.freshbooks.com/",
     communityUrl: "https://reddit.com/r/smallbusiness",
     slug: "freshbooks-api",
@@ -736,7 +648,6 @@ const services: Service[] = [
   },
   {
     name: "Zoho Invoice",
-    status: "operational",
     statusUrl: "https://status.zoho.com/",
     communityUrl: "https://reddit.com/r/zoho",
     slug: "zoho-invoice",
@@ -744,7 +655,6 @@ const services: Service[] = [
   },
   {
     name: "Stripe Invoicing",
-    status: "operational",
     statusUrl: "https://status.stripe.com/",
     communityUrl: "https://reddit.com/r/stripe",
     slug: "stripe-invoicing",
@@ -752,7 +662,6 @@ const services: Service[] = [
   },
   {
     name: "Bill.com",
-    status: "operational",
     statusUrl: "https://status.bill.com/",
     communityUrl: "https://reddit.com/r/smallbusiness",
     slug: "bill-com",
@@ -760,7 +669,6 @@ const services: Service[] = [
   },
   {
     name: "Twilio",
-    status: "operational",
     statusUrl: "https://status.twilio.com/",
     communityUrl: "https://reddit.com/r/twilio",
     slug: "twilio",
@@ -768,7 +676,6 @@ const services: Service[] = [
   },
   {
     name: "Vonage/Nexmo",
-    status: "operational",
     statusUrl: "https://status.vonage.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "vonage-nexmo",
@@ -776,7 +683,6 @@ const services: Service[] = [
   },
   {
     name: "Plivo",
-    status: "operational",
     statusUrl: "https://status.plivo.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "plivo",
@@ -784,7 +690,6 @@ const services: Service[] = [
   },
   {
     name: "Sinch",
-    status: "operational",
     statusUrl: "https://status.sinch.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "sinch",
@@ -792,7 +697,6 @@ const services: Service[] = [
   },
   {
     name: "MessageBird",
-    status: "operational",
     statusUrl: "https://status.messagebird.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "messagebird",
@@ -800,7 +704,6 @@ const services: Service[] = [
   },
   {
     name: "Telnyx",
-    status: "operational",
     statusUrl: "https://status.telnyx.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "telnyx",
@@ -808,7 +711,6 @@ const services: Service[] = [
   },
   {
     name: "SendGrid",
-    status: "operational",
     statusUrl: "https://status.sendgrid.com/",
     communityUrl: "https://sendgrid.com/en-us/blog/category/community",
     slug: "sendgrid",
@@ -816,7 +718,6 @@ const services: Service[] = [
   },
   {
     name: "Mailgun",
-    status: "operational",
     statusUrl: "https://status.mailgun.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "mailgun",
@@ -824,7 +725,6 @@ const services: Service[] = [
   },
   {
     name: "Postmark",
-    status: "operational",
     statusUrl: "https://status.postmarkapp.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "postmark",
@@ -832,7 +732,6 @@ const services: Service[] = [
   },
   {
     name: "Amazon SES",
-    status: "operational",
     statusUrl: "https://health.aws.amazon.com/health/status",
     communityUrl: "https://reddit.com/r/aws",
     slug: "amazon-ses",
@@ -840,7 +739,6 @@ const services: Service[] = [
   },
   {
     name: "SparkPost",
-    status: "operational",
     statusUrl: "https://status.sparkpost.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "sparkpost",
@@ -848,7 +746,6 @@ const services: Service[] = [
   },
   {
     name: "Mailjet",
-    status: "operational",
     statusUrl: "https://status.mailjet.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "mailjet",
@@ -856,7 +753,6 @@ const services: Service[] = [
   },
   {
     name: "Firebase Cloud Messaging",
-    status: "operational",
     statusUrl: "https://status.firebase.google.com/",
     communityUrl: "https://reddit.com/r/Firebase",
     slug: "firebase-cloud-messaging",
@@ -864,7 +760,6 @@ const services: Service[] = [
   },
   {
     name: "OneSignal",
-    status: "operational",
     statusUrl: "https://status.onesignal.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "onesignal",
@@ -872,7 +767,6 @@ const services: Service[] = [
   },
   {
     name: "Pusher Beams",
-    status: "operational",
     statusUrl: "https://status.pusher.com/",
     communityUrl: "https://reddit.com/r/webdev",
     slug: "pusher-beams",
@@ -880,7 +774,6 @@ const services: Service[] = [
   },
   {
     name: "Airship",
-    status: "operational",
     statusUrl: "https://status.airship.com/",
     communityUrl: "https://reddit.com/r/marketing",
     slug: "airship",
@@ -888,7 +781,6 @@ const services: Service[] = [
   },
   {
     name: "AWS SNS",
-    status: "operational",
     statusUrl: "https://health.aws.amazon.com/health/status",
     communityUrl: "https://reddit.com/r/aws",
     slug: "aws-sns",
@@ -896,7 +788,6 @@ const services: Service[] = [
   },
   {
     name: "Expo Push",
-    status: "operational",
     statusUrl: "https://status.expo.io/",
     communityUrl: "https://reddit.com/r/reactnative",
     slug: "expo-push",
@@ -904,7 +795,6 @@ const services: Service[] = [
   },
   {
     name: "Twilio Voice",
-    status: "operational",
     statusUrl: "https://status.twilio.com/",
     communityUrl: "https://reddit.com/r/twilio",
     slug: "twilio-voice",
@@ -912,7 +802,6 @@ const services: Service[] = [
   },
   {
     name: "Vonage Voice",
-    status: "operational",
     statusUrl: "https://status.vonage.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "vonage-voice",
@@ -920,7 +809,6 @@ const services: Service[] = [
   },
   {
     name: "Plivo Voice",
-    status: "operational",
     statusUrl: "https://status.plivo.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "plivo-voice",
@@ -928,7 +816,6 @@ const services: Service[] = [
   },
   {
     name: "Sinch Voice",
-    status: "operational",
     statusUrl: "https://status.sinch.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "sinch-voice",
@@ -936,7 +823,6 @@ const services: Service[] = [
   },
   {
     name: "Telnyx Voice",
-    status: "operational",
     statusUrl: "https://status.telnyx.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "telnyx-voice",
@@ -944,7 +830,6 @@ const services: Service[] = [
   },
   {
     name: "Bandwidth",
-    status: "operational",
     statusUrl: "https://status.bandwidth.com/",
     communityUrl: "https://reddit.com/r/VoIP",
     slug: "bandwidth",
@@ -952,7 +837,6 @@ const services: Service[] = [
   },
   {
     name: "Slack",
-    status: "operational",
     statusUrl: "https://status.slack.com/",
     communityUrl:
       "https://trailhead.salesforce.com/trailblazer-community/neighborhoods/slack",
@@ -961,7 +845,6 @@ const services: Service[] = [
   },
   {
     name: "Microsoft Teams",
-    status: "operational",
     statusUrl: "https://portal.office.com/servicestatus",
     communityUrl: "https://reddit.com/r/MicrosoftTeams",
     slug: "microsoft-teams",
@@ -969,7 +852,6 @@ const services: Service[] = [
   },
   {
     name: "Discord",
-    status: "operational",
     statusUrl: "https://discordstatus.com/",
     communityUrl: "https://reddit.com/r/discordapp",
     slug: "discord",
@@ -977,7 +859,6 @@ const services: Service[] = [
   },
   {
     name: "JIRA",
-    status: "operational",
     statusUrl: "https://status.atlassian.com/",
     communityUrl: "https://community.atlassian.com/forums/Jira/ct-p/jira",
     slug: "jira",
@@ -985,7 +866,6 @@ const services: Service[] = [
   },
   {
     name: "ServiceNow",
-    status: "operational",
     statusUrl: "https://status.servicenow.com/",
     communityUrl: "https://reddit.com/r/servicenow",
     slug: "servicenow",
@@ -993,7 +873,6 @@ const services: Service[] = [
   },
   {
     name: "Confluence",
-    status: "operational",
     statusUrl: "https://status.atlassian.com/",
     communityUrl:
       "https://community.atlassian.com/forums/Confluence/ct-p/confluence",
@@ -1002,7 +881,6 @@ const services: Service[] = [
   },
   {
     name: "Trello",
-    status: "operational",
     statusUrl: "https://trello.status.atlassian.com/",
     communityUrl: "https://community.atlassian.com/forums/Trello/ct-p/trello",
     slug: "trello",
@@ -1010,7 +888,6 @@ const services: Service[] = [
   },
   {
     name: "Auth0",
-    status: "operational",
     statusUrl: "https://status.auth0.com/",
     communityUrl: "https://reddit.com/r/auth0",
     slug: "auth0",
@@ -1018,7 +895,6 @@ const services: Service[] = [
   },
   {
     name: "Firebase Auth",
-    status: "operational",
     statusUrl: "https://status.firebase.google.com/",
     communityUrl: "https://reddit.com/r/Firebase",
     slug: "firebase-auth",
@@ -1026,7 +902,6 @@ const services: Service[] = [
   },
   {
     name: "Amazon Cognito",
-    status: "operational",
     statusUrl: "https://status.aws.amazon.com/",
     communityUrl: "https://reddit.com/r/aws",
     slug: "amazon-cognito",
@@ -1034,7 +909,6 @@ const services: Service[] = [
   },
   {
     name: "Clerk",
-    status: "operational",
     statusUrl: "https://status.clerk.dev/",
     communityUrl: "https://dev.to/clerk",
     slug: "clerk",
@@ -1042,7 +916,6 @@ const services: Service[] = [
   },
   {
     name: "Supabase Auth",
-    status: "operational",
     statusUrl: "https://status.supabase.com/",
     communityUrl: "https://reddit.com/r/Supabase",
     slug: "supabase-auth",
@@ -1050,7 +923,6 @@ const services: Service[] = [
   },
   {
     name: "Stytch",
-    status: "operational",
     statusUrl: "https://status.stytch.com/",
     communityUrl: "https://reddit.com/r/stytch",
     slug: "stytch",
@@ -1058,7 +930,6 @@ const services: Service[] = [
   },
   {
     name: "SuperTokens",
-    status: "operational",
     statusUrl: "https://status.supertokens.com/",
     communityUrl: "https://reddit.com/r/supertokens",
     slug: "supertokens",
@@ -1066,7 +937,6 @@ const services: Service[] = [
   },
   {
     name: "Descope",
-    status: "operational",
     statusUrl: "https://status.descope.com/",
     communityUrl: "https://reddit.com/r/descope",
     slug: "descope",
@@ -1074,7 +944,6 @@ const services: Service[] = [
   },
   {
     name: "AWS",
-    status: "operational",
     statusUrl: "https://status.aws.amazon.com/",
     communityUrl: "https://reddit.com/r/aws",
     slug: "aws",
@@ -1082,7 +951,6 @@ const services: Service[] = [
   },
   {
     name: "Microsoft Azure",
-    status: "operational",
     statusUrl: "https://status.azure.com/",
     communityUrl: "https://reddit.com/r/AZURE",
     slug: "microsoft-azure",
@@ -1090,7 +958,6 @@ const services: Service[] = [
   },
   {
     name: "Google Cloud Platform",
-    status: "operational",
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/googlecloud",
     slug: "google-cloud-platform",
@@ -1098,7 +965,6 @@ const services: Service[] = [
   },
   {
     name: "Alibaba Cloud",
-    status: "operational",
     statusUrl: "https://status.alibabacloud.com/",
     communityUrl: "https://reddit.com/r/alibabacloud",
     slug: "alibaba-cloud",
@@ -1106,7 +972,6 @@ const services: Service[] = [
   },
   {
     name: "Oracle Cloud Infrastructure",
-    status: "operational",
     statusUrl: "https://ocistatus.oraclecloud.com/",
     communityUrl: "https://reddit.com/r/oraclecloud",
     slug: "oracle-cloud-infrastructure",
@@ -1114,7 +979,6 @@ const services: Service[] = [
   },
   {
     name: "IBM Cloud",
-    status: "operational",
     statusUrl: "https://cloud.ibm.com/status",
     communityUrl: "https://reddit.com/r/IBMCloud",
     slug: "ibm-cloud",
@@ -1122,7 +986,6 @@ const services: Service[] = [
   },
   {
     name: "DigitalOcean",
-    status: "operational",
     statusUrl: "https://status.digitalocean.com/",
     communityUrl: "https://www.digitalocean.com/community",
     slug: "digitalocean",
@@ -1130,7 +993,6 @@ const services: Service[] = [
   },
   {
     name: "Tencent Cloud",
-    status: "operational",
     statusUrl: "https://status.tencentcloud.com/",
     communityUrl: "https://reddit.com/r/tencentcloud",
     slug: "tencent-cloud",
@@ -1138,7 +1000,6 @@ const services: Service[] = [
   },
   {
     name: "OVH Cloud",
-    status: "operational",
     statusUrl: "https://status.ovhcloud.com/",
     communityUrl: "https://reddit.com/r/ovh",
     slug: "ovh-cloud",
@@ -1146,7 +1007,6 @@ const services: Service[] = [
   },
   {
     name: "Linode",
-    status: "operational",
     statusUrl: "https://status.linode.com/",
     communityUrl: "https://www.linode.com/community/questions/",
     slug: "linode",
@@ -1154,7 +1014,6 @@ const services: Service[] = [
   },
   {
     name: "Heroku",
-    status: "operational",
     statusUrl: "https://status.heroku.com/",
     communityUrl: "https://reddit.com/r/Heroku",
     slug: "heroku",
@@ -1162,7 +1021,6 @@ const services: Service[] = [
   },
   {
     name: "Kong Gateway",
-    status: "operational",
     statusUrl: "https://status.konghq.com/",
     communityUrl: "https://reddit.com/r/kong",
     slug: "kong-gateway",
@@ -1170,7 +1028,6 @@ const services: Service[] = [
   },
   {
     name: "Apigee X",
-    status: "operational",
     statusUrl: "https://status.cloud.google.com/",
     communityUrl: "https://reddit.com/r/apigee",
     slug: "apigee-x",
@@ -1178,7 +1035,6 @@ const services: Service[] = [
   },
   {
     name: "AWS API Gateway",
-    status: "operational",
     statusUrl: "https://status.aws.amazon.com/",
     communityUrl: "https://reddit.com/r/aws",
     slug: "aws-api-gateway",
@@ -1186,7 +1042,6 @@ const services: Service[] = [
   },
   {
     name: "MuleSoft Anypoint",
-    status: "operational",
     statusUrl: "https://status.mulesoft.com/",
     communityUrl: "https://reddit.com/r/mulesoft",
     slug: "mulesoft-anypoint",
@@ -1194,7 +1049,6 @@ const services: Service[] = [
   },
   {
     name: "Postman API Hub",
-    status: "operational",
     statusUrl: "https://status.postman.com/",
     communityUrl: "https://reddit.com/r/postman",
     slug: "postman-api-hub",
@@ -1202,7 +1056,6 @@ const services: Service[] = [
   },
   {
     name: "RapidAPI",
-    status: "operational",
     statusUrl: "https://status.rapidapi.com/",
     communityUrl: "https://reddit.com/r/rapidapi",
     slug: "rapidapi",
@@ -1210,7 +1063,6 @@ const services: Service[] = [
   },
   {
     name: "Tyk",
-    status: "operational",
     statusUrl: "https://status.tyk.io/",
     communityUrl: "https://reddit.com/r/tyk",
     slug: "tyk",
@@ -1218,7 +1070,6 @@ const services: Service[] = [
   },
   {
     name: "Gravitee",
-    status: "operational",
     statusUrl: "https://status.gravitee.io/",
     communityUrl: "https://reddit.com/r/gravitee",
     slug: "gravitee",
@@ -1226,7 +1077,6 @@ const services: Service[] = [
   },
   {
     name: "Red Hat 3scale",
-    status: "operational",
     statusUrl: "https://status.redhat.com/",
     communityUrl: "https://reddit.com/r/redhat",
     slug: "red-hat-3scale",
@@ -1234,7 +1084,6 @@ const services: Service[] = [
   },
   {
     name: "IBM API Connect",
-    status: "operational",
     statusUrl: "https://cloud.ibm.com/status",
     communityUrl: "https://reddit.com/r/IBMCloud",
     slug: "ibm-api-connect",

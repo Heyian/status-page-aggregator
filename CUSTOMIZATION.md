@@ -237,29 +237,23 @@ const services = [
   // Infrastructure
   {
     name: "AWS",
-    status: "operational",
     statusUrl: "https://status.aws.amazon.com/",
     slug: "aws",
     tags: ["Cloud Infrastructure"],
-    priority: "critical", // Add priority for visual indicators
   },
   {
     name: "Your Internal API",
-    status: "operational",
     statusUrl: "https://status.yourcompany.com/api",
     slug: "your-api",
     tags: ["Internal Services"],
-    priority: "critical",
   },
 
   // Development Tools
   {
     name: "GitHub",
-    status: "operational",
     statusUrl: "https://www.githubstatus.com/",
     slug: "github",
     tags: ["Developer Tools"],
-    priority: "low",
   },
 
   // Add all your monitored services...
