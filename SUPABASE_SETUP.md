@@ -45,8 +45,7 @@ Run this SQL in your **Supabase SQL Editor** (Dashboard → SQL Editor):
 -- Create service_status table
 -- This matches the schema used by the Deno Edge Function
 CREATE TABLE service_status (
-  id BIGSERIAL PRIMARY KEY,
-  service_slug TEXT UNIQUE NOT NULL,
+  service_slug TEXT PRIMARY KEY,
   status TEXT NOT NULL CHECK (status IN ('operational', 'degraded', 'incident', 'maintenance', 'unknown')),
   last_incident TIMESTAMPTZ,
   updated_at TIMESTAMPTZ DEFAULT NOW()
