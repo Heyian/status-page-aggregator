@@ -282,15 +282,27 @@ export function StatusMonitorClient({
                 Open Source
               </Badge>
             </div>
-            <Button variant="outline" size="sm" asChild>
-              <Link
-                href="https://github.com/DrDroidLab/status-page-aggregator"
-                className="flex items-center gap-2"
+            <div className="relative">
+              {/* Sparkle animations */}
+              <div className="absolute -top-1 -left-1 w-3 h-3 bg-yellow-400 rounded-full animate-ping opacity-75"></div>
+              <div className="absolute -top-2 -right-1 w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
+              <div className="absolute -bottom-1 -left-2 w-2 h-2 bg-purple-400 rounded-full animate-bounce delay-300"></div>
+              <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-pink-400 rounded-full animate-ping delay-500"></div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="relative bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300 hover:border-blue-400 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
-                <Github className="w-4 h-4" />
-                Star on GitHub
-              </Link>
-            </Button>
+                <Link
+                  href="https://github.com/DrDroidLab/status-page-aggregator"
+                  className="flex items-center gap-2 font-semibold text-blue-700 hover:text-blue-800"
+                >
+                  <Github className="w-4 h-4" />⭐ Star on GitHub
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
