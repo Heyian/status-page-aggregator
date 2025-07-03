@@ -98,6 +98,13 @@ export async function fetchServiceStatus(
       };
     });
 
+    // Sort incidents by date (newest first)
+    incidents.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Descending order (newest first)
+    });
+
     // Determine overall status
     const status = determineOverallStatus(incidents);
 
@@ -172,6 +179,13 @@ export async function fetchServiceStatusFromAtom(
       };
     });
 
+    // Sort incidents by date (newest first)
+    incidents.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Descending order (newest first)
+    });
+
     // Determine overall status using the same logic as RSS
     const status = determineOverallStatus(incidents);
 
@@ -218,6 +232,13 @@ export async function fetchServiceStatusFromAPI(
     const incidents: StatusIncident[] = (incidentsData.incidents || []).map(
       (incident: any) => parseIncidentFromAPI(incident)
     );
+
+    // Sort incidents by date (newest first)
+    incidents.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Descending order (newest first)
+    });
 
     return {
       status: overallStatus,
@@ -308,8 +329,22 @@ function determineOverallStatus(incidents: StatusIncident[]): ServiceStatus {
     "partial",
   ];
 
-  // Words that indicate major outage
-  const outageKeywords = [
+  // Words that indicate incidents (including outages)
+  const incidentKeywords = [
+    // General incident keywords
+    "incident",
+    "disruption",
+    "investigating",
+    "monitoring",
+    "identified",
+    "continuing to work",
+    "partial fix",
+    "working towards",
+    "top priority",
+    "still experience",
+    "feature disruption",
+    "issue",
+    // Outage keywords (treated as incidents)
     "outage",
     "down",
     "unavailable",
@@ -338,19 +373,22 @@ function determineOverallStatus(incidents: StatusIncident[]): ServiceStatus {
     "planned update",
   ];
 
-  // Check for maintenance keywords first (highest priority after outage)
+  // Check for maintenance keywords first
   if (maintenanceKeywords.some((keyword) => incidentText.includes(keyword))) {
     return "maintenance";
   }
 
-  // Check for outage keywords (highest priority)
-  if (outageKeywords.some((keyword) => incidentText.includes(keyword))) {
-    return "outage";
+  // Check for incident keywords (including outages)
+  if (incidentKeywords.some((keyword) => incidentText.includes(keyword))) {
+    return "incident";
   }
 
-  // Check for operational keywords
+  // Check for resolved/operational keywords - but only if no incident keywords are present
   if (operationalKeywords.some((keyword) => incidentText.includes(keyword))) {
-    return "operational";
+    // Double-check that this isn't actually an ongoing incident
+    if (!incidentKeywords.some((keyword) => incidentText.includes(keyword))) {
+      return "operational";
+    }
   }
 
   // Check for degraded keywords
