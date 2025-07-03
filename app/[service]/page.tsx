@@ -357,6 +357,42 @@ const serviceData = {
       },
     ],
   },
+  fastly: {
+    name: "Fastly",
+    slug: "fastly",
+    statusUrl: "https://www.fastlystatus.com/",
+    communityUrl: "https://reddit.com/r/fastly",
+    tags: ["CDN", "Edge Computing", "Infrastructure"],
+    description:
+      "Fastly is an edge cloud platform providing CDN, security, and compute services with real-time visibility and instant purging capabilities.",
+    faq: [
+      {
+        question: "Is Fastly down?",
+        answer:
+          "Check the current status above. Fastly operates a global edge platform with high availability. Visit fastlystatus.com for real-time service health updates.",
+      },
+      {
+        question: "Why is my content not loading from Fastly CDN?",
+        answer:
+          "Content delivery issues can be due to cache configuration, origin server problems, or network connectivity. Check your service configuration and origin server status.",
+      },
+      {
+        question: "How to troubleshoot Fastly performance issues?",
+        answer:
+          "Review your cache settings, check edge server performance, verify SSL configurations, and analyze traffic patterns in your Fastly dashboard.",
+      },
+      {
+        question: "What to do during Fastly outages?",
+        answer:
+          "Enable origin fallback, use multiple CDN providers, implement proper error handling, and monitor the status page for incident resolution updates.",
+      },
+      {
+        question: "How reliable is Fastly's edge network?",
+        answer:
+          "Fastly provides enterprise-grade reliability with a global edge network, automatic failover, and real-time performance monitoring across all regions.",
+      },
+    ],
+  },
   slack: {
     name: "Slack",
     slug: "slack",
@@ -1332,6 +1368,78 @@ const serviceData = {
       },
     ],
   },
+  assemblyai: {
+    name: "AssemblyAI",
+    slug: "assemblyai",
+    statusUrl: "https://status.assemblyai.com/",
+    communityUrl: "https://community.assemblyai.com/",
+    tags: ["AI/ML", "LLM"],
+    description:
+      "AssemblyAI provides AI-powered transcription and translation services, enabling developers to build speech-to-text and text-to-speech capabilities into their applications.",
+    faq: [
+      {
+        question: "Is AssemblyAI down?",
+        answer:
+          "Check the current status above. AssemblyAI maintains high availability for transcription and translation services. Visit status.assemblyai.com for real-time updates.",
+      },
+      {
+        question: "Why is transcription failing?",
+        answer:
+          "Transcription failures can be due to service limits, API errors, or input issues. Check your input audio quality, format, and the AssemblyAI status page.",
+      },
+      {
+        question: "How to troubleshoot AssemblyAI API issues?",
+        answer:
+          "Verify your API key, check rate limits, ensure proper model selection, and review your request format. Monitor usage in your AssemblyAI dashboard.",
+      },
+      {
+        question: "What to do during AssemblyAI outages?",
+        answer:
+          "Implement fallback mechanisms, use local transcription tools, and monitor the status page for estimated resolution times.",
+      },
+      {
+        question: "How reliable is AssemblyAI's service?",
+        answer:
+          "AssemblyAI provides enterprise-grade reliability with global infrastructure, automatic scaling, and comprehensive monitoring for AI/ML workloads and transcription services.",
+      },
+    ],
+  },
+  deepgram: {
+    name: "Deepgram",
+    slug: "deepgram",
+    statusUrl: "https://status.deepgram.com/",
+    communityUrl: "https://discord.gg/xWRaCDBtW4",
+    tags: ["AI/ML", "Voice", "Audio", "Speech Recognition"],
+    description:
+      "Deepgram provides AI-powered speech recognition and voice analytics APIs, enabling developers to build voice-enabled applications with real-time transcription.",
+    faq: [
+      {
+        question: "Is Deepgram API down?",
+        answer:
+          "Check the current status above. Deepgram maintains high availability for speech recognition services. Visit status.deepgram.com for real-time service health updates.",
+      },
+      {
+        question: "Why is speech recognition failing?",
+        answer:
+          "Recognition failures can be due to audio quality, format issues, or service limits. Check your audio input quality, format specifications, and the Deepgram status page.",
+      },
+      {
+        question: "How to troubleshoot Deepgram API issues?",
+        answer:
+          "Verify your API key, check rate limits, ensure proper audio format, and review your request configuration. Monitor usage in your Deepgram dashboard.",
+      },
+      {
+        question: "What to do during Deepgram outages?",
+        answer:
+          "Implement fallback mechanisms, use local speech recognition tools, cache transcription results when possible, and monitor the status page for updates.",
+      },
+      {
+        question: "How reliable is Deepgram's service?",
+        answer:
+          "Deepgram provides enterprise-grade reliability with global infrastructure, automatic scaling, and comprehensive monitoring for speech recognition workloads.",
+      },
+    ],
+  },
 };
 
 type PageProps = {
@@ -1363,8 +1471,6 @@ const getRssUrl = (service: any) => {
   switch (service.slug) {
     // case "openai":
     //   return "https://status.openai.com/feed.rss";
-    case "azure":
-      return "https://rssfeed.azure.status.microsoft/en-us/status/feed/";
     case "slack":
       return "https://slack-status.com/feed/rss";
     case "render":
@@ -1381,16 +1487,18 @@ const getRssUrl = (service: any) => {
       return "https://status.pinecone.io/history.rss";
     case "mongodb-atlas":
       return "https://status.mongodb.com/history.rss";
-    case "modal":
-      return "https://status.modal.com/feed.rss";
-    case "netlify":
-      return "https://www.netlifystatus.com/history.rss";
-    case "bunny-net":
-      return "https://status.bunny.net/history.rss";
-    case "qdrant":
-      return "https://status.qdrant.io/feed.rss";
+    case "assemblyai":
+      return "https://status.assemblyai.com/history.rss";
     case "huggingface":
       return "https://status.huggingface.co/feed.rss";
+    case "qdrant":
+      return "https://status.qdrant.io/feed.rss";
+    case "modal":
+      return "https://status.modal.com/feed.rss";
+    case "bunny-net":
+      return "https://status.bunny.net/history.rss";
+    case "netlify":
+      return "https://www.netlifystatus.com/history.rss";
     default:
       return null;
   }
@@ -1403,6 +1511,11 @@ const getStatusAPIUrl = (service: any) => {
         status: "https://www.cloudflarestatus.com/api/v2/summary.json",
         incidents: "https://www.cloudflarestatus.com/api/v2/incidents.json",
       };
+    case "fastly":
+      return {
+        status: "https://www.fastlystatus.com/status.json",
+        incidents: "https://www.fastlystatus.com/incidents.json",
+      };
     case "supabase":
       return {
         status: "https://status.supabase.com/api/v2/status.json",
@@ -1412,6 +1525,11 @@ const getStatusAPIUrl = (service: any) => {
       return {
         status: "https://status.redis.io/api/v2/status.json",
         incidents: "https://status.redis.io/api/v2/incidents.json",
+      };
+    case "cursor":
+      return {
+        status: "https://status.cursor.com/api/v2/status.json",
+        incidents: "https://status.cursor.com/api/v2/incidents.json",
       };
     case "anthropic":
       return {
@@ -1500,6 +1618,8 @@ const getAtomUrl = (service: any) => {
   switch (service.slug) {
     case "google-cloud":
       return "https://status.cloud.google.com/en/feed.atom";
+    case "deepgram":
+      return "https://status.deepgram.com/history.atom";
     default:
       return null;
   }

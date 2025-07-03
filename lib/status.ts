@@ -70,12 +70,10 @@ export async function fetchServiceStatus(
     const parser = new XMLParser({
       ignoreAttributes: false,
       attributeNamePrefix: "@_",
-      cdataTagName: "__cdata",
       textNodeName: "__text",
       parseTagValue: true,
       parseAttributeValue: true,
       trimValues: true,
-      cdataPositionChar: "\\c",
     });
 
     const result = parser.parse(xmlText);
@@ -105,8 +103,8 @@ export async function fetchServiceStatus(
       return dateB - dateA; // Descending order (newest first)
     });
 
-    // Determine overall status
-    const status = determineOverallStatus(incidents);
+    // Determine overall status using Deno script logic
+    const status = determineOverallStatusFromFeed(incidents);
 
     return {
       status,
@@ -135,12 +133,10 @@ export async function fetchServiceStatusFromAtom(
     const parser = new XMLParser({
       ignoreAttributes: false,
       attributeNamePrefix: "@_",
-      cdataTagName: "__cdata",
       textNodeName: "__text",
       parseTagValue: false, // Keep as strings to preserve HTML entities
       parseAttributeValue: true,
       trimValues: true,
-      cdataPositionChar: "\\c",
     });
 
     const result = parser.parse(xmlText);
@@ -186,8 +182,8 @@ export async function fetchServiceStatusFromAtom(
       return dateB - dateA; // Descending order (newest first)
     });
 
-    // Determine overall status using the same logic as RSS
-    const status = determineOverallStatus(incidents);
+    // Determine overall status using Deno script logic
+    const status = determineOverallStatusFromFeed(incidents);
 
     return {
       status,
@@ -418,35 +414,9 @@ function extractComponents(description: string): string[] {
 
 function parseStatusFromAPI(statusData: any): ServiceStatus {
   // Handle different API response formats
-  const status =
-    statusData.status?.indicator ||
-    statusData.status?.description ||
-    statusData.indicator ||
-    "none";
-
-  switch (status.toLowerCase()) {
-    case "none":
-    case "operational":
-    case "all systems operational":
-      return "operational";
-    case "minor":
-    case "degraded_performance":
-    case "partial_outage":
-    case "partial outage":
-      return "degraded";
-    case "major":
-    case "major_outage":
-    case "major outage":
-    case "critical":
-      return "outage";
-    case "maintenance":
-    case "scheduled_maintenance":
-    case "planned_maintenance":
-    case "under_maintenance":
-      return "maintenance";
-    default:
-      return "unknown";
-  }
+  const indicator = statusData.status?.indicator ?? "";
+  const description = statusData.status?.description ?? "";
+  return normalizeStatus(`${indicator} ${description}`);
 }
 
 function parseIncidentFromAPI(incident: any): StatusIncident {
@@ -485,4 +455,104 @@ function mapAPIStatusToIncidentStatus(
     default:
       return "investigating";
   }
+}
+
+// Normalize text-based status values (from Deno script)
+function normalizeStatus(text: string): ServiceStatus {
+  const str = text.toLowerCase();
+  if (
+    str.includes("operational") ||
+    str.includes("available") ||
+    str.includes("none") ||
+    str.includes("100.000% uptime")
+  )
+    return "operational";
+  if (
+    str.includes("degraded") ||
+    str.includes("partial") ||
+    str.includes("slow") ||
+    str.includes("performance")
+  )
+    return "degraded";
+  if (
+    str.includes("minor") ||
+    str.includes("major") ||
+    str.includes("outage") ||
+    str.includes("incident") ||
+    str.includes("disruption") ||
+    str.includes("monitoring")
+  )
+    return "incident";
+  if (str.includes("maintenance")) return "maintenance";
+  return "unknown";
+}
+
+// Determine overall status from feed data (RSS/Atom) using Deno script logic
+function determineOverallStatusFromFeed(
+  incidents: StatusIncident[]
+): ServiceStatus {
+  if (incidents.length === 0) return "operational";
+
+  const lastIncident = incidents[0];
+  if (!lastIncident) return "operational";
+
+  // Check if the last incident was more than 24 hours ago
+  const lastIncidentTime = new Date(lastIncident.createdAt).getTime();
+  const now = Date.now();
+  const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
+
+  if (lastIncidentTime < twentyFourHoursAgo) {
+    return "operational";
+  }
+
+  // Within 24 hours - determine actual status using Deno script logic
+  const content =
+    `${lastIncident.title} ${lastIncident.description}`.toLowerCase();
+  let status: ServiceStatus = "operational"; // default
+
+  // Check for maintenance
+  if (
+    content.includes("maintenance") ||
+    content.includes("scheduled") ||
+    content.includes("planned") ||
+    content.includes("upgrade")
+  ) {
+    if (
+      content.includes("resolved") ||
+      content.includes("completed") ||
+      content.includes("fixed") ||
+      content.includes("restored")
+    ) {
+      status = "operational";
+    } else {
+      status = "maintenance";
+    }
+  } else if (
+    content.includes("outage") ||
+    content.includes("incident") ||
+    content.includes("disruption") ||
+    content.includes("degraded") ||
+    content.includes("investigating") ||
+    content.includes("monitoring")
+  ) {
+    if (
+      content.includes("resolved") ||
+      content.includes("completed") ||
+      content.includes("fixed") ||
+      content.includes("restored")
+    ) {
+      status = "operational";
+    } else {
+      status = "incident";
+    }
+  } else if (
+    content.includes("resolved") ||
+    content.includes("completed") ||
+    content.includes("fixed") ||
+    content.includes("restored")
+  ) {
+    status = "operational";
+  }
+
+  return status;
 }
