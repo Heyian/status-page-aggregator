@@ -63,8 +63,8 @@ export async function POST(request: NextRequest) {
     <p style="color: #555; line-height: 1.6;">${message
       ?.replace(/\n/g, "<br>")
       .replace(
-        /More information at: (https?:\/\/[^\s]+)/g,
-        '<a href="$1" style="color: #0066cc; text-decoration: underline;">View Status Page</a><br>'
+        /(https?:\/\/[^\s<]+)/g,
+        '<a href="$1" style="color: #0066cc; text-decoration: underline;">View Status Page</a>'
       )}</p>
   </div>
   <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
