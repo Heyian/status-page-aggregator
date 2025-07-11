@@ -68,7 +68,15 @@ export class TelemetryTracker {
   }
 
   private capture(type: string, data: any) {
-    this.events.push({ type, data, timestamp: Date.now() });
+    const event = { type, data, timestamp: Date.now() };
+    this.events.push(event);
+
+    // Also add to global buffer for immediate access
+    if (typeof window !== "undefined" && (window as any).__telemetryBuffer) {
+      const globalBuffer = (window as any).__telemetryBuffer;
+      globalBuffer.push(event);
+    }
+
     if (this.events.length >= this.bufferSize) {
       this.flush();
     }
@@ -155,10 +163,52 @@ export class TelemetryTracker {
     try {
       const t = performance.timing;
       const loadTime = t.loadEventEnd - t.navigationStart;
+      const domContentLoaded = t.domContentLoadedEventEnd - t.navigationStart;
+      const firstPaint = performance
+        .getEntriesByType("paint")
+        .find((entry) => entry.name === "first-paint")?.startTime;
+      const firstContentfulPaint = performance
+        .getEntriesByType("paint")
+        .find((entry) => entry.name === "first-contentful-paint")?.startTime;
+
       this.capture("page_load", {
         url: window.location.href,
-        loadTime,
+        referrer: document.referrer,
+        userAgent: navigator.userAgent,
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          devicePixelRatio: window.devicePixelRatio,
+        },
+        timing: {
+          loadTime: loadTime,
+          domContentLoaded: domContentLoaded,
+          firstPaint: firstPaint,
+          firstContentfulPaint: firstContentfulPaint,
+          navigationStart: t.navigationStart,
+          fetchStart: t.fetchStart,
+          domainLookupStart: t.domainLookupStart,
+          domainLookupEnd: t.domainLookupEnd,
+          connectStart: t.connectStart,
+          connectEnd: t.connectEnd,
+          requestStart: t.requestStart,
+          responseStart: t.responseStart,
+          responseEnd: t.responseEnd,
+          domLoading: t.domLoading,
+          domInteractive: t.domInteractive,
+          domContentLoadedEventStart: t.domContentLoadedEventStart,
+          domContentLoadedEventEnd: t.domContentLoadedEventEnd,
+          domComplete: t.domComplete,
+          loadEventStart: t.loadEventStart,
+          loadEventEnd: t.loadEventEnd,
+        },
         readyState: document.readyState,
+        title: document.title,
+        characterSet: document.characterSet,
+        language: navigator.language,
+        cookieEnabled: navigator.cookieEnabled,
+        onLine: navigator.onLine,
+        platform: navigator.platform,
       });
     } catch (error) {
       console.error("Failed to capture page load metrics:", error);
@@ -173,12 +223,56 @@ export class TelemetryTracker {
       (e) => {
         try {
           const tgt = e.target as HTMLElement;
+          const rect = tgt.getBoundingClientRect();
+
           this.capture("click", {
-            tagName: tgt.tagName,
-            id: tgt.id || null,
-            classes: tgt.className || null,
-            x: e.clientX,
-            y: e.clientY,
+            element: {
+              tagName: tgt.tagName,
+              id: tgt.id || null,
+              className: tgt.className || null,
+              textContent: tgt.textContent?.slice(0, 100) || null,
+              href: (tgt as HTMLAnchorElement).href || null,
+              type: (tgt as HTMLInputElement).type || null,
+              value: (tgt as HTMLInputElement).value || null,
+              placeholder: (tgt as HTMLInputElement).placeholder || null,
+              role: tgt.getAttribute("role") || null,
+              ariaLabel: tgt.getAttribute("aria-label") || null,
+              dataAttributes: Object.fromEntries(
+                Array.from(tgt.attributes)
+                  .filter((attr) => attr.name.startsWith("data-"))
+                  .map((attr) => [attr.name, attr.value]),
+              ),
+            },
+            position: {
+              x: e.clientX,
+              y: e.clientY,
+              pageX: e.pageX,
+              pageY: e.pageY,
+              screenX: e.screenX,
+              screenY: e.screenY,
+            },
+            boundingRect: {
+              top: rect.top,
+              left: rect.left,
+              width: rect.width,
+              height: rect.height,
+            },
+            event: {
+              button: e.button,
+              buttons: e.buttons,
+              ctrlKey: e.ctrlKey,
+              shiftKey: e.shiftKey,
+              altKey: e.altKey,
+              metaKey: e.metaKey,
+              type: e.type,
+              timestamp: e.timeStamp,
+            },
+            page: {
+              url: window.location.href,
+              title: document.title,
+              scrollX: window.scrollX,
+              scrollY: window.scrollY,
+            },
           });
         } catch (error) {
           console.error("Failed to capture click event:", error);
@@ -191,14 +285,32 @@ export class TelemetryTracker {
   private patchConsole() {
     if (typeof console === "undefined") return;
 
-    (["log", "warn", "error", "info"] as const).forEach((method) => {
+    (["log", "warn", "error", "info", "debug"] as const).forEach((method) => {
       const orig = console[method];
       console[method] = (...args: any[]) => {
         if (!args[0]?.toString().includes("[Telemetry]")) {
           this.capture(`console_${method}`, {
-            args: args.map((arg) =>
-              typeof arg === "object" ? JSON.stringify(arg) : String(arg),
-            ),
+            message: args
+              .map((arg) =>
+                typeof arg === "object" ? JSON.stringify(arg) : String(arg),
+              )
+              .join(" "),
+            args: args.map((arg) => {
+              if (typeof arg === "object") {
+                try {
+                  return JSON.stringify(arg);
+                } catch {
+                  return String(arg);
+                }
+              }
+              return String(arg);
+            }),
+            stack: new Error().stack?.split("\\n").slice(2, 7) || [],
+            timestamp: Date.now(),
+            page: {
+              url: window.location.href,
+              title: document.title,
+            },
           });
         }
         orig.apply(console, args);
@@ -244,6 +356,17 @@ export class TelemetryTracker {
             TelemetryTracker.instance?.extractQueryParams(url) || {};
           const responseHeaders: Record<string, string> = {};
           const responseText = this.responseText;
+
+          // Extract response headers
+          const headerString = this.getAllResponseHeaders();
+          if (headerString) {
+            headerString.split("\\r\\n").forEach((line) => {
+              const [key, value] = line.split(": ");
+              if (key && value) {
+                responseHeaders[key.toLowerCase()] = value;
+              }
+            });
+          }
 
           let responseBody = null;
           try {
