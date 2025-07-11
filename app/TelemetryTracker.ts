@@ -1,25 +1,64 @@
 // lib/TelemetryTracker.ts
-export type TelemetryEvent = {
-  type: string;
-  data: any;
-  timestamp: number;
-};
 
-export type NetworkEvent = {
-  url: string;
-  method: string;
-  queryParams?: Record<string, string>;
-  requestHeaders?: Record<string, string>;
-  requestBody?: any;
-  responseStatus?: number;
-  responseStatusText?: string;
-  responseHeaders?: Record<string, string>;
-  responseBody?: any;
-  duration: number;
-  error?: string;
-  startTime: number;
-  endTime: number;
-  isSupabaseQuery?: boolean;
+// API Configuration
+const TELEMETRY_API_URL = "http://20.51.107.130:8000/events/batch";
+
+// Event Type Enum
+export enum EventType {
+  PAGE = "page",
+  INTERACTION = "interaction",
+  CONSOLE = "console",
+  ERROR = "error",
+  NETWORK = "network",
+  SUPABASE = "supabase",
+}
+
+// Event Name Enum
+export enum EventName {
+  // Page events
+  PAGE_LOAD = "page_load",
+  PAGE_HIT = "page_hit",
+
+  // Interaction events
+  CLICK = "click",
+
+  // Console events
+  CONSOLE_LOG = "console_log",
+  CONSOLE_WARN = "console_warn",
+  CONSOLE_ERROR = "console_error",
+  CONSOLE_INFO = "console_info",
+  CONSOLE_DEBUG = "console_debug",
+
+  // Error events
+  JAVASCRIPT_ERROR = "javascript_error",
+  UNHANDLED_PROMISE_REJECTION = "unhandled_promise_rejection",
+
+  // Network events
+  XHR_COMPLETE = "xhr_complete",
+  XHR_ERROR = "xhr_error",
+  FETCH_COMPLETE = "fetch_complete",
+  FETCH_ERROR = "fetch_error",
+
+  // Supabase events
+  SUPABASE_XHR_COMPLETE = "supabase_xhr_complete",
+  SUPABASE_XHR_ERROR = "supabase_xhr_error",
+  SUPABASE_FETCH_COMPLETE = "supabase_fetch_complete",
+  SUPABASE_FETCH_ERROR = "supabase_fetch_error",
+}
+
+export type TelemetryEvent = {
+  event_id?: string;
+  user_id?: string;
+  session_id?: string;
+  event_type: string;
+  event_name: string;
+  properties?: Record<string, any>;
+  user_properties?: Record<string, any>;
+  page_url?: string;
+  page_title?: string;
+  referrer?: string;
+  user_agent?: string;
+  timestamp?: string;
 };
 
 export class TelemetryTracker {
@@ -28,11 +67,25 @@ export class TelemetryTracker {
   private readonly flushIntervalMs = 10_000;
   private flushTimerId?: ReturnType<typeof setInterval>;
   private isInitialized = false;
+  private sessionId: string;
 
   private static instance: TelemetryTracker;
 
   private constructor() {
+    this.sessionId = this.generateSessionId();
     this.initialize();
+  }
+
+  private generateSessionId(): string {
+    return (
+      "session_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9)
+    );
+  }
+
+  private generateEventId(): string {
+    return (
+      "event_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9)
+    );
   }
 
   private initialize() {
@@ -41,13 +94,30 @@ export class TelemetryTracker {
     }
 
     try {
-      this.initializeGlobalBuffer();
       this.trackPageLoad();
       this.patchClicks();
       this.patchConsole();
+      this.patchFetch();
       this.patchXHR();
       this.patchGlobalErrors();
       this.startFlushLoop();
+
+      // Capture initial page hit
+      this.capture(EventType.PAGE, EventName.PAGE_HIT, {
+        viewport: {
+          width: typeof window !== "undefined" ? window.innerWidth : 0,
+          height: typeof window !== "undefined" ? window.innerHeight : 0,
+          devicePixelRatio:
+            typeof window !== "undefined" ? window.devicePixelRatio : 1,
+        },
+        characterSet:
+          typeof document !== "undefined" ? document.characterSet : "",
+        language: typeof navigator !== "undefined" ? navigator.language : "",
+        cookieEnabled:
+          typeof navigator !== "undefined" ? navigator.cookieEnabled : false,
+        onLine: typeof navigator !== "undefined" ? navigator.onLine : false,
+        platform: typeof navigator !== "undefined" ? navigator.platform : "",
+      });
 
       this.isInitialized = true;
       console.log(
@@ -58,52 +128,6 @@ export class TelemetryTracker {
     }
   }
 
-  private initializeGlobalBuffer() {
-    if (typeof window === "undefined") return;
-
-    console.log("[Telemetry] Initializing telemetry tracker...");
-
-    // Event buffer - expose globally for TelemetryTracker class
-    const eventBuffer: TelemetryEvent[] = [];
-    (window as any).__telemetryBuffer = eventBuffer;
-    const bufferSize = 50;
-    const flushIntervalMs = 10000; // 10 seconds
-    let flushTimerId: ReturnType<typeof setInterval>;
-
-    // Function to flush events
-    const flushEvents = () => {
-      if (eventBuffer.length === 0) return;
-
-      console.log("[Telemetry] Flushing", eventBuffer.length, "events");
-      const payload = JSON.stringify(eventBuffer);
-
-      // Clear the buffer
-      eventBuffer.length = 0;
-
-      // Send to telemetry endpoint using original fetch to avoid recursion
-      fetch("/api/telemetry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: payload,
-      }).catch(function (err: any) {
-        console.error("[Telemetry] Failed to send events:", err);
-      });
-    };
-
-    // Start flush timer
-    flushTimerId = setInterval(flushEvents, flushIntervalMs);
-
-    console.log("[Telemetry] Global buffer initialized successfully");
-
-    // Clean up on page unload
-    window.addEventListener("beforeunload", function () {
-      if (flushTimerId) {
-        clearInterval(flushTimerId);
-      }
-      flushEvents(); // Flush any remaining events
-    });
-  }
-
   public static getInstance(): TelemetryTracker {
     if (!this.instance) {
       this.instance = new TelemetryTracker();
@@ -112,19 +136,48 @@ export class TelemetryTracker {
   }
 
   private startFlushLoop() {
-    this.flushTimerId = setInterval(() => this.flush(), this.flushIntervalMs);
+    console.log(
+      "[Telemetry] Starting flush loop with interval:",
+      this.flushIntervalMs,
+      "ms",
+    );
+    this.flushTimerId = setInterval(() => {
+      console.log(
+        "[Telemetry] Flush timer triggered, events in buffer:",
+        this.events.length,
+      );
+      this.flush();
+    }, this.flushIntervalMs);
   }
 
-  private capture(type: string, data: any) {
-    const event = { type, data, timestamp: Date.now() };
+  public capture(
+    eventType: string,
+    eventName: string,
+    properties?: Record<string, any>,
+    userProperties?: Record<string, any>,
+  ) {
+    const event: TelemetryEvent = {
+      event_id: this.generateEventId(),
+      session_id: this.sessionId,
+      event_type: eventType,
+      event_name: eventName,
+      properties: properties || {},
+      user_properties: userProperties || {},
+      page_url:
+        typeof window !== "undefined" ? window.location.href : undefined,
+      page_title: typeof document !== "undefined" ? document.title : undefined,
+      referrer: typeof document !== "undefined" ? document.referrer : undefined,
+      user_agent:
+        typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+      timestamp: new Date().toISOString(),
+    };
+
+    console.log("[Telemetry] Capturing event:", eventType, eventName, event);
+
+    // Add to local buffer
     this.events.push(event);
 
-    // Also add to global buffer for immediate access
-    if (typeof window !== "undefined" && (window as any).__telemetryBuffer) {
-      const globalBuffer = (window as any).__telemetryBuffer;
-      globalBuffer.push(event);
-    }
-
+    // Flush if buffer is full
     if (this.events.length >= this.bufferSize) {
       this.flush();
     }
@@ -133,12 +186,38 @@ export class TelemetryTracker {
   public flush() {
     if (this.events.length === 0) return;
 
-    // Send events to the global telemetry buffer instead of directly to API
-    if (typeof window !== "undefined" && (window as any).__telemetryBuffer) {
-      const globalBuffer = (window as any).__telemetryBuffer;
-      this.events.forEach((event) => globalBuffer.push(event));
-      this.events = [];
-    }
+    console.log(
+      "[Telemetry] Flushing",
+      this.events.length,
+      "events from TelemetryTracker",
+    );
+
+    // Send events directly to the API
+    const payload = {
+      batch: {
+        events: this.events,
+      },
+    };
+
+    // Send to external telemetry endpoint
+    fetch(TELEMETRY_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then(() => {
+        console.log(
+          "[Telemetry] Successfully sent",
+          this.events.length,
+          "events to API",
+        );
+      })
+      .catch(function (err: any) {
+        console.error("[Telemetry] Failed to send events:", err);
+      });
+
+    // Clear the events array
+    this.events = [];
   }
 
   private trackPageLoad() {
@@ -165,44 +244,38 @@ export class TelemetryTracker {
         .getEntriesByType("paint")
         .find((entry) => entry.name === "first-contentful-paint")?.startTime;
 
-      this.capture("page_load", {
-        url: window.location.href,
-        referrer: document.referrer,
-        userAgent: navigator.userAgent,
-        viewport: {
-          width: window.innerWidth,
-          height: window.innerHeight,
-          devicePixelRatio: window.devicePixelRatio,
-        },
-        timing: {
-          loadTime: loadTime,
-          domContentLoaded: domContentLoaded,
-          firstPaint: firstPaint,
-          firstContentfulPaint: firstContentfulPaint,
-          navigationStart: t.navigationStart,
-          fetchStart: t.fetchStart,
-          domainLookupStart: t.domainLookupStart,
-          domainLookupEnd: t.domainLookupEnd,
-          connectStart: t.connectStart,
-          connectEnd: t.connectEnd,
-          requestStart: t.requestStart,
-          responseStart: t.responseStart,
-          responseEnd: t.responseEnd,
-          domLoading: t.domLoading,
-          domInteractive: t.domInteractive,
-          domContentLoadedEventStart: t.domContentLoadedEventStart,
-          domContentLoadedEventEnd: t.domContentLoadedEventEnd,
-          domComplete: t.domComplete,
-          loadEventStart: t.loadEventStart,
-          loadEventEnd: t.loadEventEnd,
-        },
+      this.capture(EventType.PAGE, EventName.PAGE_LOAD, {
+        loadTime: loadTime,
+        domContentLoaded: domContentLoaded,
+        firstPaint: firstPaint,
+        firstContentfulPaint: firstContentfulPaint,
+        navigationStart: t.navigationStart,
+        fetchStart: t.fetchStart,
+        domainLookupStart: t.domainLookupStart,
+        domainLookupEnd: t.domainLookupEnd,
+        connectStart: t.connectStart,
+        connectEnd: t.connectEnd,
+        requestStart: t.requestStart,
+        responseStart: t.responseStart,
+        responseEnd: t.responseEnd,
+        domLoading: t.domLoading,
+        domInteractive: t.domInteractive,
+        domContentLoadedEventStart: t.domContentLoadedEventStart,
+        domContentLoadedEventEnd: t.domContentLoadedEventEnd,
+        domComplete: t.domComplete,
+        loadEventStart: t.loadEventStart,
+        loadEventEnd: t.loadEventEnd,
         readyState: document.readyState,
-        title: document.title,
         characterSet: document.characterSet,
         language: navigator.language,
         cookieEnabled: navigator.cookieEnabled,
         onLine: navigator.onLine,
         platform: navigator.platform,
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          devicePixelRatio: window.devicePixelRatio,
+        },
       });
     } catch (error) {
       console.error("Failed to capture page load metrics:", error);
@@ -219,7 +292,7 @@ export class TelemetryTracker {
           const tgt = e.target as HTMLElement;
           const rect = tgt.getBoundingClientRect();
 
-          this.capture("click", {
+          this.capture(EventType.INTERACTION, EventName.CLICK, {
             element: {
               tagName: tgt.tagName,
               id: tgt.id || null,
@@ -261,12 +334,8 @@ export class TelemetryTracker {
               type: e.type,
               timestamp: e.timeStamp,
             },
-            page: {
-              url: window.location.href,
-              title: document.title,
-              scrollX: window.scrollX,
-              scrollY: window.scrollY,
-            },
+            scrollX: window.scrollX,
+            scrollY: window.scrollY,
           });
         } catch (error) {
           console.error("Failed to capture click event:", error);
@@ -283,7 +352,28 @@ export class TelemetryTracker {
       const orig = console[method];
       console[method] = (...args: any[]) => {
         if (!args[0]?.toString().includes("[Telemetry]")) {
-          this.capture(`console_${method}`, {
+          let eventName: EventName;
+          switch (method) {
+            case "log":
+              eventName = EventName.CONSOLE_LOG;
+              break;
+            case "warn":
+              eventName = EventName.CONSOLE_WARN;
+              break;
+            case "error":
+              eventName = EventName.CONSOLE_ERROR;
+              break;
+            case "info":
+              eventName = EventName.CONSOLE_INFO;
+              break;
+            case "debug":
+              eventName = EventName.CONSOLE_DEBUG;
+              break;
+            default:
+              eventName = EventName.CONSOLE_LOG;
+          }
+
+          this.capture(EventType.CONSOLE, eventName, {
             message: args
               .map((arg) =>
                 typeof arg === "object" ? JSON.stringify(arg) : String(arg),
@@ -300,11 +390,6 @@ export class TelemetryTracker {
               return String(arg);
             }),
             stack: new Error().stack?.split("\\n").slice(2, 7) || [],
-            timestamp: Date.now(),
-            page: {
-              url: window.location.href,
-              title: document.title,
-            },
           });
         }
         orig.apply(console, args);
@@ -312,36 +397,119 @@ export class TelemetryTracker {
     });
   }
 
+  private patchFetch() {
+    if (typeof window === "undefined" || typeof window.fetch === "undefined") {
+      console.log("[Telemetry] Fetch not available, skipping fetch patching");
+      return;
+    }
+
+    console.log("[Telemetry] Patching fetch for telemetry tracking");
+    const originalFetch = window.fetch;
+
+    window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+      let url =
+        typeof input === "string"
+          ? input
+          : input instanceof Request
+          ? input.url
+          : String(input);
+      const method = init?.method || "GET";
+
+      // Skip tracking telemetry API calls to prevent infinite loops
+      if (url.includes("/api/telemetry") || url.includes(TELEMETRY_API_URL)) {
+        console.log("[Telemetry] Skipping telemetry API call:", url);
+        return originalFetch(input, init);
+      }
+
+      console.log("[Telemetry] Fetch request started:", method, url);
+      const startTime = performance.now();
+      const isSupabaseQuery =
+        url.includes("supabase.co") || url.includes("supabase.com");
+
+      try {
+        const response = await originalFetch(input, init);
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        console.log(
+          "[Telemetry] Fetch request completed:",
+          method,
+          url,
+          response.status,
+          "duration:",
+          duration + "ms",
+        );
+
+        const eventName = isSupabaseQuery
+          ? EventName.SUPABASE_FETCH_COMPLETE
+          : EventName.FETCH_COMPLETE;
+        const eventType = isSupabaseQuery
+          ? EventType.SUPABASE
+          : EventType.NETWORK;
+
+        this.capture(eventType, eventName, {
+          url,
+          method,
+          responseStatus: response.status,
+          responseStatusText: response.statusText,
+          duration,
+          startTime,
+          endTime,
+          isSupabaseQuery,
+        });
+
+        return response;
+      } catch (error) {
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        console.log("[Telemetry] Fetch request failed:", method, url, error);
+
+        const eventName = isSupabaseQuery
+          ? EventName.SUPABASE_FETCH_ERROR
+          : EventName.FETCH_ERROR;
+        const eventType = isSupabaseQuery
+          ? EventType.SUPABASE
+          : EventType.NETWORK;
+
+        this.capture(eventType, eventName, {
+          url,
+          method,
+          queryParams: this.extractQueryParams(url),
+          duration,
+          error: error instanceof Error ? error.message : String(error),
+          startTime,
+          endTime,
+          isSupabaseQuery,
+        });
+
+        throw error;
+      }
+    };
+
+    console.log("[Telemetry] Fetch patching completed successfully");
+  }
+
   private patchGlobalErrors() {
     if (typeof window === "undefined") return;
 
     // Global error handler
     window.addEventListener("error", (event) => {
-      this.capture("javascript_error", {
+      this.capture(EventType.ERROR, EventName.JAVASCRIPT_ERROR, {
         message: event.message,
         filename: event.filename,
         lineno: event.lineno,
         colno: event.colno,
         error: event.error?.toString(),
         stack: event.error?.stack,
-        timestamp: Date.now(),
-        page: {
-          url: window.location.href,
-          title: document.title,
-        },
       });
     });
 
     // Unhandled promise rejection handler
     window.addEventListener("unhandledrejection", (event) => {
-      this.capture("unhandled_promise_rejection", {
+      this.capture(EventType.ERROR, EventName.UNHANDLED_PROMISE_REJECTION, {
         reason: event.reason?.toString(),
         promise: event.promise,
-        timestamp: Date.now(),
-        page: {
-          url: window.location.href,
-          title: document.title,
-        },
       });
     });
   }
@@ -407,7 +575,12 @@ export class TelemetryTracker {
             responseBody = responseText;
           }
 
-          const xhrEvent: NetworkEvent = {
+          const eventName = isSupabaseQuery
+            ? "supabase_xhr_complete"
+            : "xhr_complete";
+          const eventType = isSupabaseQuery ? "supabase" : "network";
+
+          TelemetryTracker.instance?.capture(eventType, eventName, {
             url,
             method,
             queryParams,
@@ -419,12 +592,7 @@ export class TelemetryTracker {
             startTime,
             endTime,
             isSupabaseQuery,
-          };
-
-          TelemetryTracker.instance?.capture(
-            isSupabaseQuery ? "supabase_xhr_complete" : "xhr_complete",
-            xhrEvent,
-          );
+          });
         } catch (error) {
           console.error("Failed to capture XHR event:", error);
         }
@@ -436,7 +604,10 @@ export class TelemetryTracker {
         const endTime = performance.now();
         const duration = endTime - startTime;
 
-        const xhrEvent: NetworkEvent = {
+        const eventName = isSupabaseQuery ? "supabase_xhr_error" : "xhr_error";
+        const eventType = isSupabaseQuery ? "supabase" : "network";
+
+        TelemetryTracker.instance?.capture(eventType, eventName, {
           url,
           method,
           queryParams: TelemetryTracker.instance?.extractQueryParams(url) || {},
@@ -445,12 +616,7 @@ export class TelemetryTracker {
           startTime,
           endTime,
           isSupabaseQuery,
-        };
-
-        TelemetryTracker.instance?.capture(
-          isSupabaseQuery ? "supabase_xhr_error" : "xhr_error",
-          xhrEvent,
-        );
+        });
         cleanup();
       };
 
