@@ -19,6 +19,7 @@ export type NetworkEvent = {
   error?: string;
   startTime: number;
   endTime: number;
+  isSupabaseQuery?: boolean;
 };
 
 export class TelemetryTracker {
@@ -26,10 +27,6 @@ export class TelemetryTracker {
   private readonly bufferSize = 50;
   private readonly flushIntervalMs = 10_000;
   private flushTimerId?: ReturnType<typeof setInterval>;
-  private activeRequests = new Map<
-    string,
-    { startTime: number; url: string; method: string; init?: RequestInit }
-  >();
   private isInitialized = false;
 
   private static instance: TelemetryTracker;
@@ -44,16 +41,67 @@ export class TelemetryTracker {
     }
 
     try {
+      this.initializeGlobalBuffer();
       this.trackPageLoad();
       this.patchClicks();
       this.patchConsole();
       this.patchXHR();
+      this.patchGlobalErrors();
       this.startFlushLoop();
 
       this.isInitialized = true;
+      console.log(
+        "[Telemetry] Successfully initialized with all tracking enabled",
+      );
     } catch (error) {
       console.error("[Telemetry] Failed to initialize:", error);
     }
+  }
+
+  private initializeGlobalBuffer() {
+    if (typeof window === "undefined") return;
+
+    console.log("[Telemetry] Initializing telemetry tracker...");
+
+    // Event buffer - expose globally for TelemetryTracker class
+    const eventBuffer: TelemetryEvent[] = [];
+    (window as any).__telemetryBuffer = eventBuffer;
+    const bufferSize = 50;
+    const flushIntervalMs = 10000; // 10 seconds
+    let flushTimerId: ReturnType<typeof setInterval>;
+
+    // Function to flush events
+    const flushEvents = () => {
+      if (eventBuffer.length === 0) return;
+
+      console.log("[Telemetry] Flushing", eventBuffer.length, "events");
+      const payload = JSON.stringify(eventBuffer);
+
+      // Clear the buffer
+      eventBuffer.length = 0;
+
+      // Send to telemetry endpoint using original fetch to avoid recursion
+      fetch("/api/telemetry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).catch(function (err: any) {
+        console.error("[Telemetry] Failed to send events:", err);
+      });
+    };
+
+    // Start flush timer
+    flushTimerId = setInterval(flushEvents, flushIntervalMs);
+
+    console.log("[Telemetry] Global buffer initialized successfully");
+
+    // Clean up on page unload
+    window.addEventListener("beforeunload", function () {
+      if (flushTimerId) {
+        clearInterval(flushTimerId);
+      }
+      flushEvents(); // Flush any remaining events
+    });
   }
 
   public static getInstance(): TelemetryTracker {
@@ -90,60 +138,6 @@ export class TelemetryTracker {
       const globalBuffer = (window as any).__telemetryBuffer;
       this.events.forEach((event) => globalBuffer.push(event));
       this.events = [];
-    }
-  }
-
-  private extractQueryParams(url: string): Record<string, string> {
-    try {
-      const urlObj = new URL(url, window.location.origin);
-      const params: Record<string, string> = {};
-      urlObj.searchParams.forEach((value, key) => {
-        params[key] = value;
-      });
-      return params;
-    } catch (error) {
-      return {};
-    }
-  }
-
-  private async extractResponseBody(response: Response): Promise<any> {
-    try {
-      const contentType = response.headers.get("content-type");
-      if (contentType?.includes("application/json")) {
-        const clone = response.clone();
-        return await clone.json();
-      } else if (contentType?.includes("text/")) {
-        const clone = response.clone();
-        return await clone.text();
-      }
-      return null;
-    } catch (error) {
-      return null;
-    }
-  }
-
-  private async extractRequestBody(init?: RequestInit): Promise<any> {
-    if (!init?.body) return null;
-
-    try {
-      if (typeof init.body === "string") {
-        return JSON.parse(init.body);
-      } else if (init.body instanceof FormData) {
-        const formData: Record<string, any> = {};
-        init.body.forEach((value, key) => {
-          formData[key] = value;
-        });
-        return formData;
-      } else if (init.body instanceof URLSearchParams) {
-        const params: Record<string, string> = {};
-        init.body.forEach((value, key) => {
-          params[key] = value;
-        });
-        return params;
-      }
-      return null;
-    } catch (error) {
-      return null;
     }
   }
 
@@ -318,6 +312,40 @@ export class TelemetryTracker {
     });
   }
 
+  private patchGlobalErrors() {
+    if (typeof window === "undefined") return;
+
+    // Global error handler
+    window.addEventListener("error", (event) => {
+      this.capture("javascript_error", {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error?.toString(),
+        stack: event.error?.stack,
+        timestamp: Date.now(),
+        page: {
+          url: window.location.href,
+          title: document.title,
+        },
+      });
+    });
+
+    // Unhandled promise rejection handler
+    window.addEventListener("unhandledrejection", (event) => {
+      this.capture("unhandled_promise_rejection", {
+        reason: event.reason?.toString(),
+        promise: event.promise,
+        timestamp: Date.now(),
+        page: {
+          url: window.location.href,
+          title: document.title,
+        },
+      });
+    });
+  }
+
   private patchXHR() {
     if (typeof XMLHttpRequest === "undefined") return;
 
@@ -345,6 +373,8 @@ export class TelemetryTracker {
       const url = (this as any)._url;
       const method = (this as any)._method;
       const startTime = (this as any)._startTime;
+      const isSupabaseQuery =
+        url.includes("supabase.co") || url.includes("supabase.com");
 
       const onLoadEnd = async () => {
         const endTime = performance.now();
@@ -388,9 +418,13 @@ export class TelemetryTracker {
             duration,
             startTime,
             endTime,
+            isSupabaseQuery,
           };
 
-          TelemetryTracker.instance?.capture("xhr_complete", xhrEvent);
+          TelemetryTracker.instance?.capture(
+            isSupabaseQuery ? "supabase_xhr_complete" : "xhr_complete",
+            xhrEvent,
+          );
         } catch (error) {
           console.error("Failed to capture XHR event:", error);
         }
@@ -410,9 +444,13 @@ export class TelemetryTracker {
           error: "XHR request failed",
           startTime,
           endTime,
+          isSupabaseQuery,
         };
 
-        TelemetryTracker.instance?.capture("xhr_error", xhrEvent);
+        TelemetryTracker.instance?.capture(
+          isSupabaseQuery ? "supabase_xhr_error" : "xhr_error",
+          xhrEvent,
+        );
         cleanup();
       };
 
@@ -426,6 +464,19 @@ export class TelemetryTracker {
 
       return origSend.call(this, body);
     };
+  }
+
+  private extractQueryParams(url: string): Record<string, string> {
+    try {
+      const urlObj = new URL(url, window.location.origin);
+      const params: Record<string, string> = {};
+      urlObj.searchParams.forEach((value, key) => {
+        params[key] = value;
+      });
+      return params;
+    } catch (error) {
+      return {};
+    }
   }
 
   public destroy() {

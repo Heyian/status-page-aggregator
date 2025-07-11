@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,13 +8,34 @@ export async function POST(request: NextRequest) {
     // Log the events for debugging
     console.log(`[Telemetry API] Received ${events.length} events:`, events);
 
-    // Here you could:
-    // 1. Store events in a database
-    // 2. Send to analytics service (e.g., Mixpanel, Amplitude)
-    // 3. Send to monitoring service (e.g., Sentry, DataDog)
-    // 4. Write to log files
+    // Store events in Supabase for persistence and analysis
+    if (events.length > 0) {
+      try {
+        const { error } = await supabase.from("telemetry_events").insert(
+          events.map((event: any) => ({
+            event_type: event.type,
+            event_data: event.data,
+            timestamp: new Date(event.timestamp).toISOString(),
+            created_at: new Date().toISOString(),
+          })),
+        );
 
-    // For now, we'll just log them and could store in Supabase if needed
+        if (error) {
+          console.error(
+            "[Telemetry API] Failed to store events in Supabase:",
+            error,
+          );
+        } else {
+          console.log(
+            `[Telemetry API] Successfully stored ${events.length} events in Supabase`,
+          );
+        }
+      } catch (supabaseError) {
+        console.error("[Telemetry API] Supabase storage error:", supabaseError);
+      }
+    }
+
+    // Log individual events for debugging
     events.forEach((event: any, index: number) => {
       console.log(`Event ${index + 1}:`, {
         type: event.type,
@@ -25,7 +47,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       received: events.length,
-      message: "Telemetry events received successfully",
+      message: "Telemetry events received and stored successfully",
     });
   } catch (error) {
     console.error("Telemetry API error:", error);
