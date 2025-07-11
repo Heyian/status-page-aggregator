@@ -97,7 +97,6 @@ export class TelemetryTracker {
       this.trackPageLoad();
       this.patchClicks();
       this.patchConsole();
-      this.patchFetch();
       this.patchXHR();
       this.patchGlobalErrors();
       this.startFlushLoop();
@@ -132,6 +131,12 @@ export class TelemetryTracker {
     if (!this.instance) {
       this.instance = new TelemetryTracker();
     }
+
+    // Make instance available globally for fetch patching
+    if (typeof window !== "undefined") {
+      (window as any).__telemetryTracker = this.instance;
+    }
+
     return this.instance;
   }
 
@@ -199,13 +204,25 @@ export class TelemetryTracker {
       },
     };
 
+    console.log(
+      "[Telemetry] Sending payload:",
+      JSON.stringify(payload, null, 2),
+    );
+
     // Send to external telemetry endpoint
     fetch(TELEMETRY_API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
       body: JSON.stringify(payload),
     })
-      .then(() => {
+      .then(async (response) => {
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
         console.log(
           "[Telemetry] Successfully sent",
           this.events.length,
@@ -395,99 +412,6 @@ export class TelemetryTracker {
         orig.apply(console, args);
       };
     });
-  }
-
-  private patchFetch() {
-    if (typeof window === "undefined" || typeof window.fetch === "undefined") {
-      console.log("[Telemetry] Fetch not available, skipping fetch patching");
-      return;
-    }
-
-    console.log("[Telemetry] Patching fetch for telemetry tracking");
-    const originalFetch = window.fetch;
-
-    window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-      let url =
-        typeof input === "string"
-          ? input
-          : input instanceof Request
-          ? input.url
-          : String(input);
-      const method = init?.method || "GET";
-
-      // Skip tracking telemetry API calls to prevent infinite loops
-      if (url.includes("/api/telemetry") || url.includes(TELEMETRY_API_URL)) {
-        console.log("[Telemetry] Skipping telemetry API call:", url);
-        return originalFetch(input, init);
-      }
-
-      console.log("[Telemetry] Fetch request started:", method, url);
-      const startTime = performance.now();
-      const isSupabaseQuery =
-        url.includes("supabase.co") || url.includes("supabase.com");
-
-      try {
-        const response = await originalFetch(input, init);
-        const endTime = performance.now();
-        const duration = endTime - startTime;
-
-        console.log(
-          "[Telemetry] Fetch request completed:",
-          method,
-          url,
-          response.status,
-          "duration:",
-          duration + "ms",
-        );
-
-        const eventName = isSupabaseQuery
-          ? EventName.SUPABASE_FETCH_COMPLETE
-          : EventName.FETCH_COMPLETE;
-        const eventType = isSupabaseQuery
-          ? EventType.SUPABASE
-          : EventType.NETWORK;
-
-        this.capture(eventType, eventName, {
-          url,
-          method,
-          responseStatus: response.status,
-          responseStatusText: response.statusText,
-          duration,
-          startTime,
-          endTime,
-          isSupabaseQuery,
-        });
-
-        return response;
-      } catch (error) {
-        const endTime = performance.now();
-        const duration = endTime - startTime;
-
-        console.log("[Telemetry] Fetch request failed:", method, url, error);
-
-        const eventName = isSupabaseQuery
-          ? EventName.SUPABASE_FETCH_ERROR
-          : EventName.FETCH_ERROR;
-        const eventType = isSupabaseQuery
-          ? EventType.SUPABASE
-          : EventType.NETWORK;
-
-        this.capture(eventType, eventName, {
-          url,
-          method,
-          queryParams: this.extractQueryParams(url),
-          duration,
-          error: error instanceof Error ? error.message : String(error),
-          startTime,
-          endTime,
-          isSupabaseQuery,
-        });
-
-        throw error;
-      }
-    };
-
-    console.log("[Telemetry] Fetch patching completed successfully");
   }
 
   private patchGlobalErrors() {
