@@ -80,6 +80,63 @@ export default function RootLayout({
                 // Store original fetch
                 const originalFetch = window.fetch;
                 
+                // Helper function to extract query parameters
+                function extractQueryParams(url) {
+                  try {
+                    const urlObj = new URL(url, window.location.origin);
+                    const params = {};
+                    urlObj.searchParams.forEach((value, key) => {
+                      params[key] = value;
+                    });
+                    return params;
+                  } catch (error) {
+                    return {};
+                  }
+                }
+                
+                // Helper function to extract request body
+                async function extractRequestBody(init) {
+                  if (!init?.body) return null;
+                  
+                  try {
+                    if (typeof init.body === 'string') {
+                      return JSON.parse(init.body);
+                    } else if (init.body instanceof FormData) {
+                      const formData = {};
+                      init.body.forEach((value, key) => {
+                        formData[key] = value;
+                      });
+                      return formData;
+                    } else if (init.body instanceof URLSearchParams) {
+                      const params = {};
+                      init.body.forEach((value, key) => {
+                        params[key] = value;
+                      });
+                      return params;
+                    }
+                    return null;
+                  } catch (error) {
+                    return null;
+                  }
+                }
+                
+                // Helper function to extract response body
+                async function extractResponseBody(response) {
+                  try {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType?.includes('application/json')) {
+                      const clone = response.clone();
+                      return await clone.json();
+                    } else if (contentType?.includes('text/')) {
+                      const clone = response.clone();
+                      return await clone.text();
+                    }
+                    return null;
+                  } catch (error) {
+                    return null;
+                  }
+                }
+                
                 // Function to flush events
                 function flushEvents() {
                   if (eventBuffer.length === 0) return;
@@ -117,20 +174,36 @@ export default function RootLayout({
                   
                   console.log('[Telemetry] Fetch request started:', method, url);
                   
-                  return originalFetch.apply(this, arguments).then(function(response) {
+                  return originalFetch.apply(this, arguments).then(async function(response) {
                     const endTime = performance.now();
                     const duration = endTime - startTime;
                     
                     console.log('[Telemetry] Fetch request completed:', method, url, response.status);
                     
-                    // Add event to buffer
+                    // Extract all the detailed data
+                    const queryParams = extractQueryParams(url);
+                    const requestHeaders = init?.headers ? Object.fromEntries(
+                      init.headers instanceof Headers 
+                        ? Array.from(init.headers.entries())
+                        : Object.entries(init.headers)
+                    ) : {};
+                    const requestBody = await extractRequestBody(init);
+                    const responseHeaders = Object.fromEntries(response.headers.entries());
+                    const responseBody = await extractResponseBody(response);
+                    
+                    // Add event to buffer with complete data
                     eventBuffer.push({
                       type: 'network_complete',
                       data: {
                         url: url,
                         method: method,
+                        queryParams: queryParams,
+                        requestHeaders: requestHeaders,
+                        requestBody: requestBody,
                         responseStatus: response.status,
                         responseStatusText: response.statusText,
+                        responseHeaders: responseHeaders,
+                        responseBody: responseBody,
                         duration: duration,
                         startTime: startTime,
                         endTime: endTime
@@ -144,18 +217,30 @@ export default function RootLayout({
                     }
                     
                     return response;
-                  }).catch(function(error) {
+                  }).catch(async function(error) {
                     const endTime = performance.now();
                     const duration = endTime - startTime;
                     
                     console.log('[Telemetry] Fetch request failed:', method, url, error);
                     
-                    // Add error event to buffer
+                    // Extract request data for error events
+                    const queryParams = extractQueryParams(url);
+                    const requestHeaders = init?.headers ? Object.fromEntries(
+                      init.headers instanceof Headers 
+                        ? Array.from(init.headers.entries())
+                        : Object.entries(init.headers)
+                    ) : {};
+                    const requestBody = await extractRequestBody(init);
+                    
+                    // Add error event to buffer with complete request data
                     eventBuffer.push({
                       type: 'network_error',
                       data: {
                         url: url,
                         method: method,
+                        queryParams: queryParams,
+                        requestHeaders: requestHeaders,
+                        requestBody: requestBody,
                         error: error.message || String(error),
                         duration: duration,
                         startTime: startTime,
