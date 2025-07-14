@@ -199,9 +199,7 @@ export class TelemetryTracker {
 
     // Send events directly to the API
     const payload = {
-      batch: {
-        events: this.events,
-      },
+      events: this.events,
     };
 
     console.log(
