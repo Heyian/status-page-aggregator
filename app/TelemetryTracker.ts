@@ -1,7 +1,7 @@
 // lib/TelemetryTracker.ts
 
 // API Configuration
-const TELEMETRY_API_URL = "http://20.51.107.130:8000/events/batch";
+const TELEMETRY_API_URL = "https://ingest.hyperlook.io/events/batch";
 
 // Event Type Enum
 export enum EventType {
