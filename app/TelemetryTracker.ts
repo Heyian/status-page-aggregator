@@ -2,6 +2,7 @@
 
 // API Configuration
 const TELEMETRY_API_URL = "https://ingest.hyperlook.io/events/batch";
+const PROJECT_API_KEY = "sk_BAwmCnwHFZ8L8-lWl2AjvXDf-4l_C36XOa_2A3Rh6Ps";
 
 // Event Type Enum
 export enum EventType {
@@ -213,6 +214,7 @@ export class TelemetryTracker {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "X-API-Key": PROJECT_API_KEY,
       },
       body: JSON.stringify(payload),
     })
