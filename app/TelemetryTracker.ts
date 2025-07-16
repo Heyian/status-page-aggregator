@@ -2,7 +2,7 @@
 
 // API Configuration
 const TELEMETRY_API_URL = "https://ingest.hyperlook.io/events/batch";
-const PROJECT_API_KEY = "sk_BAwmCnwHFZ8L8-lWl2AjvXDf-4l_C36XOa_2A3Rh6Ps";
+const PROJECT_API_KEY = "sk_Au429jkd4x5mT0yiw_NvLTFLdl9YnJ_Vx7M43DxxPAY";
 
 // Event Type Enum
 export enum EventType {
