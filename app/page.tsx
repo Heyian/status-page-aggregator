@@ -1089,6 +1089,20 @@ const services: Service[] = [
     slug: "ibm-api-connect",
     tags: ["API Management", "IBM", "Enterprise"],
   },
+  {
+    name: "GitHub",
+    statusUrl: "https://www.githubstatus.com",
+    communityUrl: "https://github.community/",
+    slug: "github",
+    tags: ["Open Source", "Development"],
+  },
+  {
+    name: "GitLab",
+    statusUrl: "https://status.gitlab.com/",
+    communityUrl: "https://forum.gitlab.com/",
+    slug: "gitlab",
+    tags: ["Open Source", "Development"],
+  },
 ];
 
 function StatusIndicator({ status }: { status: string }) {
