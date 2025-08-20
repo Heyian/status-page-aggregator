@@ -3,11 +3,11 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import fetch from "npm:node-fetch@2";
 // Supabase setup
-const supabaseUrl = Deno.env.get("SUPABASE_URL");
-const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const supabaseUrl = Deno.env.get("SUPA_URL");
+const supabaseServiceRoleKey = Deno.env.get("SUPA_SERVICE_ROLE_KEY");
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 // Email API endpoint
-const EMAIL_API_URL = "<you-email-where-you-want-to-receive-the-notification>";
+const EMAIL_API_URL = "mafavreau@groupefvr.com";
 // High-priority services that trigger notifications when they change
 const NOTIFICATION_TRIGGER_SERVICES = new Set([
   "openai",
@@ -218,16 +218,6 @@ const services_rss = [
     slug: "netlify",
     name: "Netlify",
     rss_url: "https://www.netlifystatus.com/history.rss",
-  },
-  {
-    slug: "github",
-    name: "GitHub",
-    rss_url: "https://www.githubstatus.com/history.rss",
-  },
-  {
-    slug: "gitlab",
-    name: "GitLab",
-    rss_url: "https://status.gitlab.com/pages/5b36dc6502d06804c08349f7/rss",
   },
 ];
 // Services that need Atom feed scraping
